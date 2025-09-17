@@ -1,0 +1,154 @@
+//
+//  UnifiedTimerView.swift
+//  Aware
+//
+//  Created by Lautaro Pinto on 9/8/25.
+//
+
+import SwiftUI
+import SwiftData
+import AwareData
+
+//struct UnifiedTimerView: View {
+//    let timer: Timekeeper?
+//    let onStateChange: () -> Void
+//    
+//    @State private var currentTime = Date()
+//    
+//    private let timeUpdateTimer = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+//    
+//    // Computed property that forces recalculation when currentTime changes
+//    private var displayTime: String {
+//        guard let timer = timer else { return "00:00" }
+//        
+//        // Reference currentTime to ensure this property depends on it
+//        _ = currentTime
+//        
+//        if timer.isRunning {
+//            let elapsed = timer.totalElapsedSeconds + (timer.startTime?.timeIntervalSinceNow ?? 0) * -1
+//            let hours = Int(elapsed) / 3600
+//            let minutes = Int(elapsed) % 3600 / 60
+//            let seconds = Int(elapsed) % 60
+//            
+//            if hours > 0 {
+//                return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+//            } else {
+//                return String(format: "%02d:%02d", minutes, seconds)
+//            }
+//        } else {
+//            return timer.formattedElapsedTime
+//        }
+//    }
+//    
+//    private var hasActiveTimer: Bool {
+//        timer != nil
+//    }
+//    
+//    var body: some View {
+//        VStack(spacing: 16) {
+//            // Timer Info (shows when active)
+//            VStack(spacing: 8) {
+//                if let timer = timer {
+//                    Text(timer.name)
+//                        .font(.title2)
+//                        .fontWeight(.semibold)
+//                        .fontDesign(.rounded)
+//                        .transition(.scale.combined(with: .opacity))
+//                    
+//                    if let tag = timer.tag {
+//                        Text(tag.name)
+//                            .font(.subheadline)
+//                            .foregroundColor(tag.swiftUIColor)
+//                            .padding(.horizontal, 12)
+//                            .padding(.vertical, 4)
+//                            .background(tag.swiftUIColor.opacity(0.1))
+//                            .cornerRadius(8)
+//                            .transition(.scale.combined(with: .opacity))
+//                    }
+//                } else {
+//                    // Empty space to maintain layout
+//                    Spacer()
+//                        .frame(height: 44)
+//                }
+//            }
+//            .animation(.spring(response: 0.6, dampingFraction: 0.8), value: hasActiveTimer)
+//            
+//            // Time Display
+//            Text(displayTime)
+//                .font(.system(size: 48, weight: .bold, design: .monospaced))
+//                .foregroundColor(hasActiveTimer ? (timer?.isRunning == true ? .primary : .secondary) : .secondary)
+//                .contentTransition(.numericText())
+//                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: displayTime)
+//                .animation(.easeInOut(duration: 0.3), value: hasActiveTimer)
+//            
+//            // Control Buttons (shows when active)
+//            VStack(spacing: 16) {
+//                if let timer = timer {
+//                    HStack(spacing: 20) {
+//                        // Primary Action Button (Start/Pause/Resume)
+//                        PlayPauseButton(
+//                            isRunning: timer.isRunning,
+//                            hasElapsedTime: timer.totalElapsedSeconds > 0,
+//                            onAction: {
+//                                if timer.isRunning {
+//                                    timer.pause()
+//                                } else if timer.totalElapsedSeconds > 0 {
+//                                    timer.resume()
+//                                } else {
+//                                    timer.start()
+//                                }
+//                                onStateChange()
+//                            }
+//                        )
+//                        
+//                        // Stop Button (visible when timer is running or has elapsed time)
+//                        if timer.isRunning || timer.totalElapsedSeconds > 0 {
+//                            StopButton(
+//                                isRunning: timer.isRunning,
+//                                onAction: {
+//                                    timer.stop()
+//                                    onStateChange()
+//                                }
+//                            )
+//                            .transition(.scale.combined(with: .opacity))
+//                        }
+//                    }
+//                    .transition(.scale.combined(with: .opacity))
+//                    .animation(.spring(response: 0.4, dampingFraction: 0.8), value: timer.isRunning)
+//                    .animation(.spring(response: 0.4, dampingFraction: 0.8), value: timer.totalElapsedSeconds > 0)
+//                } else {
+//                    // Empty space to maintain layout
+//                    Spacer()
+//                        .frame(height: 44)
+//                }
+//            }
+//            .animation(.spring(response: 0.6, dampingFraction: 0.8), value: hasActiveTimer)
+//            
+//            // Disclaimer text (shows when empty)
+//            if timer == nil {
+//                Text("Start tracking your time with a quick timer below")
+//                    .font(.subheadline)
+//                    .foregroundColor(.secondary)
+//                    .multilineTextAlignment(.center)
+//                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+//            }
+//        }
+//        .padding(24)
+//        .frame(maxWidth: .infinity, alignment: .center)
+//        .background(Color.secondary.opacity(0.1))
+//        .cornerRadius(24)
+//        .animation(.spring(response: 0.8, dampingFraction: 0.8), value: hasActiveTimer)
+//        .onReceive(timeUpdateTimer) { _ in
+//            currentTime = Date()
+//        }
+//    }
+//}
+//
+//#Preview {
+//    @Previewable @State var timer: Timekeeper? = nil
+//    
+//    UnifiedTimerView(timer: timer) {
+//        
+//    }
+//    .padding(.horizontal)
+//}

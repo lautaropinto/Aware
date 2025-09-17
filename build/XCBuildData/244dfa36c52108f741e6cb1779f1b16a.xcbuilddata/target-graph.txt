@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'Aware' in project 'Aware'
+➜ Explicit dependency on target 'AwareWatchApp' in project 'Aware'
+Target 'AwareWatchApp' in project 'Aware' (no dependencies)

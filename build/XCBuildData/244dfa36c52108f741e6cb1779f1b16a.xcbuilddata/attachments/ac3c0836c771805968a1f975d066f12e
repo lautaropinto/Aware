@@ -1,0 +1,88 @@
+{
+  "" : {
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp-master.dia",
+    "emit-module-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp-master-emit-module.dia",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp-master.swiftdeps"
+  },
+  "/Users/lautaropinto/Projects/Aware/AwareWatchApp/AwareWatchApp.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/AwareWatchApp~partial.swiftmodule"
+  },
+  "/Users/lautaropinto/Projects/Aware/AwareWatchApp/ContentView.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/lautaropinto/Projects/Aware/AwareWatchApp/EmptyTimerView.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/EmptyTimerView~partial.swiftmodule"
+  },
+  "/Users/lautaropinto/Projects/Aware/AwareWatchApp/QuickStartView.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/QuickStartView~partial.swiftmodule"
+  },
+  "/Users/lautaropinto/Projects/Aware/AwareWatchApp/Timer.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/Timer~partial.swiftmodule"
+  },
+  "/Users/lautaropinto/Projects/Aware/AwareWatchApp/TimerDisplayView.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/TimerDisplayView~partial.swiftmodule"
+  },
+  "/Users/lautaropinto/Projects/Aware/AwareWatchApp/WatchConnectivityManager.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/WatchConnectivityManager~partial.swiftmodule"
+  },
+  "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/lautaropinto/Projects/Aware/build/Aware.build/Debug-iphonesimulator/AwareWatchApp.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

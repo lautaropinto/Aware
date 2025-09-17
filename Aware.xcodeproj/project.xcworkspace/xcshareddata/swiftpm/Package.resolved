@@ -1,0 +1,15 @@
+{
+  "originHash" : "581fbc22dc1e41a63bf1cf76d94f14b060e507ff5c81da02974822ef91065472",
+  "pins" : [
+    {
+      "identity" : "sfsymbolpicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lautaropinto/SFSymbolPicker",
+      "state" : {
+        "revision" : "6d970d7f13c58a96a76b98a00d4bce1e856cbf77",
+        "version" : "1.0.2"
+      }
+    }
+  ],
+  "version" : 3
+}
