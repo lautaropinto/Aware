@@ -13,8 +13,6 @@ struct TagIconPicker: View {
     
     @State private var showingImagePicker: Bool = false
     
-    @Namespace private var transition
-    
     var body: some View {
         Button {
             showingImagePicker = true
@@ -24,14 +22,8 @@ struct TagIconPicker: View {
         }
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.circle)
-        .matchedTransitionSource(
-            id: "sheet", in: transition
-        )
         .sheet(isPresented: $showingImagePicker) {
             SFSymbolPicker(selection: $selection)
-                .navigationTransition(
-                    .zoom(sourceID: "sheet", in: transition)
-                )
         }
     }
 }
