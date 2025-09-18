@@ -20,7 +20,7 @@ struct HistoryScene: View {
     // Filter timers based on tag selection
     private var filteredTimers: [Timekeeper] {
         guard let selectedTag = selectedTag else { return allTimers }
-        return allTimers.filter { $0.tag?.id == selectedTag.id }
+        return allTimers.filter { $0.mainTag?.id == selectedTag.id }
     }
     
     private var hasFilteredResults: Bool {

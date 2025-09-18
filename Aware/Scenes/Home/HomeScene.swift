@@ -52,7 +52,7 @@ struct HomeScene: View {
             findCurrentTimer()
         }
         .onChange(of: currentTimer) { _, newValue in
-            guard let timerColor = newValue?.tag?.swiftUIColor else {
+            guard let timerColor = newValue?.mainTag?.swiftUIColor else {
                 withAnimation { config.backgroundColor = .teal }
                 return
             }
@@ -84,7 +84,7 @@ struct HomeScene: View {
     }
     
     private func createAndStartTimer(with tag: Tag) {
-        let timer = Timekeeper(name: "\(tag.name) Session", tag: tag)
+        let timer = Timekeeper(name: "\(tag.name) Session", tags: [tag])
         modelContext.insert(timer)
         timer.start()
         currentTimer = timer
@@ -92,7 +92,9 @@ struct HomeScene: View {
     }
     
     private func createTimer(name: String, tag: Tag?) {
-        let timer = Timekeeper(name: name, tag: tag)
+        guard let tag else { return }
+        
+        let timer = Timekeeper(name: name, tags: [tag])
         modelContext.insert(timer)
         try? modelContext.save()
         showingNewTimerSheet = false

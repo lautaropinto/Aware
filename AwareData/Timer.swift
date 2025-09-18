@@ -18,9 +18,9 @@ public class Timekeeper {
     public var endTime: Date?
     public var totalElapsedSeconds: TimeInterval = 0
     public var isRunning: Bool = false
-    public var tag: Tag?
+    public var tags: [Tag]? = []
     
-    public init(name: String, tag: Tag? = nil) {
+    public init(name: String, tags: [Tag] = []) {
         self.id = UUID()
         self.name = name
         self.creationDate = Date()
@@ -28,10 +28,14 @@ public class Timekeeper {
         self.endTime = nil
         self.totalElapsedSeconds = 0
         self.isRunning = false
-        self.tag = tag
+        self.tags = tags
     }
     
     // MARK: - Timer Control Methods
+    
+    public var mainTag: Tag? {
+        tags?.first
+    }
     
     public func start() {
         guard !isRunning else { return }

@@ -18,7 +18,7 @@ public class Tag: Codable {
     public var image: String = ""
     public var creationDate: Date = Date.now
     public var displayOrder: Int = 0// Custom order for reordering
-    @Relationship(deleteRule: .nullify, inverse: \Timekeeper.tag) var timers: [Timekeeper]? = []
+    @Relationship(deleteRule: .nullify, inverse: \Timekeeper.tags) var timers: [Timekeeper]? = []
     
     public init(name: String, color: String = "#007AFF", image: String = "", displayOrder: Int = 0) {
         self.id = UUID()

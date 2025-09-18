@@ -100,7 +100,7 @@ struct DraggableTagGrid: View {
                     onReorder: onReorder
                 )
             }
-        }
+        } 
     }
 }
 

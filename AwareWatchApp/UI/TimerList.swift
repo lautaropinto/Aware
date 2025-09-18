@@ -35,13 +35,13 @@ struct TimerList: View {
     }
     
     private func createAndStartTimer(with tag: Tag) {
-        let timer = Timekeeper(name: "\(tag.name) Session", tag: tag)
+        let timer = Timekeeper(name: "\(tag.name) Session", tags: [tag])
         modelContext.insert(timer)
         timer.start()
         currentTimer = timer
         try? modelContext.save()
         withAnimation {
-            appConfig.backgroundColor = timer.tag?.swiftUIColor ?? .teal
+            appConfig.backgroundColor = timer.mainTag?.swiftUIColor ?? .teal
         }
     }
 }

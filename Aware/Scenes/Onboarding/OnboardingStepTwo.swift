@@ -7,10 +7,13 @@
 
 
 import SwiftUI
+import SwiftData
 import AwareData
 
 struct OnboardingStepTwo: View {
     let onContinue: (() -> Void)?
+    
+    @Query private var storedTags: [AwareData.Tag]
     
     @Environment(\.modelContext) private var modelContext
     
@@ -18,9 +21,9 @@ struct OnboardingStepTwo: View {
     @State private var didParagraphFinish = false
     @State private var createdTags: [AwareData.Tag] = []
     
-    let firstParagraph = "Every timer begins with a choice..."
-    let secondParagraph = "Work, rest, create, connect — what matters most to you?.."
-    let lastParagraph = "Add or remove activities to reflect your life. These are the anchors for your time..."
+    private let firstParagraph = "Every timer begins with a choice..."
+    private let secondParagraph = "Work, rest, create, connect — what matters most to you?.."
+    private let lastParagraph = "Add or remove activities to reflect your life. These are the anchors for your time..."
     
     var body: some View {
         VStack {
@@ -67,6 +70,9 @@ struct OnboardingStepTwo: View {
             .disabled(createdTags.isEmpty)
         }
         .padding()
+        .onAppear {
+            createdTags.append(contentsOf: storedTags)
+        }
     }
     
     func nextButton() {

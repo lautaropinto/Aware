@@ -22,7 +22,7 @@ struct RecentTimerRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
-                if let tag = timekeeper.tag {
+                if let tag = timekeeper.mainTag {
                     Text(tag.name)
                         .font(.caption)
                         .foregroundColor(tag.swiftUIColor)
