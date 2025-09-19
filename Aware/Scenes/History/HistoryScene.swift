@@ -25,6 +25,26 @@ struct HistoryScene: View {
         return allTimers.filter { $0.mainTag?.id == selectedTag.id }
     }
     
+    // Group entries by day
+    private var groupedEntries: [Date: [Timekeeper]] {
+        let grouped = Dictionary(grouping: filteredTimers) { entry in
+            Calendar.current.startOfDay(for: entry.creationDate)
+        }
+        
+        // Sort entries within each group once during grouping
+        return grouped.mapValues { entries in
+            entries.sorted(by: { $0.creationDate > $1.creationDate })
+        }
+    }
+    
+    private var sortedDates: [Date] {
+        groupedEntries.keys.sorted(by: >)
+    }
+    
+    private func sortedTimers(for date: Date) -> [Timekeeper] {
+        groupedEntries[date] ?? []
+    }
+    
     private var hasFilteredResults: Bool {
         !filteredTimers.isEmpty
     }
@@ -96,9 +116,11 @@ struct HistoryScene: View {
     
     private var timerList: some View {
         List {
-            Section("Friday 19 Sep") {
-                ForEach(filteredTimers, id: \.id) { timekeeper in
-                    timerRowView(for: timekeeper)
+            ForEach(sortedDates, id: \.self) { date in
+                Section("\(date.smartFormattedDate)") {
+                    ForEach(sortedTimers(for: date)) { timekeeper in
+                        timerRowView(for: timekeeper)
+                    }
                 }
             }
         }
