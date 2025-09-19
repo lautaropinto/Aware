@@ -45,6 +45,17 @@ struct HistoryScene: View {
         groupedEntries[date] ?? []
     }
     
+    private func totalElapsedTime(for date: Date) -> String {
+        let timers = sortedTimers(for: date)
+        let totalTime = timers.reduce(0) { partialResult, timer in
+            partialResult + timer.totalElapsedSeconds
+        }
+        
+        
+        
+        return TimeInterval(floatLiteral: totalTime).formattedElapsedTime
+    }
+    
     private var hasFilteredResults: Bool {
         !filteredTimers.isEmpty
     }
@@ -117,9 +128,17 @@ struct HistoryScene: View {
     private var timerList: some View {
         List {
             ForEach(sortedDates, id: \.self) { date in
-                Section("\(date.smartFormattedDate)") {
+                Section {
                     ForEach(sortedTimers(for: date)) { timekeeper in
                         timerRowView(for: timekeeper)
+                    }
+                } header: {
+                    HStack(alignment: .lastTextBaseline) {
+                        Text("\(date.smartFormattedDate)")
+                        Text("Total time: \(totalElapsedTime(for: date))")
+                            .font(.caption2.italic())
+                            .opacity(0.8)
+                            .contentTransition(.numericText())
                     }
                 }
             }
@@ -130,7 +149,6 @@ struct HistoryScene: View {
     
     private func timerRowView(for timekeeper: Timekeeper) -> some View {
         RecentTimerRow(timekeeper: timekeeper)
-//            .listRowSeparator(.hidden)
             .transition(.scale.combined(with: .opacity))
             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                 Button("Delete", role: .destructive) {
