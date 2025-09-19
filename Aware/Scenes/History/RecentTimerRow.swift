@@ -17,15 +17,21 @@ struct RecentTimerRow: View {
     
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(timekeeper.name)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                
+            HStack() {
                 if let tag = timekeeper.mainTag {
-                    Text(tag.name)
-                        .font(.caption)
-                        .foregroundColor(tag.swiftUIColor)
+                    TagIconView(tag: tag)
+                }
+                VStack(alignment: .leading, spacing: 2.0) {
+                    
+                    Text(timekeeper.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    if !timekeeper.isRunning,
+                       let endTime = timekeeper.endTime {
+                        Text("\(timekeeper.creationDate.formattedTime) - \(endTime.formattedTime)")
+                            .font(.caption2.bold())
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             
@@ -46,7 +52,10 @@ struct RecentTimerRow: View {
                 }
             }
         }
-        .listRowBackground(Color.clear)
+        .listRowBackground(
+            ConcentricRectangle()
+                .fill(.ultraThinMaterial.opacity(0.3))
+        )
         .onReceive(timeUpdateTimer) { _ in
             if timekeeper.isRunning {
                 currentTime = Date()

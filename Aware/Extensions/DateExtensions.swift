@@ -13,6 +13,14 @@ extension Date {
         Calendar.current.date(byAdding: .day, value: -1, to: self)!
     }
     
+    /// Will return formatted hours and minutes.
+    var formattedTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        
+        return formatter.string(from: self)
+    }
+    
     /// Will return formatted date: Friday, 19 sep
     var formattedDate: String {
         let formatter = DateFormatter()

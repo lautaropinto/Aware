@@ -118,14 +118,7 @@ struct DraggableTagButton: View {
     var body: some View {
         Button(action: onTap) {
             HStack {
-                Image(systemName: tag.image)
-                    .imageScale(.small)
-                    .foregroundStyle(Color.primary)
-                    .padding(8.0)
-                    .background(
-                        Circle()
-                            .fill(tag.swiftUIColor.gradient)
-                    )
+                TagIconView(tag: tag)
                 
                 Text(tag.name)
                     .font(.headline)
