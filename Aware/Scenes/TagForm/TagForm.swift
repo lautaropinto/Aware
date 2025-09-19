@@ -11,6 +11,8 @@ import AwareData
 import SFSymbolPicker
 
 struct TagForm: View {
+    let tagToEdit: Tag?
+    
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var existingTags: [Tag]
@@ -19,6 +21,11 @@ struct TagForm: View {
     @State private var selectedColor: Color = .blue
     @State private var tagImage: String = "tag"
     @State private var showingImagePicker: Bool = false
+    
+    init(tagToEdit: Tag? = nil) {
+        self.tagToEdit = tagToEdit
+        fillForm()
+    }
     
     private var isSaveEnabled: Bool {
         !tagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -120,12 +127,52 @@ struct TagForm: View {
                     }
                 }
             }
+            .onAppear {
+                fillForm()
+            }
         }
         .presentationDetents([.medium])
         .presentationCornerRadius(42)
     }
     
+    private func fillForm() {
+        print("fill form")
+        guard let tagToEdit else {
+            print("ke")
+            return
+        }
+        print("toy aca -..-", tagToEdit)
+        print("toy aca -..-", tagToEdit.name)
+        print("toy aca -..-", tagToEdit.color)
+        print("toy aca -..-", tagToEdit.image)
+        tagName = tagToEdit.name
+        selectedColor = tagToEdit.swiftUIColor
+        tagImage = tagToEdit.image
+    }
+    
+    private func clearForm() {
+        tagName = ""
+        selectedColor = .accent
+        tagImage = "heart"
+    }
+    
     private func saveTag() {
+        if tagToEdit == nil {
+            createNewTag()
+        } else {
+            editTag()
+        }
+    }
+    
+    private func editTag() {
+        tagToEdit?.name = tagName
+        tagToEdit?.color = selectedColor.toHex()
+        tagToEdit?.image = tagImage
+        
+        trySaveContextAndExit()
+    }
+    
+    private func createNewTag() {
         let trimmedName = tagName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return }
         
@@ -139,8 +186,13 @@ struct TagForm: View {
         let newTag = Tag(name: trimmedName, color: hexColor, image: tagImage, displayOrder: nextOrder)
         modelContext.insert(newTag)
         
+        trySaveContextAndExit()
+    }
+    
+    private func trySaveContextAndExit() {
         do {
             try modelContext.save()
+            clearForm()
             dismiss()
         } catch {
             // Handle error if needed

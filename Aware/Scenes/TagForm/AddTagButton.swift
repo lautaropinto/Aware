@@ -6,15 +6,21 @@
 //
 
 import SwiftUI
+import AwareData
 
 struct AddTagButton: View {
+    @Binding var mode: QuickStartSection.TagMode
     @State private var isShowingTagForm = false
     
     var body: some View {
         Button(action: {
-            isShowingTagForm = true
+            if mode == .play {
+                isShowingTagForm = true
+            } else {
+                withAnimation { mode = .play }
+            }
         }) {
-            Image(systemName: "plus")
+            Image(systemName: mode == .play ? "plus" : "play.fill")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.primary)
                 .frame(width: 32, height: 32)
@@ -29,5 +35,5 @@ struct AddTagButton: View {
 }
 
 #Preview {
-    AddTagButton()
+    AddTagButton(mode: .constant(.play))
 }

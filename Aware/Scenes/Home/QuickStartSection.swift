@@ -16,6 +16,10 @@ struct QuickStartSection: View {
     let onTagSelected: (Tag) -> Void
     
     @State private var draggedTag: Tag?
+    @State private var tagMode: TagMode = .play
+    @State private var showingDeleteAlert = false
+    @State private var tagToDelete: Tag?
+    @State private var tagToEdit: Tag?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -28,23 +32,48 @@ struct QuickStartSection: View {
                 
                 Spacer()
                 
-                AddTagButton()
+                HStack {
+                    EditModeButton()
+                    DeleteModeButton()
+                }
+                
+                AddTagButton(mode: $tagMode)
                     .disabled(isDisabled)
             }
             
             DraggableTagGrid(
                 tags: tags,
                 isDisabled: isDisabled,
+                tagMode: tagMode,
                 draggedTag: $draggedTag,
                 onTagSelected: { tag in
                     if !isDisabled {
-                        onTagSelected(tag)
+                        switch tagMode {
+                        case .play:
+                            onTagSelected(tag)
+                        case .delete:
+                            onDelete(tag)
+                        case .edit:
+                            onEdit(tag)
+                        }
                     }
                 },
                 onReorder: { sourceTag, targetTag in
                     reorderTags(sourceTag: sourceTag, targetTag: targetTag)
                 }
             )
+        }
+        .alert("Delete activity", isPresented: $showingDeleteAlert) {
+            DeleteAlert
+        } message: {
+            Text(
+                "Are you sure you want to delete this activity and its related timers? This action cannot be undone."
+            )
+        }
+        .sheet(item: $tagToEdit, onDismiss: {
+            tagToEdit = nil
+        }) { tag in
+            TagForm(tagToEdit: tag)
         }
     }
     
@@ -76,6 +105,89 @@ struct QuickStartSection: View {
             print("Failed to reorder tags: \(error)")
         }
     }
+    
+    private func onDelete(_ tag: Tag) {
+        tagToDelete = tag
+        showingDeleteAlert = true
+    }
+    
+    private func onEdit(_ tag: Tag) {
+        tagToEdit = tag
+    }
+    
+    @ViewBuilder
+    func DeleteModeButton() -> some View {
+        Button(action: {
+            withAnimation { tagMode = .delete }
+        }) {
+            Image(systemName: "trash")
+                .imageScale(.small)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.red)
+                .frame(width: 32, height: 32)
+                .background(Color.secondary.opacity(0.1))
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+    }
+    
+    @ViewBuilder
+    func EditModeButton() -> some View {
+        Button(action: {
+            withAnimation { tagMode = .edit }
+        }) {
+            Image(systemName: "pencil")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.yellow)
+                .frame(width: 32, height: 32)
+                .background(Color.secondary.opacity(0.1))
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+    }
+    
+    @ViewBuilder
+    private var DeleteAlert: some View {
+        Button("Cancel", role: .cancel) {}
+        Button("Delete", role: .destructive) {
+            guard let tagToDelete else { return }
+            withAnimation {
+                modelContext.delete(tagToDelete)
+                
+                self.tagToDelete = nil
+            }
+        }
+    }
+    
+    enum TagMode {
+        case play, delete, edit
+        
+        var color: Color {
+            switch self {
+            case .play: return .clear
+            case .delete: return .red
+            case .edit: return .yellow
+            }
+        }
+        
+        var buttonIconColor: Color {
+            switch self {
+            case .play: return .secondary
+            case .delete: return .red
+            case .edit: return .yellow
+            }
+        }
+        
+        var buttonIcon: String {
+            switch self {
+            case .play: return "play.fill"
+            case .delete: return "trash"
+            case .edit: return "pencil"
+            }
+        }
+    }
 }
 
 // MARK: - DraggableTagGrid Component
@@ -83,6 +195,7 @@ struct QuickStartSection: View {
 struct DraggableTagGrid: View {
     let tags: [Tag]
     let isDisabled: Bool
+    let tagMode: QuickStartSection.TagMode
     @Binding var draggedTag: Tag?
     let onTagSelected: (Tag) -> Void
     let onReorder: (Tag, Tag) -> Void
@@ -97,7 +210,8 @@ struct DraggableTagGrid: View {
                     isDisabled: isDisabled,
                     draggedTag: $draggedTag,
                     onTap: { onTagSelected(tag) },
-                    onReorder: onReorder
+                    onReorder: onReorder,
+                    tagMode: tagMode
                 )
             }
         } 
@@ -112,6 +226,7 @@ struct DraggableTagButton: View {
     @Binding var draggedTag: Tag?
     let onTap: () -> Void
     let onReorder: (Tag, Tag) -> Void
+    let tagMode: QuickStartSection.TagMode
     
     @State private var isDragging = false
     
@@ -126,9 +241,9 @@ struct DraggableTagButton: View {
                 
                 Spacer()
                 
-                Image(systemName: "play.fill")
+                Image(systemName: tagMode.buttonIcon)
                     .imageScale(.small)
-                    .foregroundStyle(Color.secondary.opacity(0.2))
+                    .foregroundStyle(tagMode.buttonIconColor)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -169,6 +284,11 @@ struct DraggableTagButton: View {
             isDragging = newValue?.id == tag.id
         }
         .glassEffect(in: .containerRelative)
+        .background(
+            Capsule()
+                .stroke(tagMode.color.opacity(0.3), lineWidth: 1.0)
+                .fill(tagMode.color.opacity(0.1))
+        )
     }
 }
 
