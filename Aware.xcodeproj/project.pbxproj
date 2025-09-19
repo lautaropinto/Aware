@@ -9,12 +9,20 @@
 /* Begin PBXBuildFile section */
 		E90350522E739632004ED425 /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E90350512E739632004ED425 /* AwareUI */; };
 		E90350542E739636004ED425 /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E90350532E739636004ED425 /* AwareUI */; };
+		E95870B62E7DD4A5009E47C4 /* AwareWatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = E9CEF0432E72EDDE00F4F969 /* AwareWatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E97846112E79B04500A76B52 /* SFSymbolPicker in Frameworks */ = {isa = PBXBuildFile; productRef = E97846102E79B04500A76B52 /* SFSymbolPicker */; };
 		E9CEF03E2E720E0300F4F969 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E9CEF03D2E720E0300F4F969 /* AwareData */; };
 		E9CEF04F2E72EF2200F4F969 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E9CEF04E2E72EF2200F4F969 /* AwareData */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E95870B72E7DD4A5009E47C4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E9CD7FA62E6FA70B00B4AB53 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E9CEF0422E72EDDE00F4F969;
+			remoteInfo = AwareWatchApp;
+		};
 		E9CD7FBC2E6FA70C00B4AB53 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E9CD7FA62E6FA70B00B4AB53 /* Project object */;
@@ -38,6 +46,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
+				E95870B62E7DD4A5009E47C4 /* AwareWatchApp.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -183,6 +192,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E95870B82E7DD4A5009E47C4 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				E9CD7FB02E6FA70B00B4AB53 /* Aware */,
@@ -381,6 +391,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		E95870B82E7DD4A5009E47C4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E9CEF0422E72EDDE00F4F969 /* AwareWatchApp */;
+			targetProxy = E95870B72E7DD4A5009E47C4 /* PBXContainerItemProxy */;
+		};
 		E9CD7FBD2E6FA70C00B4AB53 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E9CD7FAD2E6FA70B00B4AB53 /* Aware */;

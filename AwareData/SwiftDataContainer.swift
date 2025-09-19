@@ -22,7 +22,7 @@ struct AwareDataContainerViewModifier: ViewModifier {
             schema: schema,
             isStoredInMemoryOnly: inMemory,
             cloudKitDatabase: .private(
-                "iCloud.com.aware.db.container.aware-timers"
+                "iCloud.aware-timers"
             )
         )
         container = try! ModelContainer(
