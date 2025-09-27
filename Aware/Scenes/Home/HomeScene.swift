@@ -9,10 +9,15 @@ import SwiftUI
 import SwiftData
 import AwareData
 import AwareUI
+import OSLog
+
+private var logger = Logger(subsystem: "Aware", category: "HomeScene")
 
 struct HomeScene: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.appConfig) private var config
+    @Environment(ActivityStore.self) private var activityStore
+    @Environment(\.scenePhase) var scenePhase
     
     @Query private var timers: [Timekeeper]
     @Query private var tags: [Tag]
@@ -27,7 +32,7 @@ struct HomeScene: View {
             ScrollView {
                 VStack(spacing: 24) {
                     // Unified Timer Section
-                    UnifiedTimerView(timer: currentTimer, onStateChange: refreshCurrentTimer)
+                    StopWatch(timer: currentTimer, onStateChange: refreshCurrentTimer)
                         .padding(.horizontal)
                     
                     // Quick Start Section
@@ -49,6 +54,7 @@ struct HomeScene: View {
         }
         // Publish the binding so all descendants share and can react to changes
         .onAppear {
+            logger.debug("onAppear()")
             findCurrentTimer()
         }
         .onChange(of: currentTimer) { _, newValue in
@@ -57,6 +63,11 @@ struct HomeScene: View {
                 return
             }
             withAnimation { config.backgroundColor = timerColor }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                findCurrentTimer()
+            }
         }
     }
     
@@ -75,6 +86,12 @@ struct HomeScene: View {
         currentTimer = timers.first { timer in
             timer.isRunning || (timer.totalElapsedSeconds > 0 && timer.endTime == nil)
         }
+        
+        if let currentTimer {
+            activityStore.timer = currentTimer
+            logger.debug("Starting activity with timer: \(currentTimer.formattedElapsedTime)")
+            activityStore.startLiveActivity(with: currentTimer)
+        }
     }
     
     private func refreshCurrentTimer() {
@@ -88,6 +105,8 @@ struct HomeScene: View {
         modelContext.insert(timer)
         timer.start()
         currentTimer = timer
+        activityStore.timer = timer
+        activityStore.startLiveActivity(with: timer)
         try? modelContext.save()
     }
     

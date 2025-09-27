@@ -10,18 +10,23 @@
 		E90350522E739632004ED425 /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E90350512E739632004ED425 /* AwareUI */; };
 		E90350542E739636004ED425 /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E90350532E739636004ED425 /* AwareUI */; };
 		E95870B62E7DD4A5009E47C4 /* AwareWatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = E9CEF0432E72EDDE00F4F969 /* AwareWatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E95870D12E814E56009E47C4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95870D02E814E56009E47C4 /* WidgetKit.framework */; };
+		E95870D32E814E56009E47C4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95870D22E814E56009E47C4 /* SwiftUI.framework */; };
+		E95870DE2E814E58009E47C4 /* WidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E95870CF2E814E56009E47C4 /* WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E95870FF2E8157D4009E47C4 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E95870FE2E8157D4009E47C4 /* AwareData */; };
+		E96D595D2E8323DF009B178D /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E96D595C2E8323DF009B178D /* AwareUI */; };
 		E97846112E79B04500A76B52 /* SFSymbolPicker in Frameworks */ = {isa = PBXBuildFile; productRef = E97846102E79B04500A76B52 /* SFSymbolPicker */; };
 		E9CEF03E2E720E0300F4F969 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E9CEF03D2E720E0300F4F969 /* AwareData */; };
 		E9CEF04F2E72EF2200F4F969 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E9CEF04E2E72EF2200F4F969 /* AwareData */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E95870B72E7DD4A5009E47C4 /* PBXContainerItemProxy */ = {
+		E95870DC2E814E58009E47C4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E9CD7FA62E6FA70B00B4AB53 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = E9CEF0422E72EDDE00F4F969;
-			remoteInfo = AwareWatchApp;
+			remoteGlobalIDString = E95870CE2E814E56009E47C4;
+			remoteInfo = WidgetExtension;
 		};
 		E9CD7FBC2E6FA70C00B4AB53 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -40,6 +45,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		E95870E32E814E58009E47C4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				E95870DE2E814E58009E47C4 /* WidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E98E2A4A2E7192560033EB7E /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -55,6 +71,9 @@
 
 /* Begin PBXFileReference section */
 		E90350502E739561004ED425 /* AwareUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AwareUI; sourceTree = "<group>"; };
+		E95870CF2E814E56009E47C4 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E95870D02E814E56009E47C4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
+		E95870D22E814E56009E47C4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
 		E9CD7FAE2E6FA70B00B4AB53 /* Aware.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aware.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9CD7FBB2E6FA70C00B4AB53 /* AwareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9CD7FC52E6FA70C00B4AB53 /* AwareUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwareUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +82,31 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E95870E22E814E58009E47C4 /* Exceptions for "Widget" folder in "WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E95870CE2E814E56009E47C4 /* WidgetExtension */;
+		};
+		E95870FD2E8157C0009E47C4 /* Exceptions for "Widget" folder in "Aware" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				LiveActivity/ActiveTimerView.swift,
+				LiveActivity/CountText.swift,
+			);
+			target = E9CD7FAD2E6FA70B00B4AB53 /* Aware */;
+		};
+		E96D582D2E82398E009B178D /* Exceptions for "Aware" folder in "WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				LiveActivity/ActivityStore.swift,
+				LiveActivity/Intents/IntentNotifications.swift,
+				LiveActivity/Intents/StopLiveIntent.swift,
+				LiveActivity/LiveActivityAttributes.swift,
+			);
+			target = E95870CE2E814E56009E47C4 /* WidgetExtension */;
+		};
 		E99D2DEA2E72F53500683D51 /* Exceptions for "Aware" folder in "Aware" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -80,10 +124,20 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		E95870D42E814E56009E47C4 /* Widget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E95870FD2E8157C0009E47C4 /* Exceptions for "Widget" folder in "Aware" target */,
+				E95870E22E814E58009E47C4 /* Exceptions for "Widget" folder in "WidgetExtension" target */,
+			);
+			path = Widget;
+			sourceTree = "<group>";
+		};
 		E9CD7FB02E6FA70B00B4AB53 /* Aware */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				E99D2DEA2E72F53500683D51 /* Exceptions for "Aware" folder in "Aware" target */,
+				E96D582D2E82398E009B178D /* Exceptions for "Aware" folder in "WidgetExtension" target */,
 			);
 			path = Aware;
 			sourceTree = "<group>";
@@ -109,6 +163,17 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		E95870CC2E814E56009E47C4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E95870D32E814E56009E47C4 /* SwiftUI.framework in Frameworks */,
+				E96D595D2E8323DF009B178D /* AwareUI in Frameworks */,
+				E95870D12E814E56009E47C4 /* WidgetKit.framework in Frameworks */,
+				E95870FF2E8157D4009E47C4 /* AwareData in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E9CD7FAB2E6FA70B00B4AB53 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -154,6 +219,7 @@
 				E9CD7FBE2E6FA70C00B4AB53 /* AwareTests */,
 				E9CD7FC82E6FA70C00B4AB53 /* AwareUITests */,
 				E9CEF0442E72EDDE00F4F969 /* AwareWatchApp */,
+				E95870D42E814E56009E47C4 /* Widget */,
 				E9CEF0382E720D8300F4F969 /* Frameworks */,
 				E9CD7FAF2E6FA70B00B4AB53 /* Products */,
 			);
@@ -166,6 +232,7 @@
 				E9CD7FBB2E6FA70C00B4AB53 /* AwareTests.xctest */,
 				E9CD7FC52E6FA70C00B4AB53 /* AwareUITests.xctest */,
 				E9CEF0432E72EDDE00F4F969 /* AwareWatchApp.app */,
+				E95870CF2E814E56009E47C4 /* WidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -173,6 +240,8 @@
 		E9CEF0382E720D8300F4F969 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E95870D02E814E56009E47C4 /* WidgetKit.framework */,
+				E95870D22E814E56009E47C4 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -180,6 +249,30 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		E95870CE2E814E56009E47C4 /* WidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E95870DF2E814E58009E47C4 /* Build configuration list for PBXNativeTarget "WidgetExtension" */;
+			buildPhases = (
+				E95870CB2E814E56009E47C4 /* Sources */,
+				E95870CC2E814E56009E47C4 /* Frameworks */,
+				E95870CD2E814E56009E47C4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E95870D42E814E56009E47C4 /* Widget */,
+			);
+			name = WidgetExtension;
+			packageProductDependencies = (
+				E95870FE2E8157D4009E47C4 /* AwareData */,
+				E96D595C2E8323DF009B178D /* AwareUI */,
+			);
+			productName = WidgetExtension;
+			productReference = E95870CF2E814E56009E47C4 /* WidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		E9CD7FAD2E6FA70B00B4AB53 /* Aware */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E9CD7FCF2E6FA70C00B4AB53 /* Build configuration list for PBXNativeTarget "Aware" */;
@@ -188,11 +281,12 @@
 				E9CD7FAB2E6FA70B00B4AB53 /* Frameworks */,
 				E9CD7FAC2E6FA70B00B4AB53 /* Resources */,
 				E98E2A4A2E7192560033EB7E /* Embed Watch Content */,
+				E95870E32E814E58009E47C4 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E95870B82E7DD4A5009E47C4 /* PBXTargetDependency */,
+				E95870DD2E814E58009E47C4 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				E9CD7FB02E6FA70B00B4AB53 /* Aware */,
@@ -287,6 +381,9 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					E95870CE2E814E56009E47C4 = {
+						CreatedOnToolsVersion = 26.0;
+					};
 					E9CD7FAD2E6FA70B00B4AB53 = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -324,11 +421,19 @@
 				E9CD7FBA2E6FA70C00B4AB53 /* AwareTests */,
 				E9CD7FC42E6FA70C00B4AB53 /* AwareUITests */,
 				E9CEF0422E72EDDE00F4F969 /* AwareWatchApp */,
+				E95870CE2E814E56009E47C4 /* WidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		E95870CD2E814E56009E47C4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E9CD7FAC2E6FA70B00B4AB53 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -360,6 +465,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		E95870CB2E814E56009E47C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E9CD7FAA2E6FA70B00B4AB53 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -391,10 +503,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E95870B82E7DD4A5009E47C4 /* PBXTargetDependency */ = {
+		E95870DD2E814E58009E47C4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E9CEF0422E72EDDE00F4F969 /* AwareWatchApp */;
-			targetProxy = E95870B72E7DD4A5009E47C4 /* PBXContainerItemProxy */;
+			target = E95870CE2E814E56009E47C4 /* WidgetExtension */;
+			targetProxy = E95870DC2E814E58009E47C4 /* PBXContainerItemProxy */;
 		};
 		E9CD7FBD2E6FA70C00B4AB53 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -409,6 +521,90 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		E95870E02E814E58009E47C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TH65WUC269;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Widget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lautaropinto.Aware.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		E95870E12E814E58009E47C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TH65WUC269;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Widget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Widget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lautaropinto.Aware.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 		E9CD7FCD2E6FA70C00B4AB53 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -753,6 +949,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		E95870DF2E814E58009E47C4 /* Build configuration list for PBXNativeTarget "WidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E95870E02E814E58009E47C4 /* Debug */,
+				E95870E12E814E58009E47C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E9CD7FA92E6FA70B00B4AB53 /* Build configuration list for PBXProject "Aware" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -817,6 +1022,14 @@
 			productName = AwareUI;
 		};
 		E90350532E739636004ED425 /* AwareUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AwareUI;
+		};
+		E95870FE2E8157D4009E47C4 /* AwareData */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AwareData;
+		};
+		E96D595C2E8323DF009B178D /* AwareUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AwareUI;
 		};

@@ -9,6 +9,10 @@ import Foundation
 
 extension Date {
     //MARK: Date Properties
+    var startOfDay: Date {
+        Calendar.current.startOfDay(for: self)
+    }
+    
     var previousDay: Date {
         Calendar.current.date(byAdding: .day, value: -1, to: self)!
     }

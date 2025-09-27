@@ -11,7 +11,10 @@ import SwiftData
 struct ContentView: View {
     @AppStorage("aware-onboarding-ftu-completed") var onboardingCompleted = false
     
+    @Environment(\.modelContext) private var modelContext
+    
     @State private var slowlyAppear = false
+    @State private var activityStore = ActivityStore()
     
     var body: some View {
         VStack {
@@ -28,7 +31,10 @@ struct ContentView: View {
                 withAnimation(.spring(duration: 1.5)) { slowlyAppear = true }
             }
         }
-        .onAppear { slowlyAppear = onboardingCompleted }
+        .onAppear {
+            slowlyAppear = onboardingCompleted
+            activityStore.modelContext = self.modelContext
+        }
     }
     
     @ViewBuilder
@@ -40,6 +46,8 @@ struct ContentView: View {
                     Text("Home")
                 }
                 .tag(0)
+                .setUpIntentNotificationListener()
+                .environment(activityStore)
             
             HistoryScene()
                 .tabItem {

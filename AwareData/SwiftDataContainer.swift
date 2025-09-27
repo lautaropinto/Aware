@@ -8,6 +8,27 @@
 import SwiftUI
 import SwiftData
 
+public extension ModelContainer {
+    static var defaultConfig: ModelContainer? {
+        let schema = SwiftData.Schema([
+            Tag.self,
+            Timekeeper.self,
+        ])
+        
+        let config = ModelConfiguration(
+            schema: schema,
+            cloudKitDatabase: .private(
+                "iCloud.aware-timers"
+            )
+        )
+        
+        return try? ModelContainer(
+            for: schema,
+            configurations: config
+        )
+    }
+}
+
 struct AwareDataContainerViewModifier: ViewModifier {
     let container: ModelContainer
     

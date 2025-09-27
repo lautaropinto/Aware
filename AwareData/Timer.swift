@@ -10,7 +10,10 @@ import SwiftData
 import SwiftUI
 
 @Model
-public class Timekeeper {
+public class Timekeeper: Codable {
+    enum CodingKeys: String, CodingKey {
+        case id, name, creationDate, startTime, endTime, totalElapsedSeconds, isRunning, tags
+    }
     public var id: UUID = UUID()
     public var name: String = ""
     public var creationDate: Date = Date.now
@@ -97,5 +100,39 @@ public class Timekeeper {
         } else {
             return String(format: "%02d:%02d", minutes, seconds)
         }
+    }
+    
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+//        id: UUID = UUID()
+//        name: String = ""
+//        creationDate: Date = Date.now
+//        startTime: Date?
+//        endTime: Date?
+//        totalElapsedSeconds: TimeInterval = 0
+//        isRunning: Bool = false
+//        tags: [Tag]? = []
+
+        self.id = try container.decode(UUID.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.creationDate = try container.decode(Date.self, forKey: .creationDate)
+        self.startTime = try container.decode(Date.self, forKey: .startTime)
+        self.endTime = try container.decode(Date?.self, forKey: .endTime)
+        self.totalElapsedSeconds = try container.decode(TimeInterval.self, forKey: .totalElapsedSeconds)
+        self.isRunning = try container.decode(Bool.self, forKey: .isRunning)
+        self.tags = try container.decode([Tag]?.self, forKey: .tags)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(creationDate, forKey: .creationDate)
+        try container.encode(startTime, forKey: .startTime)
+        try container.encode(endTime, forKey: .endTime)
+        try container.encode(totalElapsedSeconds, forKey: .totalElapsedSeconds)
+        try container.encode(isRunning, forKey: .isRunning)
+        try container.encode(tags, forKey: .tags)
     }
 }
