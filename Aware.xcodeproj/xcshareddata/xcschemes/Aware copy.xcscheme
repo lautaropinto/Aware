@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E9CEF0422E72EDDE00F4F969"
-               BuildableName = "AwareWatchApp.app"
-               BlueprintName = "AwareWatchApp"
+               BlueprintIdentifier = "E9B3BC712E88952400893A89"
+               BuildableName = "Aware copy.app"
+               BlueprintName = "Aware copy"
                ReferencedContainer = "container:Aware.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,9 +44,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E9CEF0422E72EDDE00F4F969"
-            BuildableName = "AwareWatchApp.app"
-            BlueprintName = "AwareWatchApp"
+            BlueprintIdentifier = "E9B3BC712E88952400893A89"
+            BuildableName = "Aware copy.app"
+            BlueprintName = "Aware copy"
             ReferencedContainer = "container:Aware.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E9CEF0422E72EDDE00F4F969"
-            BuildableName = "AwareWatchApp.app"
-            BlueprintName = "AwareWatchApp"
+            BlueprintIdentifier = "E9B3BC712E88952400893A89"
+            BuildableName = "Aware copy.app"
+            BlueprintName = "Aware copy"
             ReferencedContainer = "container:Aware.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -73,7 +73,6 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
-      customArchiveName = "AwareWatchApp"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

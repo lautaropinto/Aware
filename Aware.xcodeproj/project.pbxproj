@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E90350522E739632004ED425 /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E90350512E739632004ED425 /* AwareUI */; };
-		E90350542E739636004ED425 /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E90350532E739636004ED425 /* AwareUI */; };
-		E95870B62E7DD4A5009E47C4 /* AwareWatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = E9CEF0432E72EDDE00F4F969 /* AwareWatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E95870D12E814E56009E47C4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95870D02E814E56009E47C4 /* WidgetKit.framework */; };
 		E95870D32E814E56009E47C4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95870D22E814E56009E47C4 /* SwiftUI.framework */; };
 		E95870DE2E814E58009E47C4 /* WidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E95870CF2E814E56009E47C4 /* WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -17,7 +15,6 @@
 		E96D595D2E8323DF009B178D /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E96D595C2E8323DF009B178D /* AwareUI */; };
 		E97846112E79B04500A76B52 /* SFSymbolPicker in Frameworks */ = {isa = PBXBuildFile; productRef = E97846102E79B04500A76B52 /* SFSymbolPicker */; };
 		E9CEF03E2E720E0300F4F969 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E9CEF03D2E720E0300F4F969 /* AwareData */; };
-		E9CEF04F2E72EF2200F4F969 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E9CEF04E2E72EF2200F4F969 /* AwareData */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,7 +59,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				E95870B62E7DD4A5009E47C4 /* AwareWatchApp.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,11 +70,11 @@
 		E95870CF2E814E56009E47C4 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E95870D02E814E56009E47C4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
 		E95870D22E814E56009E47C4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
+		E9B3BC872E88952400893A89 /* Aware copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Aware copy-Info.plist"; path = "/Users/lautaropinto/Projects/Aware/Aware copy-Info.plist"; sourceTree = "<absolute>"; };
 		E9CD7FAE2E6FA70B00B4AB53 /* Aware.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aware.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9CD7FBB2E6FA70C00B4AB53 /* AwareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9CD7FC52E6FA70C00B4AB53 /* AwareUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwareUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9CEF0372E720BF500F4F969 /* AwareData */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AwareData; sourceTree = "<group>"; };
-		E9CEF0432E72EDDE00F4F969 /* AwareWatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AwareWatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -114,13 +110,6 @@
 			);
 			target = E9CD7FAD2E6FA70B00B4AB53 /* Aware */;
 		};
-		E99D2DF42E72F55700683D51 /* Exceptions for "AwareWatchApp" folder in "AwareWatchApp" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = E9CEF0422E72EDDE00F4F969 /* AwareWatchApp */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -150,14 +139,6 @@
 		E9CD7FC82E6FA70C00B4AB53 /* AwareUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = AwareUITests;
-			sourceTree = "<group>";
-		};
-		E9CEF0442E72EDDE00F4F969 /* AwareWatchApp */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				E99D2DF42E72F55700683D51 /* Exceptions for "AwareWatchApp" folder in "AwareWatchApp" target */,
-			);
-			path = AwareWatchApp;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -198,18 +179,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E9CEF0402E72EDDE00F4F969 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E9CEF04F2E72EF2200F4F969 /* AwareData in Frameworks */,
-				E90350542E739636004ED425 /* AwareUI in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E9B3BBF52E88937600893A89 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		E9CD7FA52E6FA70B00B4AB53 = {
 			isa = PBXGroup;
 			children = (
@@ -218,10 +197,11 @@
 				E9CD7FB02E6FA70B00B4AB53 /* Aware */,
 				E9CD7FBE2E6FA70C00B4AB53 /* AwareTests */,
 				E9CD7FC82E6FA70C00B4AB53 /* AwareUITests */,
-				E9CEF0442E72EDDE00F4F969 /* AwareWatchApp */,
 				E95870D42E814E56009E47C4 /* Widget */,
 				E9CEF0382E720D8300F4F969 /* Frameworks */,
 				E9CD7FAF2E6FA70B00B4AB53 /* Products */,
+				E9B3BBF52E88937600893A89 /* Recovered References */,
+				E9B3BC872E88952400893A89 /* Aware copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -231,7 +211,6 @@
 				E9CD7FAE2E6FA70B00B4AB53 /* Aware.app */,
 				E9CD7FBB2E6FA70C00B4AB53 /* AwareTests.xctest */,
 				E9CD7FC52E6FA70C00B4AB53 /* AwareUITests.xctest */,
-				E9CEF0432E72EDDE00F4F969 /* AwareWatchApp.app */,
 				E95870CF2E814E56009E47C4 /* WidgetExtension.appex */,
 			);
 			name = Products;
@@ -347,30 +326,6 @@
 			productReference = E9CD7FC52E6FA70C00B4AB53 /* AwareUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		E9CEF0422E72EDDE00F4F969 /* AwareWatchApp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E9CEF04B2E72EDDF00F4F969 /* Build configuration list for PBXNativeTarget "AwareWatchApp" */;
-			buildPhases = (
-				E9CEF03F2E72EDDE00F4F969 /* Sources */,
-				E9CEF0402E72EDDE00F4F969 /* Frameworks */,
-				E9CEF0412E72EDDE00F4F969 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				E9CEF0442E72EDDE00F4F969 /* AwareWatchApp */,
-			);
-			name = AwareWatchApp;
-			packageProductDependencies = (
-				E9CEF04E2E72EF2200F4F969 /* AwareData */,
-				E90350532E739636004ED425 /* AwareUI */,
-			);
-			productName = "AwareWatch Watch App";
-			productReference = E9CEF0432E72EDDE00F4F969 /* AwareWatchApp.app */;
-			productType = "com.apple.product-type.application";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -395,9 +350,6 @@
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = E9CD7FAD2E6FA70B00B4AB53;
 					};
-					E9CEF0422E72EDDE00F4F969 = {
-						CreatedOnToolsVersion = 26.0;
-					};
 				};
 			};
 			buildConfigurationList = E9CD7FA92E6FA70B00B4AB53 /* Build configuration list for PBXProject "Aware" */;
@@ -420,7 +372,6 @@
 				E9CD7FAD2E6FA70B00B4AB53 /* Aware */,
 				E9CD7FBA2E6FA70C00B4AB53 /* AwareTests */,
 				E9CD7FC42E6FA70C00B4AB53 /* AwareUITests */,
-				E9CEF0422E72EDDE00F4F969 /* AwareWatchApp */,
 				E95870CE2E814E56009E47C4 /* WidgetExtension */,
 			);
 		};
@@ -455,13 +406,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E9CEF0412E72EDDE00F4F969 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -487,13 +431,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E9CD7FC12E6FA70C00B4AB53 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E9CEF03F2E72EDDE00F4F969 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -878,74 +815,6 @@
 			};
 			name = Release;
 		};
-		E9CEF04C2E72EDDF00F4F969 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = AwareWatchApp/AwareWatchApp.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = TH65WUC269;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AwareWatchApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Aware;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lautaropinto.Aware;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lautaropinto.Aware.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Debug;
-		};
-		E9CEF04D2E72EDDF00F4F969 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = AwareWatchApp/AwareWatchApp.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = TH65WUC269;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AwareWatchApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Aware;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lautaropinto.Aware;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lautaropinto.Aware.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -994,15 +863,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E9CEF04B2E72EDDF00F4F969 /* Build configuration list for PBXNativeTarget "AwareWatchApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E9CEF04C2E72EDDF00F4F969 /* Debug */,
-				E9CEF04D2E72EDDF00F4F969 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -1021,10 +881,6 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = AwareUI;
 		};
-		E90350532E739636004ED425 /* AwareUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AwareUI;
-		};
 		E95870FE2E8157D4009E47C4 /* AwareData */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AwareData;
@@ -1039,10 +895,6 @@
 			productName = SFSymbolPicker;
 		};
 		E9CEF03D2E720E0300F4F969 /* AwareData */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AwareData;
-		};
-		E9CEF04E2E72EF2200F4F969 /* AwareData */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AwareData;
 		};

@@ -4,15 +4,15 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Aware copy.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>Aware.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
-		</dict>
-		<key>AwareWatch Watch App.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>1</integer>
 		</dict>
 		<key>WidgetExtension.xcscheme_^#shared#^_</key>
 		<dict>
@@ -22,7 +22,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>E95870CE2E814E56009E47C4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>E98E2A3B2E7192540033EB7E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E9B3BC712E88952400893A89</key>
 		<dict>
 			<key>primary</key>
 			<true/>
