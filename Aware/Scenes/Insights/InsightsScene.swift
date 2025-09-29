@@ -1,0 +1,65 @@
+//
+//  InsightsScene.swift
+//  Aware
+//
+//  Created by Lautaro Pinto on 9/29/25.
+//
+
+import SwiftUI
+import SwiftData
+import AwareData
+
+struct InsightsScene: View {
+    @Environment(\.modelContext) private var modelContext
+    @State private var insightStore = InsightStore()
+
+    @State private var selectedTimeFrame: TimeFrame = .currentWeek
+    @State private var selectedWeekDate: Date = Date().startOfWeek
+    @State private var selectedMonthDate: Date = Date().startOfMonth
+    @State private var selectedYearDate: Date = Date().startOfYear
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 24) {
+                    headerSection
+                    chartSection
+                }
+                .padding()
+            }
+            .applyBackgroundGradient()
+            .navigationTitle("Insights")
+        }
+        .onAppear {
+            insightStore.setModelContext(modelContext)
+            insightStore.updateTimeFrame(to: selectedTimeFrame)
+        }
+        .onChange(of: selectedTimeFrame) { _, newTimeFrame in
+            insightStore.updateTimeFrame(to: newTimeFrame)
+        }
+    }
+
+    private var headerSection: some View {
+        TimeFramePicker(
+            selectedTimeFrame: $selectedTimeFrame,
+            selectedWeekDate: $selectedWeekDate,
+            selectedMonthDate: $selectedMonthDate,
+            selectedYearDate: $selectedYearDate
+        )
+    }
+
+    private var chartSection: some View {
+        VStack(spacing: 16) {
+            InsightsPieChart(
+                data: insightStore.getInsightData(),
+                totalTime: insightStore.totalTimeForPeriod
+            )
+        }
+        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: selectedTimeFrame.id)
+    }
+}
+
+#Preview {
+    InsightsScene()
+        .modelContainer(for: [Timekeeper.self, Tag.self], inMemory: true)
+}

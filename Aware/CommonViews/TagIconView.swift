@@ -10,6 +10,7 @@ import AwareData
 
 struct TagIconView: View {
     let tag: Tag
+    
     var body: some View {
         Image(systemName: tag.image)
             .imageScale(.small)

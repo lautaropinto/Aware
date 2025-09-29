@@ -48,13 +48,20 @@ struct ContentView: View {
                 .tag(0)
                 .setUpIntentNotificationListener()
                 .environment(activityStore)
-            
+
             HistoryScene()
                 .tabItem {
                     Image(systemName: "clock.fill")
                     Text("History")
                 }
                 .tag(1)
+
+            InsightsScene()
+                .tabItem {
+                    Image(systemName: "chart.pie.fill")
+                    Text("Insights")
+                }
+                .tag(2)
         }
         .background(Color.background)
         .accentColor(.primary)

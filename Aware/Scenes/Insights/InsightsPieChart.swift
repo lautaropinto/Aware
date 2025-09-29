@@ -1,0 +1,183 @@
+//
+//  InsightsPieChart.swift
+//  Aware
+//
+//  Created by Lautaro Pinto on 9/29/25.
+//
+
+import SwiftUI
+import Charts
+import AwareData
+
+struct InsightsPieChart: View {
+    let data: [TagInsightData]
+    let totalTime: TimeInterval
+
+    @State private var hasAppeared = false
+    @State private var chartProgress: Double = 0.0
+    @State private var hasEverAppeared = false
+
+    var body: some View {
+        VStack(spacing: 24) {
+            if data.isEmpty {
+                emptyStateView
+                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                    .opacity(hasAppeared ? 1.0 : 0.0)
+                    .scaleEffect(hasAppeared ? 1.0 : 0.8)
+            } else {
+                pieChartView
+                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                    .opacity(hasAppeared ? 1.0 : 0.0)
+                    .scaleEffect(hasAppeared ? 1.0 : 0.8)
+
+                legendView
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .opacity(hasAppeared ? 1.0 : 0.0)
+                    .offset(y: hasAppeared ? 0 : 20)
+            }
+        }
+        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: data.count)
+        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: totalTime)
+        .onAppear {
+            if !hasEverAppeared {
+                hasEverAppeared = true
+                withAnimation(.spring(response: 0.8, dampingFraction: 0.7).delay(0.2)) {
+                    hasAppeared = true
+                }
+                withAnimation(.easeInOut(duration: 1.2).delay(0.4)) {
+                    chartProgress = 1.0
+                }
+            } else {
+                // Instant appearance for subsequent visits
+                hasAppeared = true
+                chartProgress = 1.0
+            }
+        }
+    }
+
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "chart.pie")
+                .font(.system(size: 64))
+                .foregroundColor(.gray.opacity(0.5))
+
+            Text("No Data Available")
+                .font(.title2.bold())
+                .foregroundColor(.primary)
+
+            Text("Start tracking your time to see insights")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(height: 300)
+    }
+
+    private var pieChartView: some View {
+        Chart(data) { item in
+            SectorMark(
+                angle: .value("Time", item.totalTime * chartProgress),
+                innerRadius: .ratio(totalTime > 3600 ? 0.6 : 0.4) ,
+                outerRadius: .ratio(totalTime > 3600 ? 0.9 : 0.8),
+                angularInset: 2
+            )
+            .foregroundStyle(item.tag.swiftUIColor.gradient)
+            .opacity(0.8)
+        }
+        .frame(height: 300)
+        .overlay {
+            VStack(spacing: 4) {
+                Text((totalTime * chartProgress).formattedElapsedTime)
+                    .font(.title.bold())
+                    .foregroundColor(.primary)
+                    .contentTransition(.numericText())
+
+                Text("Total Time")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: totalTime)
+        }
+    }
+
+    private var legendView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(Array(data.prefix(5).enumerated()), id: \.element.id) { index, item in
+                HStack(spacing: 12) {
+                    TagIconView(tag: item.tag)
+                        .scaleEffect(0.8)
+
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(item.tag.name)
+                                .font(.body.weight(.medium))
+                                .foregroundColor(.primary)
+
+                            Text(item.totalTime.formattedElapsedTime)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .contentTransition(.numericText())
+                        }
+
+                        Spacer()
+
+                        Text("\(Int(item.percentage))%")
+                            .font(.body.weight(.semibold))
+                            .foregroundColor(.primary)
+                            .contentTransition(.numericText())
+                    }
+                }
+                .opacity(hasAppeared ? 1.0 : 0.0)
+                .offset(x: hasAppeared ? 0 : -30)
+                .animation(
+                    .spring(response: 0.6, dampingFraction: 0.8)
+                    .delay(0.8 + Double(index) * 0.1),
+                    value: hasAppeared
+                )
+                .transition(.asymmetric(
+                    insertion: .move(edge: .leading).combined(with: .opacity),
+                    removal: .move(edge: .trailing).combined(with: .opacity)
+                ))
+            }
+
+            if data.count > 5 {
+                HStack {
+                    Circle()
+                        .fill(.gray.opacity(0.5))
+                        .frame(width: 12, height: 12)
+
+                    Text("and \(data.count - 5) more...")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+
+                    Spacer()
+                }
+                .opacity(hasAppeared ? 1.0 : 0.0)
+                .offset(x: hasAppeared ? 0 : -30)
+                .animation(
+                    .spring(response: 0.6, dampingFraction: 0.8)
+                    .delay(1.3),
+                    value: hasAppeared
+                )
+                .transition(.opacity)
+            }
+        }
+        .padding(.horizontal, 16)
+        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: data.map(\.id))
+    }
+}
+
+#Preview {
+    let sampleTag1 = Tag(name: "Working", color: "#FF6B6B")
+    let sampleTag2 = Tag(name: "Learning", color: "#4ECDC4")
+    let sampleTag3 = Tag(name: "Exercise", color: "#45B7D1")
+
+    let sampleData = [
+        TagInsightData(tag: sampleTag1, totalTime: 7200, percentage: 60.0),
+        TagInsightData(tag: sampleTag2, totalTime: 3600, percentage: 30.0),
+        TagInsightData(tag: sampleTag3, totalTime: 1200, percentage: 10.0)
+    ]
+
+    InsightsPieChart(data: sampleData, totalTime: 12000)
+        .padding()
+}

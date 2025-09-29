@@ -8,7 +8,13 @@
 import SwiftUI
 
 struct DefaultBigButton: ButtonStyle {
-    @Environment(\.isEnabled) var isEnabled: Bool
+    let color: Color
+
+    @Environment(\.isEnabled) private var isEnabled: Bool
+    
+    init(color: Color = .clear) {
+        self.color = color
+    }
     
     func makeBody(configuration: Configuration) -> some View {
         let opacity = configuration.isPressed || !isEnabled ? 0.75 : 1.0
@@ -18,6 +24,7 @@ struct DefaultBigButton: ButtonStyle {
             .foregroundColor(isEnabled ? Color.white : Color.gray)
             .frame(maxWidth: .infinity)
             .padding()
+            .background(Capsule().fill(isEnabled ? color : Color.gray))
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .opacity(opacity)
             .glassEffect(.clear)
