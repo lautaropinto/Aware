@@ -9,10 +9,76 @@
     {
       "layers" : [
         {
+          "fill" : "automatic",
+          "glass" : false,
+          "hidden" : true,
+          "image-name" : "semicolon.png",
+          "name" : "semicolon",
+          "position" : {
+            "scale" : 0.68,
+            "translation-in-points" : [
+              -258.5828415050935,
+              -1.1785158163321259
+            ]
+          }
+        },
+        {
+          "hidden" : true,
+          "image-name" : "Ellipse 1.png",
+          "name" : "Ellipse 1",
+          "position" : {
+            "scale" : 1.16,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "hidden" : true,
+          "image-name" : "square.png",
+          "name" : "square",
+          "opacity" : 1,
+          "position" : {
+            "scale" : 1.33,
+            "translation-in-points" : [
+              -1.8006808626551827,
+              -3.8656818519386604
+            ]
+          }
+        }
+      ],
+      "name" : "Hidden References",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "display-p3:0.00000,0.00000,0.00000,1.00000"
+              }
+            }
+          ],
           "glass" : false,
           "hidden" : false,
           "image-name" : "Numbers.png",
           "name" : "Numbers",
+          "opacity-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : 1
+            }
+          ],
           "position" : {
             "scale" : 1.42,
             "translation-in-points" : [
@@ -35,31 +101,29 @@
           }
         },
         {
-          "fill" : "automatic",
-          "glass" : false,
-          "hidden" : true,
-          "image-name" : "semicolon.png",
-          "name" : "semicolon",
+          "glass" : true,
+          "hidden" : false,
+          "image-name" : "Rectangle 5.png",
+          "name" : "Rectangle 5",
+          "opacity-specializations" : [
+            {
+              "value" : 0.86
+            },
+            {
+              "appearance" : "tinted",
+              "value" : 0.72
+            }
+          ],
           "position" : {
-            "scale" : 0.68,
+            "scale" : 1.1,
             "translation-in-points" : [
-              -258.5828415050935,
-              -1.1785158163321259
-            ]
-          }
-        },
-        {
-          "image-name" : "square.png",
-          "name" : "square",
-          "position" : {
-            "scale" : 1.33,
-            "translation-in-points" : [
-              0,
-              0
+              -0.5924385298039461,
+              3.0520800366902527
             ]
           }
         }
       ],
+      "name" : "Icon",
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5
