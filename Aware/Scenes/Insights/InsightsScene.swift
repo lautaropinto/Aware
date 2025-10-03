@@ -25,7 +25,10 @@ struct InsightsScene: View {
             ScrollView {
                 VStack(spacing: 24) {
                     headerSection
-                    chartSection
+                    PieChartView(
+                        data: insightStore.getInsightData(),
+                        totalTime: insightStore.totalTimeForPeriod
+                    )
                 }
                 .padding()
             }
@@ -53,16 +56,6 @@ struct InsightsScene: View {
             selectedYearDate: $selectedYearDate,
             showUntrackedTime: $showUntrackedTime
         )
-    }
-
-    private var chartSection: some View {
-        VStack(spacing: 16) {
-            InsightsPieChart(
-                data: insightStore.getInsightData(),
-                totalTime: insightStore.totalTimeForPeriod
-            )
-        }
-        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: selectedTimeFrame.id)
     }
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 import Charts
 import AwareData
 
-struct InsightsPieChart: View {
+struct PieChartView: View {
     let data: [TagInsightData]
     let totalTime: TimeInterval
 
@@ -20,15 +20,13 @@ struct InsightsPieChart: View {
     var body: some View {
         VStack(spacing: 24) {
             if data.isEmpty {
-                emptyStateView
+                InsightsEmptyState()
                     .transition(.opacity.combined(with: .scale(scale: 0.8)))
                     .opacity(hasAppeared ? 1.0 : 0.0)
-                    .scaleEffect(hasAppeared ? 1.0 : 0.8)
             } else {
                 pieChartView
                     .transition(.opacity.combined(with: .scale(scale: 0.8)))
                     .opacity(hasAppeared ? 1.0 : 0.0)
-                    .scaleEffect(hasAppeared ? 1.0 : 0.8)
 
                 legendView
             }
@@ -52,29 +50,11 @@ struct InsightsPieChart: View {
         }
     }
 
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "chart.pie")
-                .font(.system(size: 64))
-                .foregroundColor(.gray.opacity(0.5))
-
-            Text("No Data Available")
-                .font(.title2.bold())
-                .foregroundColor(.primary)
-
-            Text("Start tracking your time to see insights")
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(height: 300)
-    }
-
     private var pieChartView: some View {
         Chart(data) { item in
             SectorMark(
                 angle: .value("Time", item.totalTime * chartProgress),
-                innerRadius: .ratio(totalTime > 3600 ? 0.6 : 0.4) ,
+                innerRadius: .ratio(totalTime > 3600 ? 0.6 : 0.48),
                 outerRadius: .ratio(totalTime > 3600 ? 0.9 : 0.8),
                 angularInset: 2
             )
@@ -160,7 +140,7 @@ struct InsightsPieChart: View {
         TagInsightData(tag: sampleTag3, totalTime: 1200, percentage: 10.0)
     ]
 
-    InsightsPieChart(data: sampleData, totalTime: 12000)
+    PieChartView(data: sampleData, totalTime: 12000)
         .padding()
 }
 
