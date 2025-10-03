@@ -47,19 +47,19 @@ struct TimeFramePicker: View {
                 .animation(.spring(response: 0.6, dampingFraction: 0.8), value: hasAppeared)
 
             // Date navigation controls
-            if selectedTimeFrame != .allTime {
-                HStack {
-                    DateNavigationView()
-
-                    if case .daily = selectedTimeFrame {
-                        Spacer()
-                        UntrackedTimeToggle()
-                    }
+            HStack {
+                DateNavigationView()
+                
+                if case .daily = selectedTimeFrame {
+                    UntrackedTimeToggle()
+                } else {
+                    UntrackedTimeToggle()
+                        .opacity(0)
                 }
-                .opacity(hasAppeared ? 1.0 : 0.0)
-                .offset(y: hasAppeared ? 0 : 10)
-                .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1), value: hasAppeared)
             }
+            .opacity(hasAppeared && selectedTimeFrame != .allTime ? 1.0 : 0.0)
+            .offset(y: hasAppeared ? 0 : 10)
+            .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1), value: hasAppeared)
         }
         .onAppear {
             if !hasEverAppeared {
