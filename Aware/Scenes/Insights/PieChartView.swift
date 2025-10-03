@@ -26,14 +26,11 @@ struct PieChartView: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.8)))
                     .opacity(hasAppeared ? 1.0 : 0.0)
             } else {
-                pieChartView
-                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
-                    .opacity(hasAppeared ? 1.0 : 0.0)
+                ChartView()
 
-                legendView
+                LegendView()
             }
         }
-        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: hasAppeared)
         .animation(.spring(response: 0.5, dampingFraction: 0.8), value: data.map(\.id))
         .onAppear {
             if !hasEverAppeared {
@@ -52,7 +49,8 @@ struct PieChartView: View {
         }
     }
 
-    private var pieChartView: some View {
+    @ViewBuilder
+    private func ChartView() -> some View {
         Chart(data) { item in
             SectorMark(
                 angle: .value("Time", item.totalTime * chartProgress),
@@ -69,7 +67,7 @@ struct PieChartView: View {
         }
     }
 
-    private var legendView: some View {
+    @ViewBuilder private func LegendView() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(Array(data.prefix(5).enumerated()), id: \.element.id) { index, item in
                 HStack(spacing: 12) {
@@ -135,7 +133,6 @@ struct PieChartView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
         }
     }
 }
