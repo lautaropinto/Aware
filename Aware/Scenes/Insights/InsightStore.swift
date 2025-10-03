@@ -33,7 +33,19 @@ class InsightStore {
 
     private var modelContext: ModelContext?
 
-    init() {}
+    init() {
+        let storedTimeFrame = UserDefaults.standard.integer(forKey: .UserDefault.selectedTimeFrame)
+        switch storedTimeFrame {
+        case 0: self.selectedTimeFrame = .currentDay
+        case 1: self.selectedTimeFrame = .currentWeek
+        case 2: self.selectedTimeFrame = .currentMonth
+        case 3: self.selectedTimeFrame = .currentYear
+        case 4: self.selectedTimeFrame = .allTime
+        default: self.selectedTimeFrame = .daily(.now)
+        }
+        
+        showUntrackedTime = UserDefaults.standard.bool(forKey: .UserDefault.showUntrackedTime)
+    }
 
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context

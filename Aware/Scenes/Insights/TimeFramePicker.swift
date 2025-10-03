@@ -89,14 +89,19 @@ extension TimeFramePicker {
             set: { newType in
                 switch newType {
                 case "daily":
+                    UserDefaults.standard.set(0, forKey: .UserDefault.selectedTimeFrame)
                     selectedTimeFrame = .daily(selectedDayDate)
                 case "week":
+                    UserDefaults.standard.set(1, forKey: .UserDefault.selectedTimeFrame)
                     selectedTimeFrame = .week(selectedWeekDate)
                 case "month":
+                    UserDefaults.standard.set(2, forKey: .UserDefault.selectedTimeFrame)
                     selectedTimeFrame = .month(selectedMonthDate)
                 case "year":
+                    UserDefaults.standard.set(3, forKey: .UserDefault.selectedTimeFrame)
                     selectedTimeFrame = .year(selectedYearDate)
                 case "allTime":
+                    UserDefaults.standard.set(4, forKey: .UserDefault.selectedTimeFrame)
                     selectedTimeFrame = .allTime
                 default:
                     break
@@ -135,6 +140,7 @@ extension TimeFramePicker {
         Button(action: {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                 showUntrackedTime.toggle()
+                UserDefaults.standard.set(showUntrackedTime, forKey: .UserDefault.showUntrackedTime)
             }
         }) {
             HStack(spacing: 6) {
