@@ -27,11 +27,11 @@ struct PieChartView: View {
                     .opacity(hasAppeared ? 1.0 : 0.0)
             } else {
                 ChartView()
+                    .animation(.spring(), value: data.map(\.id))
 
                 LegendView()
             }
         }
-        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: data.map(\.id))
         .onAppear {
             if !hasEverAppeared {
                 hasEverAppeared = true
@@ -69,7 +69,8 @@ struct PieChartView: View {
 
     @ViewBuilder private func LegendView() -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            ForEach(Array(data.prefix(5).enumerated()), id: \.element.id) { index, item in
+            let sortedData = data.prefix(5).sorted(by: { $0.percentage > $1.percentage })
+            ForEach(Array(sortedData.enumerated()), id: \.element.id) { index, item in
                 HStack(spacing: 12) {
                     if item.tag.name == "Untracked" {
                         UntrackedTimeIconView()

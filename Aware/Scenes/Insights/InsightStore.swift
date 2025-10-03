@@ -79,7 +79,7 @@ class InsightStore {
                 }
             }
 
-            return tagData
+            return tagData.sorted(by: { $0.tag.displayOrder < $1.tag.displayOrder })
         } catch {
             print("Failed to fetch timers: \(error)")
             return []
