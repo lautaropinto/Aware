@@ -12,19 +12,21 @@ import AwareData
 struct InsightsScene: View {
     @Environment(\.modelContext) private var modelContext
     @State private var insightStore = InsightStore()
-
-    @State private var selectedTimeFrame: TimeFrame = .currentWeek
-    @State private var selectedDayDate: Date = Date().startOfDay
-    @State private var selectedWeekDate: Date = Date().startOfWeek
-    @State private var selectedMonthDate: Date = Date().startOfMonth
-    @State private var selectedYearDate: Date = Date().startOfYear
-    @State private var showUntrackedTime: Bool = false
-
+    
     var body: some View {
+        @Bindable var store = insightStore
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                    headerSection
+                    TimeFramePicker(
+                        selectedTimeFrame: $store.selectedTimeFrame,
+                        selectedDayDate: $store.selectedDayDate,
+                        selectedWeekDate: $store.selectedWeekDate,
+                        selectedMonthDate: $store.selectedMonthDate,
+                        selectedYearDate: $store.selectedYearDate,
+                        showUntrackedTime: $store.showUntrackedTime
+                    )
+                    
                     PieChartView(
                         data: insightStore.getInsightData(),
                         totalTime: insightStore.totalTimeForPeriod
@@ -37,25 +39,15 @@ struct InsightsScene: View {
         }
         .onAppear {
             insightStore.setModelContext(modelContext)
-            insightStore.updateTimeFrame(to: selectedTimeFrame)
+            insightStore.updateTimeFrame(to: store.selectedTimeFrame)
         }
-        .onChange(of: selectedTimeFrame) { _, newTimeFrame in
+        .onChange(of: store.selectedTimeFrame) { _, newTimeFrame in
             insightStore.updateTimeFrame(to: newTimeFrame)
         }
-        .onChange(of: showUntrackedTime) { _, newValue in
+        .onChange(of: store.showUntrackedTime) { _, newValue in
             insightStore.updateShowUntrackedTime(to: newValue)
         }
-    }
-
-    private var headerSection: some View {
-        TimeFramePicker(
-            selectedTimeFrame: $selectedTimeFrame,
-            selectedDayDate: $selectedDayDate,
-            selectedWeekDate: $selectedWeekDate,
-            selectedMonthDate: $selectedMonthDate,
-            selectedYearDate: $selectedYearDate,
-            showUntrackedTime: $showUntrackedTime
-        )
+        .environment(insightStore)
     }
 }
 

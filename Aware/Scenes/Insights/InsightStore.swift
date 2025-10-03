@@ -19,7 +19,14 @@ struct TagInsightData: Identifiable {
 @Observable
 class InsightStore {
     var currentTimeFrame: TimeFrame = .currentWeek
+    // TimeFrame Picker info
+    var selectedTimeFrame: TimeFrame = .currentWeek
+    var selectedDayDate: Date = Date().startOfDay
+    var selectedWeekDate: Date = Date().startOfWeek
+    var selectedMonthDate: Date = Date().startOfMonth
+    var selectedYearDate: Date = Date().startOfYear
     var showUntrackedTime: Bool = false
+    
 
     private var modelContext: ModelContext?
 

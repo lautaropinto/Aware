@@ -13,6 +13,8 @@ struct PieChartView: View {
     let data: [TagInsightData]
     let totalTime: TimeInterval
 
+    @Environment(InsightStore.self) private var store
+    
     @State private var hasAppeared = false
     @State private var chartProgress: Double = 0.0
     @State private var hasEverAppeared = false
@@ -63,17 +65,7 @@ struct PieChartView: View {
         }
         .frame(height: 300)
         .overlay {
-            VStack(spacing: 4) {
-                Text((totalTime * chartProgress).formattedElapsedTime)
-                    .font(.title.bold())
-                    .foregroundColor(.primary)
-                    .contentTransition(.numericText())
-
-                Text("Total Time")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: totalTime)
+            CenterChartOverlayView()
         }
     }
 
@@ -126,6 +118,25 @@ struct PieChartView: View {
             }
         }
         .padding(.horizontal, 16)
+    }
+    
+    @ViewBuilder private func CenterChartOverlayView() -> some View {
+        VStack(spacing: 4) {
+            let wording = "All day time"
+            let timeText = (totalTime * chartProgress).formattedElapsedTime
+            Text(store.showUntrackedTime ? wording : timeText)
+                .font(store.showUntrackedTime ? .title3 : .title)
+                .bold()
+                .foregroundColor(.primary)
+                .contentTransition(.numericText())
+            
+            if !store.showUntrackedTime {
+                Text("Total Time")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+        }
     }
 }
 
