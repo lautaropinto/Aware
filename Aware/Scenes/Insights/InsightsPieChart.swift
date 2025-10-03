@@ -16,7 +16,6 @@ struct InsightsPieChart: View {
     @State private var hasAppeared = false
     @State private var chartProgress: Double = 0.0
     @State private var hasEverAppeared = false
-    @State private var legendOpacity: Double = 0.0
 
     var body: some View {
         VStack(spacing: 24) {
@@ -32,10 +31,10 @@ struct InsightsPieChart: View {
                     .scaleEffect(hasAppeared ? 1.0 : 0.8)
 
                 legendView
-                    .opacity(legendOpacity)
             }
         }
         .animation(.spring(response: 0.6, dampingFraction: 0.8), value: hasAppeared)
+        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: data.map(\.id))
         .onAppear {
             if !hasEverAppeared {
                 hasEverAppeared = true
@@ -45,14 +44,10 @@ struct InsightsPieChart: View {
                 withAnimation(.easeInOut(duration: 1.2).delay(0.4)) {
                     chartProgress = 1.0
                 }
-                withAnimation(.easeInOut(duration: 0.6).delay(0.8)) {
-                    legendOpacity = 1.0
-                }
             } else {
                 // Instant appearance for subsequent visits
                 hasAppeared = true
                 chartProgress = 1.0
-                legendOpacity = 1.0
             }
         }
     }
