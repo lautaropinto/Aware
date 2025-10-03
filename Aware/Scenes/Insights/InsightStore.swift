@@ -19,6 +19,7 @@ struct TagInsightData: Identifiable {
 @Observable
 class InsightStore {
     var currentTimeFrame: TimeFrame = .currentWeek
+    var showUntrackedTime: Bool = false
 
     private var modelContext: ModelContext?
 
@@ -32,13 +33,17 @@ class InsightStore {
         currentTimeFrame = newFrame
     }
 
+    func updateShowUntrackedTime(to newValue: Bool) {
+        showUntrackedTime = newValue
+    }
+
     func getInsightData() -> [TagInsightData] {
         guard let modelContext = modelContext else { return [] }
 
         let descriptor: FetchDescriptor<Timekeeper>
 
         if let range = currentTimeFrame.dateRange {
-            // Specific time range (week, month, year)
+            // Specific time range (week, month, year, daily)
             let rangeStart = range.start
             let rangeEnd = range.end
 
@@ -58,7 +63,16 @@ class InsightStore {
 
         do {
             let timers = try modelContext.fetch(descriptor)
-            return aggregateTimersByTag(timers)
+            var tagData = aggregateTimersByTag(timers)
+
+            // Add untracked time for daily view
+            if showUntrackedTime, case .daily = currentTimeFrame {
+                if let untrackedData = calculateUntrackedTime(from: tagData) {
+                    tagData.append(untrackedData)
+                }
+            }
+
+            return tagData
         } catch {
             print("Failed to fetch timers: \(error)")
             return []
@@ -78,16 +92,43 @@ class InsightStore {
             }
         }
 
-        let totalTime = tagTimes.values.reduce(0) { $0 + $1.totalTime }
-        guard totalTime > 0 else { return [] }
+        let totalTrackedTime = tagTimes.values.reduce(0) { $0 + $1.totalTime }
+
+        // Calculate percentages based on total time (including untracked for daily view)
+        let totalTimeForPercentage: TimeInterval
+        if showUntrackedTime, case .daily = currentTimeFrame {
+            let totalDayTime: TimeInterval = 24 * 60 * 60 // 24 hours in seconds
+            totalTimeForPercentage = totalDayTime
+        } else {
+            totalTimeForPercentage = totalTrackedTime
+        }
+
+        guard totalTimeForPercentage > 0 else { return [] }
 
         return tagTimes.values.map { (tag, time) in
             TagInsightData(
                 tag: tag,
                 totalTime: time,
-                percentage: (time / totalTime) * 100
+                percentage: (time / totalTimeForPercentage) * 100
             )
         }.sorted { $0.totalTime > $1.totalTime }
+    }
+
+    private func calculateUntrackedTime(from tagData: [TagInsightData]) -> TagInsightData? {
+        let totalTrackedTime = tagData.reduce(0) { $0 + $1.totalTime }
+        let totalDayTime: TimeInterval = 24 * 60 * 60 // 24 hours in seconds
+        let untrackedTime = totalDayTime - totalTrackedTime
+
+        guard untrackedTime > 0 else { return nil }
+
+        // Create a dummy tag for untracked time
+        let untrackedTag = Tag(name: "Untracked", color: "#808080", image: "clock.fill")
+
+        return TagInsightData(
+            tag: untrackedTag,
+            totalTime: untrackedTime,
+            percentage: (untrackedTime / totalDayTime) * 100
+        )
     }
 
     var hasData: Bool {

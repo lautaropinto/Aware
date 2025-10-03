@@ -13,7 +13,7 @@
           "glass" : false,
           "hidden" : true,
           "image-name" : "semicolon.png",
-          "name" : "semicolon",
+          "name" : "oldsemicolon",
           "position" : {
             "scale" : 0.68,
             "translation-in-points" : [
@@ -46,6 +46,33 @@
               -3.8656818519386604
             ]
           }
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "display-p3:0.00000,0.00000,0.00000,1.00000"
+              }
+            }
+          ],
+          "glass" : false,
+          "hidden" : true,
+          "image-name" : "Numbers.png",
+          "name" : "OldNumbers",
+          "opacity-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : 1
+            }
+          ],
+          "position" : {
+            "scale" : 1.42,
+            "translation-in-points" : [
+              18.747359585306025,
+              -14.18364370572502
+            ]
+          }
         }
       ],
       "name" : "Hidden References",
@@ -61,42 +88,27 @@
     {
       "layers" : [
         {
-          "fill-specializations" : [
-            {
-              "appearance" : "tinted",
-              "value" : {
-                "solid" : "display-p3:0.00000,0.00000,0.00000,1.00000"
-              }
-            }
-          ],
           "glass" : false,
-          "hidden" : false,
-          "image-name" : "Numbers.png",
-          "name" : "Numbers",
-          "opacity-specializations" : [
-            {
-              "appearance" : "tinted",
-              "value" : 1
-            }
-          ],
+          "image-name" : "colons.png",
+          "name" : "semicolon",
           "position" : {
-            "scale" : 1.42,
+            "scale" : 1.22,
             "translation-in-points" : [
-              18.747359585306025,
-              -14.18364370572502
+              -359.1810846089516,
+              -5.546818776403738
             ]
           }
         },
         {
-          "fill" : "none",
           "glass" : false,
-          "image-name" : "half-semicolon 2.png",
-          "name" : "half-semicolon 2",
+          "hidden" : false,
+          "image-name" : "Numbers 2.png",
+          "name" : "Numbers",
           "position" : {
-            "scale" : 1.16,
+            "scale" : 1.45,
             "translation-in-points" : [
-              -338.9904718977492,
-              -4.332642019973102
+              15.046765640338487,
+              -31.600166167694532
             ]
           }
         },

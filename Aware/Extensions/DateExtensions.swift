@@ -8,6 +8,7 @@
 import Foundation
 
 enum TimeFrame: Equatable, Identifiable {
+    case daily(Date)
     case week(Date)
     case month(Date)
     case year(Date)
@@ -15,6 +16,8 @@ enum TimeFrame: Equatable, Identifiable {
 
     var id: String {
         switch self {
+        case .daily(let date):
+            return "daily-\(date.timeIntervalSince1970)"
         case .week(let date):
             return "week-\(date.timeIntervalSince1970)"
         case .month(let date):
@@ -28,6 +31,8 @@ enum TimeFrame: Equatable, Identifiable {
 
     var displayName: String {
         switch self {
+        case .daily(let date):
+            return date.formattedDay
         case .week(let date):
             return date.formattedWeekRange
         case .month(let date):
@@ -40,6 +45,10 @@ enum TimeFrame: Equatable, Identifiable {
     }
 
     // Static helpers for current timeframes
+    static var currentDay: TimeFrame {
+        .daily(Date().startOfDay)
+    }
+
     static var currentWeek: TimeFrame {
         .week(Date().startOfWeek)
     }
@@ -53,12 +62,14 @@ enum TimeFrame: Equatable, Identifiable {
     }
 
     static var allCases: [TimeFrame] {
-        [.currentWeek, .currentMonth, .currentYear, .allTime]
+        [.currentDay, .currentWeek, .currentMonth, .currentYear, .allTime]
     }
 
     // Navigation helpers
     func previous() -> TimeFrame? {
         switch self {
+        case .daily(let date):
+            return .daily(date.previousDay)
         case .week(let date):
             return .week(date.previousWeek())
         case .month(let date):
@@ -72,6 +83,11 @@ enum TimeFrame: Equatable, Identifiable {
 
     func next() -> TimeFrame? {
         switch self {
+        case .daily(let date):
+            let nextDay = date.nextDay
+            // Don't allow future days
+            guard nextDay.startOfDay <= Date().startOfDay else { return nil }
+            return .daily(nextDay)
         case .week(let date):
             let nextWeek = date.nextWeek()
             // Don't allow future weeks
@@ -103,6 +119,8 @@ enum TimeFrame: Equatable, Identifiable {
     // Date range for filtering
     var dateRange: (start: Date, end: Date)? {
         switch self {
+        case .daily(let date):
+            return (start: date.startOfDay, end: date.endOfDay)
         case .week(let date):
             return (start: date.startOfWeek, end: date.endOfWeek)
         case .month(let date):
@@ -259,6 +277,12 @@ extension Date {
     var formattedYear: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy"
+        return formatter.string(from: self)
+    }
+
+    var formattedDay: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMM d"
         return formatter.string(from: self)
     }
 }

@@ -14,9 +14,11 @@ struct InsightsScene: View {
     @State private var insightStore = InsightStore()
 
     @State private var selectedTimeFrame: TimeFrame = .currentWeek
+    @State private var selectedDayDate: Date = Date().startOfDay
     @State private var selectedWeekDate: Date = Date().startOfWeek
     @State private var selectedMonthDate: Date = Date().startOfMonth
     @State private var selectedYearDate: Date = Date().startOfYear
+    @State private var showUntrackedTime: Bool = false
 
     var body: some View {
         NavigationView {
@@ -37,14 +39,19 @@ struct InsightsScene: View {
         .onChange(of: selectedTimeFrame) { _, newTimeFrame in
             insightStore.updateTimeFrame(to: newTimeFrame)
         }
+        .onChange(of: showUntrackedTime) { _, newValue in
+            insightStore.updateShowUntrackedTime(to: newValue)
+        }
     }
 
     private var headerSection: some View {
         TimeFramePicker(
             selectedTimeFrame: $selectedTimeFrame,
+            selectedDayDate: $selectedDayDate,
             selectedWeekDate: $selectedWeekDate,
             selectedMonthDate: $selectedMonthDate,
-            selectedYearDate: $selectedYearDate
+            selectedYearDate: $selectedYearDate,
+            showUntrackedTime: $showUntrackedTime
         )
     }
 

@@ -104,8 +104,13 @@ struct InsightsPieChart: View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(Array(data.prefix(5).enumerated()), id: \.element.id) { index, item in
                 HStack(spacing: 12) {
-                    TagIconView(tag: item.tag)
-                        .scaleEffect(0.8)
+                    if item.tag.name == "Untracked" {
+                        UntrackedTimeIconView()
+                            .scaleEffect(0.8)
+                    } else {
+                        TagIconView(tag: item.tag)
+                            .scaleEffect(0.8)
+                    }
 
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
@@ -180,4 +185,18 @@ struct InsightsPieChart: View {
 
     InsightsPieChart(data: sampleData, totalTime: 12000)
         .padding()
+}
+
+struct UntrackedTimeIconView: View {
+    var body: some View {
+        Image(systemName: "clock.fill")
+            .imageScale(.small)
+            .foregroundStyle(Color.primary)
+            .padding(8.0)
+            .background(
+                Circle()
+                    .fill(Color.gray.gradient)
+                    .frame(width: 32.0, height: 32.0)
+            )
+    }
 }

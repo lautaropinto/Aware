@@ -9,9 +9,11 @@ import SwiftUI
 
 struct TimeFramePicker: View {
     @Binding var selectedTimeFrame: TimeFrame
+    @Binding var selectedDayDate: Date
     @Binding var selectedWeekDate: Date
     @Binding var selectedMonthDate: Date
     @Binding var selectedYearDate: Date
+    @Binding var showUntrackedTime: Bool
     let availableTimeFrames: [TimeFrame]
 
     @State private var showingPeriodSelector = false
@@ -20,15 +22,19 @@ struct TimeFramePicker: View {
 
     init(
         selectedTimeFrame: Binding<TimeFrame>,
+        selectedDayDate: Binding<Date>,
         selectedWeekDate: Binding<Date>,
         selectedMonthDate: Binding<Date>,
         selectedYearDate: Binding<Date>,
+        showUntrackedTime: Binding<Bool> = .constant(false),
         availableTimeFrames: [TimeFrame] = TimeFrame.allCases
     ) {
         self._selectedTimeFrame = selectedTimeFrame
+        self._selectedDayDate = selectedDayDate
         self._selectedWeekDate = selectedWeekDate
         self._selectedMonthDate = selectedMonthDate
         self._selectedYearDate = selectedYearDate
+        self._showUntrackedTime = showUntrackedTime
         self.availableTimeFrames = availableTimeFrames
     }
 
@@ -42,10 +48,17 @@ struct TimeFramePicker: View {
 
             // Date navigation controls
             if selectedTimeFrame != .allTime {
-                DateNavigationView()
-                    .opacity(hasAppeared ? 1.0 : 0.0)
-                    .offset(y: hasAppeared ? 0 : 10)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1), value: hasAppeared)
+                HStack {
+                    DateNavigationView()
+
+                    if case .daily = selectedTimeFrame {
+                        Spacer()
+                        UntrackedTimeToggle()
+                    }
+                }
+                .opacity(hasAppeared ? 1.0 : 0.0)
+                .offset(y: hasAppeared ? 0 : 10)
+                .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1), value: hasAppeared)
             }
         }
         .onAppear {
@@ -75,6 +88,8 @@ extension TimeFramePicker {
             get: { timeFrameType },
             set: { newType in
                 switch newType {
+                case "daily":
+                    selectedTimeFrame = .daily(selectedDayDate)
                 case "week":
                     selectedTimeFrame = .week(selectedWeekDate)
                 case "month":
@@ -88,6 +103,7 @@ extension TimeFramePicker {
                 }
             }
         )) {
+            Text("Day").tag("daily")
             Text("Week").tag("week")
             Text("Month").tag("month")
             Text("Year").tag("year")
@@ -98,6 +114,8 @@ extension TimeFramePicker {
 
     private var timeFrameType: String {
         switch selectedTimeFrame {
+        case .daily:
+            return "daily"
         case .week:
             return "week"
         case .month:
@@ -107,6 +125,35 @@ extension TimeFramePicker {
         case .allTime:
             return "allTime"
         }
+    }
+}
+
+// MARK: - Untracked Time Toggle
+extension TimeFramePicker {
+    @ViewBuilder
+    private func UntrackedTimeToggle() -> some View {
+        Button(action: {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                showUntrackedTime.toggle()
+            }
+        }) {
+            HStack(spacing: 6) {
+                Image(systemName: showUntrackedTime ? "eye.fill" : "eye.slash.fill")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                Text("Untracked")
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            .foregroundColor(showUntrackedTime ? .accentColor : .secondary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(showUntrackedTime ? Color.accentColor.opacity(0.1) : Color.gray.opacity(0.1))
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -138,6 +185,8 @@ extension TimeFramePicker {
 
     private func updatePersistentDates(for timeFrame: TimeFrame) {
         switch timeFrame {
+        case .daily(let date):
+            selectedDayDate = date
         case .week(let date):
             selectedWeekDate = date
         case .month(let date):
@@ -163,6 +212,8 @@ extension TimeFramePicker {
                     .padding(.top, 20)
 
                 switch selectedTimeFrame {
+                case .daily:
+                    DayDatePicker()
                 case .week:
                     WeekDatePicker()
                 case .month:
@@ -187,6 +238,8 @@ extension TimeFramePicker {
 
     private var sheetTitle: String {
         switch selectedTimeFrame {
+        case .daily:
+            return "Select day"
         case .week:
             return "Select week"
         case .month:
@@ -201,6 +254,19 @@ extension TimeFramePicker {
 
 // MARK: - Custom Date Pickers
 extension TimeFramePicker {
+    @ViewBuilder
+    private func DayDatePicker() -> some View {
+        CustomDayPicker(
+            selectedDay: Binding(
+                get: { currentDayDate },
+                set: { newDate in
+                    selectedDayDate = newDate
+                    selectedTimeFrame = .daily(newDate)
+                }
+            )
+        )
+    }
+
     @ViewBuilder
     private func WeekDatePicker() -> some View {
         CustomWeekPicker(
@@ -238,6 +304,15 @@ extension TimeFramePicker {
                 }
             )
         )
+    }
+
+    private var currentDayDate: Date {
+        switch selectedTimeFrame {
+        case .daily(let date):
+            return date
+        default:
+            return selectedDayDate
+        }
     }
 
     private var currentWeekDate: Date {
@@ -349,6 +424,53 @@ struct CustomMonthPicker: View {
     }
 }
 
+// MARK: - Custom Day Picker
+struct CustomDayPicker: View {
+    @Binding var selectedDay: Date
+
+    var body: some View {
+        Picker("Select Day", selection: $selectedDay) {
+            ForEach(availableDays, id: \.self) { dayDate in
+                Text(displayText(for: dayDate))
+                    .tag(dayDate)
+            }
+        }
+        .pickerStyle(.wheel)
+        .labelsHidden()
+    }
+
+    private func displayText(for dayDate: Date) -> String {
+        let calendar = Calendar.current
+        let today = Date()
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+
+        if calendar.isDate(dayDate, inSameDayAs: today) {
+            return "Today"
+        } else if calendar.isDate(dayDate, inSameDayAs: yesterday) {
+            return "Yesterday"
+        } else {
+            return dayDate.formattedDay
+        }
+    }
+
+    private var availableDays: [Date] {
+        var days: [Date] = []
+        let calendar = Calendar.current
+
+        // Generate days from 3 months ago to current day (no future days)
+        let startDate = calendar.date(byAdding: .month, value: -3, to: Date()) ?? Date()
+        let endDate = Date()
+
+        var currentDate = startDate.startOfDay
+        while currentDate <= endDate.startOfDay {
+            days.append(currentDate)
+            currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+        }
+
+        return days.reversed() // Most recent first, oldest at bottom
+    }
+}
+
 // MARK: - Custom Year Picker
 struct CustomYearPicker: View {
     @Binding var selectedYear: Date
@@ -403,16 +525,20 @@ struct ActionButtonStyle: ButtonStyle {
 
 #Preview {
     @Previewable @State var selectedTimeFrame: TimeFrame = .currentWeek
+    @Previewable @State var selectedDayDate: Date = Date()
     @Previewable @State var selectedWeekDate: Date = Date()
     @Previewable @State var selectedMonthDate: Date = Date()
     @Previewable @State var selectedYearDate: Date = Date()
+    @Previewable @State var showUntrackedTime: Bool = false
 
     VStack(spacing: 20) {
         TimeFramePicker(
             selectedTimeFrame: $selectedTimeFrame,
+            selectedDayDate: $selectedDayDate,
             selectedWeekDate: $selectedWeekDate,
             selectedMonthDate: $selectedMonthDate,
-            selectedYearDate: $selectedYearDate
+            selectedYearDate: $selectedYearDate,
+            showUntrackedTime: $showUntrackedTime
         )
 
         Text("Selected: \(selectedTimeFrame.displayName)")
