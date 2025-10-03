@@ -8,6 +8,9 @@
 import SwiftUI
 import SwiftData
 import AwareData
+import OSLog
+
+private var logger = Logger(subsystem: "Aware", category: "InsightStore")
 
 struct TagInsightData: Identifiable {
     let id = UUID()
@@ -81,7 +84,7 @@ class InsightStore {
 
             return tagData.sorted(by: { $0.tag.displayOrder < $1.tag.displayOrder })
         } catch {
-            print("Failed to fetch timers: \(error)")
+            logger.error("Failed to fetch timers: \(error)")
             return []
         }
     }
