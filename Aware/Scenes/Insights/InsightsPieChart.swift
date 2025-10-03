@@ -16,6 +16,7 @@ struct InsightsPieChart: View {
     @State private var hasAppeared = false
     @State private var chartProgress: Double = 0.0
     @State private var hasEverAppeared = false
+    @State private var legendOpacity: Double = 0.0
 
     var body: some View {
         VStack(spacing: 24) {
@@ -31,13 +32,10 @@ struct InsightsPieChart: View {
                     .scaleEffect(hasAppeared ? 1.0 : 0.8)
 
                 legendView
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .opacity(hasAppeared ? 1.0 : 0.0)
-                    .offset(y: hasAppeared ? 0 : 20)
+                    .opacity(legendOpacity)
             }
         }
-        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: data.count)
-        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: totalTime)
+        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: hasAppeared)
         .onAppear {
             if !hasEverAppeared {
                 hasEverAppeared = true
@@ -47,10 +45,14 @@ struct InsightsPieChart: View {
                 withAnimation(.easeInOut(duration: 1.2).delay(0.4)) {
                     chartProgress = 1.0
                 }
+                withAnimation(.easeInOut(duration: 0.6).delay(0.8)) {
+                    legendOpacity = 1.0
+                }
             } else {
                 // Instant appearance for subsequent visits
                 hasAppeared = true
                 chartProgress = 1.0
+                legendOpacity = 1.0
             }
         }
     }
@@ -132,17 +134,6 @@ struct InsightsPieChart: View {
                             .contentTransition(.numericText())
                     }
                 }
-                .opacity(hasAppeared ? 1.0 : 0.0)
-                .offset(x: hasAppeared ? 0 : -30)
-                .animation(
-                    .spring(response: 0.6, dampingFraction: 0.8)
-                    .delay(0.8 + Double(index) * 0.1),
-                    value: hasAppeared
-                )
-                .transition(.asymmetric(
-                    insertion: .move(edge: .leading).combined(with: .opacity),
-                    removal: .move(edge: .trailing).combined(with: .opacity)
-                ))
             }
 
             if data.count > 5 {
@@ -157,18 +148,9 @@ struct InsightsPieChart: View {
 
                     Spacer()
                 }
-                .opacity(hasAppeared ? 1.0 : 0.0)
-                .offset(x: hasAppeared ? 0 : -30)
-                .animation(
-                    .spring(response: 0.6, dampingFraction: 0.8)
-                    .delay(1.3),
-                    value: hasAppeared
-                )
-                .transition(.opacity)
             }
         }
         .padding(.horizontal, 16)
-        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: data.map(\.id))
     }
 }
 
