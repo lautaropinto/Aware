@@ -90,19 +90,19 @@ extension TimeFramePicker {
                 switch newType {
                 case "daily":
                     UserDefaults.standard.set(0, forKey: .UserDefault.selectedTimeFrame)
-                    selectedTimeFrame = .daily(selectedDayDate)
+                    withAnimation { selectedTimeFrame = .daily(selectedDayDate) }
                 case "week":
                     UserDefaults.standard.set(1, forKey: .UserDefault.selectedTimeFrame)
-                    selectedTimeFrame = .week(selectedWeekDate)
+                    withAnimation { selectedTimeFrame = .week(selectedWeekDate) }
                 case "month":
                     UserDefaults.standard.set(2, forKey: .UserDefault.selectedTimeFrame)
-                    selectedTimeFrame = .month(selectedMonthDate)
+                    withAnimation { selectedTimeFrame = .month(selectedMonthDate) }
                 case "year":
                     UserDefaults.standard.set(3, forKey: .UserDefault.selectedTimeFrame)
-                    selectedTimeFrame = .year(selectedYearDate)
+                    withAnimation { selectedTimeFrame = .year(selectedYearDate) }
                 case "allTime":
                     UserDefaults.standard.set(4, forKey: .UserDefault.selectedTimeFrame)
-                    selectedTimeFrame = .allTime
+                    withAnimation { selectedTimeFrame = .allTime }
                 default:
                     break
                 }
