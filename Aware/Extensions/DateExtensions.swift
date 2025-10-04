@@ -135,6 +135,14 @@ enum TimeFrame: Equatable, Identifiable {
 
 extension Date {
     //MARK: Date Properties
+    var month: Int {
+        Calendar.current.component(.month, from: self)
+    }
+    
+    var year: Int {
+        Calendar.current.component(.year, from: self)
+    }
+    
     var startOfDay: Date {
         Calendar.current.startOfDay(for: self)
     }
