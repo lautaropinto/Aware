@@ -115,7 +115,7 @@ struct TagForm: View {
                 .animation(.easeInOut(duration: 0.2), value: isSaveEnabled)
             }
             .padding(24)
-            .navigationTitle("New Tag")
+            .navigationTitle("New activity")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
