@@ -20,4 +20,21 @@ extension TimeInterval {
             return String(format: "%02d:%02d", minutes, seconds)
         }
     }
+    
+    public var compactFormattedTime: String {
+        let time = self
+        let hours = Int(time) / 3600
+        let minutes = Int(time) % 3600 / 60
+
+        if hours > 0 {
+            return "\(hours)h \(String(format: "%02d", minutes))m"
+        } else {
+            return "\(minutes)m"
+        }
+    }
+}
+
+extension Int {
+    static var oneHour: Int { 3600 }
+    
 }

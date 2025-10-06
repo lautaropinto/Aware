@@ -27,6 +27,8 @@ struct HomeScene: View {
     @State private var selectedTag: Tag?
     @State private var newTimerName = ""
     
+    @Namespace private var settingsTransition
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -48,11 +50,15 @@ struct HomeScene: View {
                 .animation(.spring(response: 0.8, dampingFraction: 0.8), value: currentTimer != nil)
                 .padding()
             }
-            // Drive the gradient from the environment binding (same as $backgroundColor here)
             .applyBackgroundGradient()
             .navigationTitle("Timer")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    SettingsButton(transition: settingsTransition)
+                }
+                .matchedTransitionSource(id: "settings", in: settingsTransition)
+            }
         }
-        // Publish the binding so all descendants share and can react to changes
         .onAppear {
             logger.debug("onAppear()")
             findCurrentTimer()
