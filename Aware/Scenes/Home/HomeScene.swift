@@ -45,7 +45,6 @@ struct HomeScene: View {
                         }
                     )
                     .animation(.spring(response: 0.6, dampingFraction: 0.8), value: currentTimer != nil)
-                    
                 }
                 .animation(.spring(response: 0.8, dampingFraction: 0.8), value: currentTimer != nil)
                 .padding()
