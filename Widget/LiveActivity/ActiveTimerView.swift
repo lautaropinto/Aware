@@ -17,16 +17,73 @@ struct ActiveTimerView: View {
     @Query var tags: [Tag]
     
     let context: ActivityViewContext<TimerAttributes>
-    @Environment(\.modelContext) private var modelContext
+    
+    @Environment(\.activityFamily) private var activityFamily
     
     var body: some View {
         let timer = context.attributes.timer
         
+        switch activityFamily {
+        case .small:
+            SmallContent(timer: timer)
+        case .medium:
+            MediumContent(timer: timer)
+        @unknown default:
+            MediumContent(timer: timer)
+        }
+    }
+    
+    @ViewBuilder private func SmallContent(timer: Timekeeper) -> some View {
+        VStack(spacing: 8.0) {
+            HStack(spacing: 8.0) {
+                Image("aware")
+                
+                if let tag = timer.mainTag {
+                    Text("\(tag.name)")
+                        .bold()
+                }
+                Spacer()
+            }
+            .padding(.leading, 6.0)
+
+            HStack {
+                if context.state.intentAction == .resume {
+                    CountText(timeInterval: context.state.timerInterval)
+                        .font(.title2)
+                        .fontDesign(.monospaced)
+                        .fontWeight(.semibold)
+                        .foregroundColor(!context.isStale ? .primary : .secondary)
+                        .contentTransition(.numericText())
+                } else {
+                    Text(context.state.totalElapsedSeconds.formattedElapsedTime)
+                        .fontDesign(.monospaced)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                        .contentTransition(.numericText())
+                }
+                
+                if !context.isStale {
+                    HStack(spacing: 0.0) {
+                        StopButton(displayText: false)
+                            .scaleEffect(0.8)
+                        PauseResumeButton(displayText: false)
+                            .scaleEffect(0.8)
+                    }
+                } else {
+                    Text("Finished")
+                        .bold()
+                        .foregroundStyle(.red.opacity(0.6))
+                }
+            }
+        }
+        .padding(8.0)
+        .background(timer.mainTag!.swiftUIColor.gradient)
+    }
+    
+    @ViewBuilder private func MediumContent(timer: Timekeeper) -> some View {
         VStack(spacing: 8.0) {
             HStack {
-                if let tag = timer.mainTag {
-                    TagIconView(tag: tag)
-                }
+                Image("aware")
                 
                 Text("\(context.attributes.timer.name)")
                     .font(.headline.bold())
@@ -66,8 +123,7 @@ struct ActiveTimerView: View {
     }
     
     @ViewBuilder
-    private func StopButton() -> some View {
-        
+    private func StopButton(displayText: Bool = true) -> some View {
         Button(
             intent: StopWatchLiveIntent(
                 timerID: context.attributes.timer.id.uuidString,
@@ -75,7 +131,9 @@ struct ActiveTimerView: View {
             ), label: {
                 HStack(spacing: 6) {
                     Image(systemName: "stop.fill")
-                    Text("Stop")
+                    if displayText {
+                        Text("Stop")
+                    }
                 }
                 .font(.caption.weight(.medium))
                 .foregroundColor(.white)
@@ -88,7 +146,7 @@ struct ActiveTimerView: View {
     }
     
     @ViewBuilder
-    private func PauseResumeButton() -> some View {
+    private func PauseResumeButton(displayText: Bool = true) -> some View {
         let isRunning = context.state.intentAction == .resume
         Button(
             intent: StopWatchLiveIntent(
@@ -97,7 +155,9 @@ struct ActiveTimerView: View {
             ), label: {
                 HStack(spacing: 6) {
                     Image(systemName: isRunning ? "pause.fill" : "play.fill")
-                    Text(isRunning ? "Pause" : "Resume")
+                    if displayText {
+                        Text(isRunning ? "Pause" : "Resume")
+                    }
                 }
                 .font(.caption.weight(.medium))
                 .foregroundColor(.white)

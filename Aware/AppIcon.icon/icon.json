@@ -9,32 +9,6 @@
     {
       "layers" : [
         {
-          "fill" : "automatic",
-          "glass" : false,
-          "hidden" : true,
-          "image-name" : "semicolon.png",
-          "name" : "oldsemicolon",
-          "position" : {
-            "scale" : 0.68,
-            "translation-in-points" : [
-              -258.5828415050935,
-              -1.1785158163321259
-            ]
-          }
-        },
-        {
-          "hidden" : true,
-          "image-name" : "Ellipse 1.png",
-          "name" : "Ellipse 1",
-          "position" : {
-            "scale" : 1.16,
-            "translation-in-points" : [
-              0,
-              0
-            ]
-          }
-        },
-        {
           "hidden" : true,
           "image-name" : "square.png",
           "name" : "square",
@@ -89,6 +63,7 @@
       "layers" : [
         {
           "glass" : false,
+          "hidden" : true,
           "image-name" : "colons.png",
           "name" : "semicolon",
           "position" : {
@@ -96,6 +71,20 @@
             "translation-in-points" : [
               -359.1810846089516,
               -5.546818776403738
+            ]
+          }
+        },
+        {
+          "fill" : "automatic",
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "semicolon.png",
+          "name" : "oldsemicolon",
+          "position" : {
+            "scale" : 0.49,
+            "translation-in-points" : [
+              -323.0213125943266,
+              10.95254456977592
             ]
           }
         },
@@ -114,7 +103,7 @@
         },
         {
           "glass" : true,
-          "hidden" : false,
+          "hidden" : true,
           "image-name" : "Rectangle 5.png",
           "name" : "Rectangle 5",
           "opacity-specializations" : [
@@ -131,6 +120,18 @@
             "translation-in-points" : [
               -0.5924385298039461,
               3.0520800366902527
+            ]
+          }
+        },
+        {
+          "hidden" : false,
+          "image-name" : "Ellipse 1.png",
+          "name" : "Ellipse 1",
+          "position" : {
+            "scale" : 1.16,
+            "translation-in-points" : [
+              0,
+              0
             ]
           }
         }

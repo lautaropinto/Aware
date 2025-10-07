@@ -20,7 +20,7 @@ struct ActiveTimerLiveActivityWidget: Widget {
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     HStack {
-                        TagIconView(tag: context.attributes.timer.mainTag!)
+                        Image("aware")
                         
                         Text("\(context.attributes.timer.name):")
                             .fixedSize(horizontal: true, vertical: true)
@@ -45,9 +45,7 @@ struct ActiveTimerLiveActivityWidget: Widget {
                     }
                 }
             } compactLeading: {
-                let tag = context.attributes.timer.mainTag!
-                Image(systemName: tag.image)
-                    .foregroundStyle(tag.swiftUIColor.gradient)
+                Image("roundedAware")
             } compactTrailing: {
                 if context.state.intentAction == .resume {
                     CountText(timeInterval: context.state.timerInterval)
@@ -57,15 +55,24 @@ struct ActiveTimerLiveActivityWidget: Widget {
                         .contentTransition(.numericText())
                 }
             } minimal: {
-                let tag = context.attributes.timer.mainTag!
-                Image(systemName: tag.image)
-                    .foregroundStyle(tag.swiftUIColor.gradient)
-                    
+                Image("roundedAware")
             }
         }
+        .supplementalActivityFamilies([.small])
     }
 }
 
+
+
+#Preview(
+    "Dynamic Island Compact",
+    as: .dynamicIsland(.compact),
+    using: TimerAttributes.previews
+) {
+    ActiveTimerLiveActivityWidget()
+} contentStates: {
+    TimerAttributes.ContentState.previewDefault
+}
 
 extension TimeInterval {
     public var formattedElapsedTime: String {

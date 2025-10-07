@@ -30,11 +30,25 @@ public struct TimerAttributes: ActivityAttributes {
             self.eventDescription = eventDescription
             self.intentAction = intentAction
         }
+        
+        static var previewDefault: ContentState {
+            return ContentState(
+                totalElapsedSeconds: 362,
+                eventDescription: "resume",
+                intentAction: .resume
+            )
+        }
     }
     
     public let timer: Timekeeper
     
     public init(timer: Timekeeper) {
         self.timer = timer
+    }
+    
+    static var previews: TimerAttributes {
+        let tag = Tag(name: "Running", color: "#3434ab", image: "heart", displayOrder: 0)
+        let timer = Timekeeper(name: "Sran session", tags: [tag])
+        return TimerAttributes.init(timer: timer)
     }
 }
