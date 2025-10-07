@@ -34,8 +34,14 @@ final class ActivityStore {
         
         guard ActivityStore.getLiveActivity(for: timer.id) == nil else {
             let formattedElapsedTime = timer.totalElapsedSeconds.formattedElapsedTime
+            let notRunningAction: IntentAction = timer.endTime == nil ? .pause : .stop
+
             logger.info("Activity already ongoing with totalElapsedSeconds: \(formattedElapsedTime)")
-            self.updateLiveActivity(elapsedTime: timer.currentElapsedTime, intentAction: .resume)
+            
+            self.updateLiveActivity(
+                elapsedTime: timer.currentElapsedTime,
+                intentAction: timer.isRunning ? .resume : notRunningAction
+            )
             
             return
         }
