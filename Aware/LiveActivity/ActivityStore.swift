@@ -33,7 +33,9 @@ final class ActivityStore {
         }
         
         guard ActivityStore.getLiveActivity(for: timer.id) == nil else {
-            logger.info("Activity already ongoing")
+            let formattedElapsedTime = timer.totalElapsedSeconds.formattedElapsedTime
+            logger.info("Activity already ongoing with totalElapsedSeconds: \(formattedElapsedTime)")
+            self.updateLiveActivity(elapsedTime: timer.currentElapsedTime, intentAction: .resume)
             
             return
         }
@@ -92,6 +94,7 @@ final class ActivityStore {
         )
         
         Task {
+            logger.info("Ending live activity.")
             await activity?.end(
                 ActivityContent(state: finalState, staleDate: Date.now),
                 dismissalPolicy: .default
