@@ -124,48 +124,79 @@ struct ActiveTimerView: View {
     
     @ViewBuilder
     private func StopButton(displayText: Bool = true) -> some View {
-        Button(
-            intent: StopWatchLiveIntent(
-                timerID: context.attributes.timer.id.uuidString,
-                action: "stop"
-            ), label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "stop.fill")
-                    if displayText {
-                        Text("Stop")
-                    }
-                }
-                .font(.caption.weight(.medium))
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.red.opacity(0.8), in: .capsule)
-            }
+        let intent = StopWatchLiveIntent(
+            timerID: context.attributes.timer.id.uuidString,
+            action: "stop"
         )
-        .buttonStyle(.plain)
+        
+        Toggle(isOn: context.state.isLoading, intent: intent) {
+            
+        }
+        .toggleStyle(
+            CustomToggleStyle(
+                image: "stop.fill",
+                displayText: displayText,
+                text: "Stop",
+                backgroundColor: .red
+            )
+        )
     }
     
     @ViewBuilder
     private func PauseResumeButton(displayText: Bool = true) -> some View {
         let isRunning = context.state.intentAction == .resume
-        Button(
-            intent: StopWatchLiveIntent(
-                timerID: context.attributes.timer.id.uuidString,
-                action: isRunning ? "pause" : "resume"
-            ), label: {
+        
+        let intent = StopWatchLiveIntent(
+            timerID: context.attributes.timer.id.uuidString,
+            action: isRunning ? "pause" : "resume"
+        )
+        
+        Toggle(isOn: context.state.isLoading, intent: intent) {
+            
+        }
+        .toggleStyle(
+            CustomToggleStyle(
+                image: isRunning ? "pause.fill" : "play.fill",
+                displayText: displayText,
+                text: isRunning ? "Pause" : "Resume",
+                backgroundColor: isRunning ? .yellow : .green
+            )
+        )
+    }
+}
+
+/// Workaround to place a loader after a tap.
+private struct CustomToggleStyle: ToggleStyle {
+    let image: String
+    let displayText: Bool
+    let text: String
+    let backgroundColor: Color
+    
+    func makeBody(configuration: Configuration) -> some View {
+        Button {
+            configuration.isOn.toggle()
+        } label: {
+            if configuration.isOn {
+                Image(systemName: "progress.indicator")
+                    .foregroundStyle(.gray.gradient)
+            } else {
                 HStack(spacing: 6) {
-                    Image(systemName: isRunning ? "pause.fill" : "play.fill")
+                    Image(systemName: image)
+                    
                     if displayText {
-                        Text(isRunning ? "Pause" : "Resume")
+                        Text(text)
                     }
                 }
                 .font(.caption.weight(.medium))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(isRunning ? .yellow.opacity(0.8) : .green.opacity(0.8), in: .capsule)
+                .background(
+                    backgroundColor.opacity(0.8),
+                    in: .capsule
+                )
             }
-        )
+        }
         .buttonStyle(.plain)
     }
 }

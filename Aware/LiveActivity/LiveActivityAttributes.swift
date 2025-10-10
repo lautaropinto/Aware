@@ -14,6 +14,7 @@ public struct TimerAttributes: ActivityAttributes {
         public let totalElapsedSeconds: TimeInterval
         public let eventDescription: String
         public let intentAction: IntentAction
+        public let isLoading: Bool
         
         public var timerInterval: ClosedRange<Date> {
             let startTime = Date(timeIntervalSinceNow: -totalElapsedSeconds)
@@ -24,11 +25,13 @@ public struct TimerAttributes: ActivityAttributes {
         public init(
             totalElapsedSeconds: TimeInterval,
             eventDescription: String,
-            intentAction: IntentAction
+            intentAction: IntentAction,
+            isLoading: Bool = false
         ) {
             self.totalElapsedSeconds = totalElapsedSeconds
             self.eventDescription = eventDescription
             self.intentAction = intentAction
+            self.isLoading = isLoading
         }
         
         static var previewDefault: ContentState {
