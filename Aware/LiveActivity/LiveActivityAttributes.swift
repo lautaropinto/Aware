@@ -58,7 +58,7 @@ public struct TimerAttributes: ActivityAttributes {
     }
     
     static var previews: TimerAttributes {
-        let tag = Tag(name: "Running", color: "#3434ab", image: "heart", displayOrder: 0)
+        let tag = Tag(name: "Running", color: "#FF456A", image: "heart", displayOrder: 0)
         let timer = Timekeeper(name: "Sran session", tags: [tag])
         return TimerAttributes.init(timer: timer)
     }

@@ -62,12 +62,13 @@ struct ActiveTimerView: View {
                         .contentTransition(.numericText())
                 }
                 
+                
                 if !context.isStale {
-                    HStack(spacing: 0.0) {
-                        StopButton(displayText: false)
-                            .scaleEffect(0.8)
+                    HStack(spacing: 4.0) {
                         PauseResumeButton(displayText: false)
-                            .scaleEffect(0.8)
+                            .frame(maxWidth: 36.0)
+                        StopButton(displayText: false)
+                            .frame(maxWidth: 36.0)
                     }
                 } else {
                     Text("Finished")
@@ -77,7 +78,7 @@ struct ActiveTimerView: View {
             }
         }
         .padding(8.0)
-        .activityBackgroundTint(context.attributes.timer.mainTag!.swiftUIColor.opacity(0.1))
+        .applyBackgroundGradient()
     }
     
     @ViewBuilder private func MediumContent(timer: Timekeeper) -> some View {
@@ -107,8 +108,8 @@ struct ActiveTimerView: View {
             
             if !context.isStale {
                 HStack {
-                    StopButton()
                     PauseResumeButton()
+                    StopButton()
                 }
             } else {
                 Text("Finished")

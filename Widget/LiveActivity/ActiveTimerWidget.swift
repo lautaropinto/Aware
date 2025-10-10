@@ -12,10 +12,16 @@ import AwareData
 import AwareUI
 
 struct ActiveTimerLiveActivityWidget: Widget {
+    @State private var appConfig = CrossConfig(backgroundColor: Color.accentColor)
+    
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TimerAttributes.self) { context in
             ActiveTimerView(context: context)
                 .activityBackgroundTint(context.attributes.timer.mainTag!.swiftUIColor.opacity(0.1))
+                .environment(\.appConfig, appConfig)
+                .onAppear {
+                    appConfig.backgroundColor = context.attributes.timer.mainTag!.swiftUIColor
+                }
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
