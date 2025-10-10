@@ -49,7 +49,7 @@ struct ActiveTimerView: View {
             HStack {
                 if context.state.intentAction == .resume {
                     CountText(timeInterval: context.state.timerInterval)
-                        .font(.title2)
+                        .font(context.state.totalElapsedSeconds > 3600 ? .body : .title3)
                         .fontDesign(.monospaced)
                         .fontWeight(.semibold)
                         .foregroundColor(!context.isStale ? .primary : .secondary)
@@ -77,7 +77,7 @@ struct ActiveTimerView: View {
             }
         }
         .padding(8.0)
-        .background(timer.mainTag!.swiftUIColor.gradient)
+        .activityBackgroundTint(context.attributes.timer.mainTag!.swiftUIColor.opacity(0.1))
     }
     
     @ViewBuilder private func MediumContent(timer: Timekeeper) -> some View {

@@ -38,6 +38,14 @@ public struct TimerAttributes: ActivityAttributes {
                 intentAction: .resume
             )
         }
+        
+        static var longTimerState: ContentState {
+            return ContentState(
+                totalElapsedSeconds: 4256,
+                eventDescription: "resume",
+                intentAction: .resume
+            )
+        }
     }
     
     public let timer: Timekeeper

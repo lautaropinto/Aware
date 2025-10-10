@@ -16,7 +16,6 @@ struct CountText: View {
             .overlay {
                 Text(timerInterval: timeInterval, countsDown: false)
                     .contentTransition(.numericText())
-//                    .foregroundStyle(.white)
                     .fontDesign(.monospaced)
                     .multilineTextAlignment(.center)
             }

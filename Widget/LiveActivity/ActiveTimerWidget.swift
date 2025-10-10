@@ -71,7 +71,7 @@ struct ActiveTimerLiveActivityWidget: Widget {
 ) {
     ActiveTimerLiveActivityWidget()
 } contentStates: {
-    TimerAttributes.ContentState.previewDefault
+    TimerAttributes.ContentState.longTimerState
 }
 
 extension TimeInterval {
