@@ -20,7 +20,7 @@ struct AboutListSection: View {
                         .labelStyle(ColorfulIcon(color: .accent))
                 }
             }
-            .listRowBackground(Color.gray.opacity(0.4))
+            .listRowBackground(Color.gray.opacity(0.1))
             
             Button {
                 openURL(URL(string: "https://lautaropinto.com/aware-privacy-policy")!)
@@ -35,7 +35,7 @@ struct AboutListSection: View {
                         .foregroundStyle(Color.secondary)
                 }
             }
-            .listRowBackground(Color.gray.opacity(0.4))
+            .listRowBackground(Color.gray.opacity(0.1))
         }
     }
 }

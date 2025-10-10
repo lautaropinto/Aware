@@ -29,7 +29,7 @@ struct EmailSenderSection: View {
                 }
             }
             .tint(.primary)
-            .listRowBackground(Color.gray.opacity(0.4))
+            .listRowBackground(Color.gray.opacity(0.1))
         } footer: {
             Text("Your thoughts shape Aware")
                 .italic()
