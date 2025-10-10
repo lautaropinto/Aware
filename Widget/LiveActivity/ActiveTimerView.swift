@@ -49,7 +49,7 @@ struct ActiveTimerView: View {
             HStack {
                 if context.state.intentAction == .resume {
                     CountText(timeInterval: context.state.timerInterval)
-                        .font(context.state.totalElapsedSeconds > 3600 ? .body : .title3)
+                        .font(.body)
                         .fontDesign(.monospaced)
                         .fontWeight(.semibold)
                         .foregroundColor(!context.isStale ? .primary : .secondary)
@@ -61,7 +61,6 @@ struct ActiveTimerView: View {
                         .foregroundColor(.primary)
                         .contentTransition(.numericText())
                 }
-                
                 
                 if !context.isStale {
                     HStack(spacing: 4.0) {
@@ -108,8 +107,8 @@ struct ActiveTimerView: View {
             
             if !context.isStale {
                 HStack {
-                    PauseResumeButton()
-                    StopButton()
+                    PauseResumeToggle()
+                    StopToggle()
                 }
             } else {
                 Text("Finished")
@@ -124,7 +123,7 @@ struct ActiveTimerView: View {
     }
     
     @ViewBuilder
-    private func StopButton(displayText: Bool = true) -> some View {
+    private func StopToggle(displayText: Bool = true) -> some View {
         let intent = StopWatchLiveIntent(
             timerID: context.attributes.timer.id.uuidString,
             action: "stop"
@@ -144,7 +143,7 @@ struct ActiveTimerView: View {
     }
     
     @ViewBuilder
-    private func PauseResumeButton(displayText: Bool = true) -> some View {
+    private func PauseResumeToggle(displayText: Bool = true) -> some View {
         let isRunning = context.state.intentAction == .resume
         
         let intent = StopWatchLiveIntent(
@@ -163,6 +162,54 @@ struct ActiveTimerView: View {
                 backgroundColor: isRunning ? .yellow : .green
             )
         )
+    }
+    
+    @ViewBuilder
+    private func StopButton(displayText: Bool = true) -> some View {
+        Button(
+            intent: StopWatchLiveIntent(
+                timerID: context.attributes.timer.id.uuidString,
+                action: "stop"
+            ), label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "stop.fill")
+                    if displayText {
+                        Text("Stop")
+                    }
+                }
+                .font(.caption.weight(.medium))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.red.opacity(0.8), in: .capsule)
+            }
+        )
+        .buttonStyle(.plain)
+    }
+    
+    @ViewBuilder
+    private func PauseResumeButton(displayText: Bool = true) -> some View {
+        let isRunning = context.state.intentAction == .resume
+
+        Button(
+            intent: StopWatchLiveIntent(
+                timerID: context.attributes.timer.id.uuidString,
+                action: isRunning ? "pause" : "resume"
+            ), label: {
+                HStack(spacing: 6) {
+                    Image(systemName: isRunning ? "pause.fill" : "play.fill")
+                    if displayText {
+                        Text(isRunning ? "Pause" : "Resume")
+                    }
+                }
+                .font(.caption.weight(.medium))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(isRunning ? .yellow.opacity(0.8) : .green.opacity(0.8), in: .capsule)
+            }
+        )
+        .buttonStyle(.plain)
     }
 }
 
