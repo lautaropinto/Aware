@@ -17,6 +17,16 @@ struct TagInsightData: Identifiable {
     let tag: Tag
     let totalTime: TimeInterval
     let percentage: Double
+    let sessionCount: Int
+
+    var averageTime: TimeInterval {
+        guard sessionCount > 0 else { return 0 }
+        return totalTime / Double(sessionCount)
+    }
+
+    var shouldShowAverage: Bool {
+        return averageTime > 1800 && sessionCount > 3 // 30 minutes = 1800 seconds
+    }
 }
 
 @Observable
@@ -102,19 +112,19 @@ class InsightStore {
     }
 
     private func aggregateTimersByTag(_ timers: [Timekeeper]) -> [TagInsightData] {
-        var tagTimes: [UUID: (tag: Tag, totalTime: TimeInterval)] = [:]
+        var tagData: [UUID: (tag: Tag, totalTime: TimeInterval, sessionCount: Int)] = [:]
 
         for timer in timers {
             guard let tag = timer.mainTag else { continue }
 
-            if let existing = tagTimes[tag.id] {
-                tagTimes[tag.id] = (tag: existing.tag, totalTime: existing.totalTime + timer.totalElapsedSeconds)
+            if let existing = tagData[tag.id] {
+                tagData[tag.id] = (tag: existing.tag, totalTime: existing.totalTime + timer.totalElapsedSeconds, sessionCount: existing.sessionCount + 1)
             } else {
-                tagTimes[tag.id] = (tag: tag, totalTime: timer.totalElapsedSeconds)
+                tagData[tag.id] = (tag: tag, totalTime: timer.totalElapsedSeconds, sessionCount: 1)
             }
         }
 
-        let totalTrackedTime = tagTimes.values.reduce(0) { $0 + $1.totalTime }
+        let totalTrackedTime = tagData.values.reduce(0) { $0 + $1.totalTime }
 
         // Calculate percentages based on total time (including untracked for daily view)
         let totalTimeForPercentage: TimeInterval
@@ -127,11 +137,12 @@ class InsightStore {
 
         guard totalTimeForPercentage > 0 else { return [] }
 
-        return tagTimes.values.map { (tag, time) in
+        return tagData.values.map { (tag, time, count) in
             TagInsightData(
                 tag: tag,
                 totalTime: time,
-                percentage: (time / totalTimeForPercentage) * 100
+                percentage: (time / totalTimeForPercentage) * 100,
+                sessionCount: count
             )
         }.sorted { $0.totalTime > $1.totalTime }
     }
@@ -149,7 +160,8 @@ class InsightStore {
         return TagInsightData(
             tag: untrackedTag,
             totalTime: untrackedTime,
-            percentage: (untrackedTime / totalDayTime) * 100
+            percentage: (untrackedTime / totalDayTime) * 100,
+            sessionCount: 1
         )
     }
 

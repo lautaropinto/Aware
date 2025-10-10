@@ -14,10 +14,19 @@ struct PieChartView: View {
     let totalTime: TimeInterval
 
     @Environment(InsightStore.self) private var store
-    
+
     @State private var hasAppeared = false
     @State private var chartProgress: Double = 0.0
     @State private var hasEverAppeared = false
+
+    private var isDailyTimeFrame: Bool {
+        switch store.currentTimeFrame {
+        case .daily:
+            return true
+        default:
+            return false
+        }
+    }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -86,10 +95,21 @@ struct PieChartView: View {
                                 .font(.body.weight(.medium))
                                 .foregroundColor(.primary)
 
-                            Text(item.totalTime.formattedElapsedTime)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .contentTransition(.numericText())
+                            HStack(alignment: .center) {
+                                Text(item.totalTime.formattedElapsedTime)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .contentTransition(.numericText())
+
+                                // Show average time for non-daily timeframes
+                                if !isDailyTimeFrame && item.shouldShowAverage {
+                                    Text("• \(item.averageTime.compactFormattedTime) avg per session")
+                                        .font(.caption)
+                                        .italic()
+                                        .foregroundColor(.secondary.opacity(0.8))
+                                        .contentTransition(.numericText())
+                                }
+                            }
                         }
 
                         Spacer()
@@ -144,9 +164,9 @@ struct PieChartView: View {
     let sampleTag3 = Tag(name: "Exercise", color: "#45B7D1")
 
     let sampleData = [
-        TagInsightData(tag: sampleTag1, totalTime: 7200, percentage: 60.0),
-        TagInsightData(tag: sampleTag2, totalTime: 3600, percentage: 30.0),
-        TagInsightData(tag: sampleTag3, totalTime: 1200, percentage: 10.0)
+        TagInsightData(tag: sampleTag1, totalTime: 7200, percentage: 60.0, sessionCount: 0),
+        TagInsightData(tag: sampleTag2, totalTime: 3600, percentage: 30.0, sessionCount: 0),
+        TagInsightData(tag: sampleTag3, totalTime: 1200, percentage: 10.0, sessionCount: 0)
     ]
 
     PieChartView(data: sampleData, totalTime: 12000)
