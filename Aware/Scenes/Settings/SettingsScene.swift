@@ -14,6 +14,7 @@ extension SettingsButton {
                 VStack {
                     List {
                         EmailSenderSection()
+                        RateAppSection()
                         AboutListSection()
                     }
                     .navigationTitleWithCloseButton("Settings")

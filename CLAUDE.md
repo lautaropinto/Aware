@@ -56,6 +56,19 @@ This is a SwiftUI-based iOS and Apple Watch timer/time-tracking application with
 - Modular package structure for code reuse between platforms
 - Preview-friendly architecture with in-memory model containers for SwiftUI previews
 
+### Settings Architecture (`Aware/Scenes/Settings/`)
+- **Modular Section Pattern**: Settings are organized as separate SwiftUI views for each functional area
+- **File Structure**:
+  - `SettingsScene.swift`: Main settings container with List of sections
+  - `SettingsButton.swift`: Settings gear button with sheet presentation
+  - Section directories: `Contact/`, `About/`, `RateApp/` etc.
+- **Visual Design System**:
+  - Uses `ColorfulIcon` label style with `.accent` color for consistency
+  - Section items have `Color.gray.opacity(0.1)` background
+  - External links show arrow indicator (`arrow.up.right`)
+  - HStack layout: Label, Spacer, optional arrow icon
+- **Integration Pattern**: Each section implements `View` protocol and gets added to `SettingsScene` List  
+
 ## Important Implementation Notes
 
 - The app requires iOS 18+ and watchOS 11+ (see platform requirements in Package.swift files)
