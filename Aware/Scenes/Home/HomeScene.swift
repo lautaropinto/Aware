@@ -35,6 +35,7 @@ struct HomeScene: View {
                 VStack(spacing: 24) {
                     // Unified Timer Section
                     StopWatch(timer: currentTimer, onStateChange: refreshCurrentTimer)
+                        .rateAppPrompt()
                         .padding(.horizontal)
                     
                     // Quick Start Section

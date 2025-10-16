@@ -128,6 +128,7 @@ public struct StopWatch: View {
                                         appConfig.backgroundColor = .accentColor
                                     }
                                     timer.stop()
+                                    NotificationCenter.default.post(name: .timerDidStop, object: nil)
                                     activityStore.endLiveActivity()
                                     onStateChange()
                                 }
