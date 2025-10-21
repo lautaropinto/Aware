@@ -76,6 +76,11 @@ struct HistoryScene: View {
                 timerListSection
             }   
             .navigationTitle("History")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ManualEntryButton()
+                }
+            }
             .applyBackgroundGradient()
         }
     }
