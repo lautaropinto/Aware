@@ -34,9 +34,9 @@ private struct TitleWithCloseButtonModifier: ViewModifier {
                             dismiss()
                         }
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(Color.primary)
-                            .imageScale(.large)
+                        Image(systemName: "xmark")
+                            .imageScale(.small)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
             }

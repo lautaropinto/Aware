@@ -122,8 +122,9 @@ struct TagForm: View {
                     Button {
                         dismiss()
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(Color.primary)
+                        Image(systemName: "xmark")
+                            .imageScale(.small)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
             }
