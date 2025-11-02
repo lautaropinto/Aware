@@ -70,6 +70,7 @@ struct TagForm: View {
                             .padding(.vertical, 6)
                             .background(selectedColor.opacity(0.1))
                             .cornerRadius(8)
+                            .animation(.spring, value: selectedColor)
                         
                         Spacer()
                     }
@@ -102,17 +103,20 @@ struct TagForm: View {
                 
                 // Save Button
                 Button(action: saveTag) {
-                    Text("Save Tag")
+                    Text("Save")
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(isSaveEnabled ? selectedColor : Color.gray)
+                        .clipShape(.capsule)
                         .cornerRadius(12)
                 }
+                .glassEffect(.regular.interactive(isSaveEnabled), in: .capsule)
                 .disabled(!isSaveEnabled)
                 .animation(.easeInOut(duration: 0.2), value: isSaveEnabled)
+                .animation(.spring, value: selectedColor)
             }
             .padding(24)
             .navigationTitle("New activity")
