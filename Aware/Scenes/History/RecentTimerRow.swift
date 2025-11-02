@@ -20,6 +20,7 @@ struct RecentTimerRow: View {
             HStack() {
                 if let tag = timekeeper.mainTag {
                     TagIconView(tag: tag)
+                        .scaleEffect(0.86)
                 }
                 VStack(alignment: .leading, spacing: 2.0) {
                     

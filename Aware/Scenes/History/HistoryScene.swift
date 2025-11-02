@@ -50,9 +50,7 @@ struct HistoryScene: View {
         let totalTime = timers.reduce(0) { partialResult, timer in
             partialResult + timer.totalElapsedSeconds
         }
-        
-        
-        
+
         return TimeInterval(floatLiteral: totalTime).formattedElapsedTime
     }
     
