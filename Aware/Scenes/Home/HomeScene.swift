@@ -26,6 +26,7 @@ struct HomeScene: View {
     @State private var showingNewTimerSheet = false
     @State private var selectedTag: Tag?
     @State private var newTimerName = ""
+    @State private var isSettingsPresented = false
     
     @Namespace private var settingsTransition
     
@@ -54,10 +55,14 @@ struct HomeScene: View {
             .navigationTitle("Timer")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    SettingsButton(transition: settingsTransition)
+                    SettingsButton(isSettingsPresented: self.$isSettingsPresented, transition: settingsTransition)
                 }
                 .matchedTransitionSource(id: "settings", in: settingsTransition)
             }
+        }
+        .sheet(isPresented: $isSettingsPresented) {
+            SettingsButton.SettingsScene()
+                .navigationTransition(.zoom(sourceID: "settings", in: settingsTransition))
         }
         .onAppear {
             logger.debug("onAppear()")

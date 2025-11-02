@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct SettingsButton: View {
-    @State private var isSettingsPresented = false
+    @Binding private var isSettingsPresented: Bool
     
     private let transition: Namespace.ID
     
-    init(transition: Namespace.ID) {
+    init(isSettingsPresented: Binding<Bool>, transition: Namespace.ID) {
         self.transition = transition
+        self._isSettingsPresented = isSettingsPresented
     }
     
     var body: some View {
@@ -22,10 +23,6 @@ struct SettingsButton: View {
         } label: {
             Image(systemName: "gearshape.fill")
                 .foregroundStyle(.primary)
-        }
-        .sheet(isPresented: $isSettingsPresented) {
-            SettingsScene()
-                .navigationTransition(.zoom(sourceID: "settings", in: transition))
         }
     }
 }
