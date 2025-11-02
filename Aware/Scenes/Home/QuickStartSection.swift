@@ -123,12 +123,8 @@ struct QuickStartSection: View {
             Image(systemName: "trash")
                 .imageScale(.small)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.red)
-                .frame(width: 32, height: 32)
-                .background(Color.secondary.opacity(0.1))
-                .clipShape(Circle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CircledSmallButton(color: .red))
         .disabled(isDisabled)
     }
     
@@ -139,12 +135,8 @@ struct QuickStartSection: View {
         }) {
             Image(systemName: "pencil")
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.yellow)
-                .frame(width: 32, height: 32)
-                .background(Color.secondary.opacity(0.1))
-                .clipShape(Circle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CircledSmallButton(color: .yellow))
         .disabled(isDisabled)
     }
     
@@ -174,7 +166,7 @@ struct QuickStartSection: View {
         
         var buttonIconColor: Color {
             switch self {
-            case .play: return .secondary
+            case .play: return .secondary.opacity(0.3)
             case .delete: return .red
             case .edit: return .yellow
             }
@@ -233,7 +225,9 @@ struct DraggableTagButton: View {
     var body: some View {
         Button(action: onTap) {
             HStack {
-                TagIconView(tag: tag)
+                Image(systemName: tag.image)
+                    .imageScale(.small)
+                    .foregroundStyle(tag.swiftUIColor)
                 
                 Text(tag.name)
                     .font(.headline)

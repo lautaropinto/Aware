@@ -22,15 +22,16 @@ struct AddTagButton: View {
         }) {
             Image(systemName: mode == .play ? "plus" : "play.fill")
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.primary)
-                .frame(width: 32, height: 32)
-                .background(Color.secondary.opacity(0.1))
-                .clipShape(Circle())
+                .foregroundColor(.background)
         }
-        .buttonStyle(.plain)
+//        .frame(width: 30.0, height: 30.0)
+//        .buttonStyle(.borderedProminent)
+//        .tint(.primary)
+//        .clipShape(Circle())
         .sheet(isPresented: $isShowingTagForm) {
             TagForm()
         }
+        .buttonStyle(CircledSmallButton(color: .primary))
     }
 }
 
