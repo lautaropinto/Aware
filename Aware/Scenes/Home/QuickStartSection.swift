@@ -283,7 +283,7 @@ struct DraggableTagButton: View {
         .onChange(of: draggedTag) { _, newValue in
             isDragging = newValue?.id == tag.id
         }
-        .glassEffect(in: .containerRelative)
+        .glassEffect(.regular.interactive(), in: .containerRelative)
         .background(
             Capsule()
                 .stroke(tagMode.color.opacity(0.3), lineWidth: 1.0)
