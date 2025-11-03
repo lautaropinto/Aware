@@ -9,6 +9,13 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+extension Timekeeper: TimelineEntry {
+    public var type: TimelineEntryType { .timekeeper }
+    public var image: String { mainTag?.image ?? "" }
+    public var swiftUIColor: Color { mainTag?.swiftUIColor ?? .accentColor }
+    public var duration: TimeInterval { self.totalElapsedSeconds }
+}
+
 @Model
 public class Timekeeper: Codable {
     enum CodingKeys: String, CodingKey {

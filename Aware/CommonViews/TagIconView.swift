@@ -11,6 +11,14 @@ import AwareData
 struct TagIconView: View {
     let tag: Tag
     
+    init(tag: Tag) {
+        self.tag = tag
+    }
+    
+    init(color: Color, icon: String) {
+        self.tag = Tag(name: "", color: color.toHex(), image: icon)
+    }
+    
     var body: some View {
         Image(systemName: tag.image)
             .imageScale(.small)

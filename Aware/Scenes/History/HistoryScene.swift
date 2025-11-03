@@ -20,13 +20,13 @@ struct HistoryScene: View {
     @State private var selectedTag: Tag?
     
     // Filter timers based on tag selection
-    private var filteredTimers: [Timekeeper] {
+    private var filteredTimers: [any TimelineEntry] {
         guard let selectedTag = selectedTag else { return allTimers }
         return allTimers.filter { $0.mainTag?.id == selectedTag.id }
     }
     
     // Group entries by day
-    private var groupedEntries: [Date: [Timekeeper]] {
+    private var groupedEntries: [Date: [any TimelineEntry]] {
         let grouped = Dictionary(grouping: filteredTimers) { entry in
             Calendar.current.startOfDay(for: entry.creationDate)
         }
@@ -41,14 +41,14 @@ struct HistoryScene: View {
         groupedEntries.keys.sorted(by: >)
     }
     
-    private func sortedTimers(for date: Date) -> [Timekeeper] {
+    private func sortedTimers(for date: Date) -> [any TimelineEntry] {
         groupedEntries[date] ?? []
     }
     
     private func totalElapsedTime(for date: Date) -> String {
         let timers = sortedTimers(for: date)
         let totalTime = timers.reduce(0) { partialResult, timer in
-            partialResult + timer.totalElapsedSeconds
+            partialResult + timer.duration
         }
 
         return TimeInterval(floatLiteral: totalTime).formattedElapsedTime
@@ -132,7 +132,7 @@ struct HistoryScene: View {
         List {
             ForEach(sortedDates, id: \.self) { date in
                 Section {
-                    ForEach(sortedTimers(for: date)) { timekeeper in
+                    ForEach(sortedTimers(for: date), id: \.id) { timekeeper in
                         timerRowView(for: timekeeper)
                     }
                 } header: {
@@ -150,12 +150,15 @@ struct HistoryScene: View {
         .transition(.opacity)
     }
     
-    private func timerRowView(for timekeeper: Timekeeper) -> some View {
-        RecentTimerRow(timekeeper: timekeeper)
+    @ViewBuilder
+    private func timerRowView(for timekeeper: any TimelineEntry) -> some View {
+        RecentTimerRow(entry: timekeeper)
             .transition(.scale.combined(with: .opacity))
             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                Button("Delete", role: .destructive) {
-                    deleteTimer(timekeeper)
+                if let timekeeper = timekeeper as? Timekeeper {
+                    Button("Delete", role: .destructive) {
+                        deleteTimer(timekeeper)
+                    }
                 }
             }
     }

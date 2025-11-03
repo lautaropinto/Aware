@@ -10,7 +10,7 @@ import SwiftData
 import AwareData
 
 struct RecentTimerRow: View {
-    let timekeeper: Timekeeper
+    let entry: any TimelineEntry
     
     @State private var currentTime = Date()
     private let timeUpdateTimer = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -18,16 +18,15 @@ struct RecentTimerRow: View {
     var body: some View {
         HStack {
             HStack() {
-                if let tag = timekeeper.mainTag {
-                    TagIconView(tag: tag)
-                        .scaleEffect(0.86)
-                }
+                TagIconView(color: entry.swiftUIColor, icon: entry.image)
+                    .scaleEffect(0.86)
+                
                 VStack(alignment: .leading, spacing: 2.0) {
                     
-                    Text(timekeeper.name)
+                    Text(entry.name)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    if !timekeeper.isRunning,
+                    if let timekeeper = entry as? Timekeeper, !timekeeper.isRunning,
                        let endTime = timekeeper.endTime {
                         Text("\(timekeeper.creationDate.formattedTime) - \(endTime.formattedTime)")
                             .font(.caption2.bold())
@@ -38,7 +37,8 @@ struct RecentTimerRow: View {
             
             Spacer()
             
-            VStack(alignment: .trailing, spacing: 4) {
+            if let timekeeper = entry as? Timekeeper {
+               VStack(alignment: .trailing, spacing: 4) {
                 Text(displayTime)
                     .font(timekeeper.isRunning ? .subheadline.bold() : .subheadline)
                     .fontWeight(.medium)
@@ -53,18 +53,22 @@ struct RecentTimerRow: View {
                 }
             }
         }
+        }
         .listRowBackground(
             ConcentricRectangle()
                 .fill(.ultraThinMaterial.opacity(0.3))
         )
         .onReceive(timeUpdateTimer) { _ in
-            if timekeeper.isRunning {
+            if let timekeeper = entry as? Timekeeper, timekeeper.isRunning {
                 currentTime = Date()
             }
         }
     }
     
     private var displayTime: String {
+        guard let timekeeper = entry as? Timekeeper else {
+            return "00:00"
+        }
         // Reference currentTime to ensure this property depends on it for running timers
         if timekeeper.isRunning {
             _ = currentTime

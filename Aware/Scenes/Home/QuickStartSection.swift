@@ -227,7 +227,7 @@ struct DraggableTagButton: View {
             HStack {
                 Image(systemName: tag.image)
                     .imageScale(.small)
-                    .foregroundStyle(tag.swiftUIColor)
+                    .foregroundStyle(isDisabled ? .secondary.opacity(0.86) : tag.swiftUIColor)
                 
                 Text(tag.name)
                     .font(.headline)
@@ -242,11 +242,10 @@ struct DraggableTagButton: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .scaleEffect(isDragging ? 1.05 : (isDisabled ? 0.95 : 1.0))
-            .opacity(isDragging ? 0.8 : (isDisabled ? 0.5 : 1.0))
             .animation(.easeInOut(duration: 0.2), value: isDragging)
             .animation(.easeInOut(duration: 0.3), value: isDisabled)
         }
-        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
         .disabled(isDisabled)
         .draggable(tag) {
             // Drag preview
@@ -277,7 +276,6 @@ struct DraggableTagButton: View {
         .onChange(of: draggedTag) { _, newValue in
             isDragging = newValue?.id == tag.id
         }
-        .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
     }
 }
 
