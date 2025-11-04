@@ -95,7 +95,8 @@ class InsightStore {
 
         do {
             let timers = try modelContext.fetch(descriptor)
-            var tagData = aggregateTimersByTag(timers)
+            let entries: [any TimelineEntry] = timers
+            var tagData = aggregateTimersByTag(entries)
 
             // Add untracked time for daily view
             if showUntrackedTime, case .daily = currentTimeFrame {
@@ -111,16 +112,17 @@ class InsightStore {
         }
     }
 
-    private func aggregateTimersByTag(_ timers: [Timekeeper]) -> [TagInsightData] {
+    private func aggregateTimersByTag(_ entries: [any TimelineEntry]) -> [TagInsightData] {
         var tagData: [UUID: (tag: Tag, totalTime: TimeInterval, sessionCount: Int)] = [:]
 
-        for timer in timers {
-            guard let tag = timer.mainTag else { continue }
+        for entry in entries {
+            guard let timekeeper = entry as? Timekeeper,
+                  let tag = timekeeper.mainTag else { continue }
 
             if let existing = tagData[tag.id] {
-                tagData[tag.id] = (tag: existing.tag, totalTime: existing.totalTime + timer.totalElapsedSeconds, sessionCount: existing.sessionCount + 1)
+                tagData[tag.id] = (tag: existing.tag, totalTime: existing.totalTime + timekeeper.totalElapsedSeconds, sessionCount: existing.sessionCount + 1)
             } else {
-                tagData[tag.id] = (tag: tag, totalTime: timer.totalElapsedSeconds, sessionCount: 1)
+                tagData[tag.id] = (tag: tag, totalTime: timekeeper.totalElapsedSeconds, sessionCount: 1)
             }
         }
 
