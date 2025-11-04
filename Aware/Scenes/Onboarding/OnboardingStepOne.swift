@@ -52,7 +52,8 @@ struct OnboardingStepOne: View {
             Button("Continue") {
                 onContinue?()
             }
-            .buttonStyle(.defaultCapsule)
+            .buttonStyle(DefaultBigButton(color: .accent))
+            .glassEffect(.regular.interactive())
             .opacity(didParagraphFinish ? 1.0 : 0.0)
             .transition(.opacity)
         }

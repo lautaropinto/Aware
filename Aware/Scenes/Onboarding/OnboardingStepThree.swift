@@ -60,9 +60,10 @@ struct OnboardingStepThree: View {
             Button("Start Timing") {
                 onContinue?()
             }
-            .buttonStyle(.defaultCapsule)
+            .buttonStyle(DefaultBigButton(color: .accent))
             .opacity(didParagraphFinish ? 1.0 : 0.0)
             .transition(.opacity)
+            .glassEffect(.regular.interactive())
         }
         .padding()
         .onAppear {

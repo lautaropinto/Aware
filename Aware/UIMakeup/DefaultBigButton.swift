@@ -27,7 +27,6 @@ struct DefaultBigButton: ButtonStyle {
             .background(Capsule().fill(isEnabled ? color : Color.gray))
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .opacity(opacity)
-            .glassEffect(.clear)
             .clipShape(Capsule())
             .contentShape(.capsule)
     }

@@ -10,11 +10,12 @@ import SwiftData
 
 struct ContentView: View {
     @AppStorage("aware-onboarding-ftu-completed") var onboardingCompleted = false
-    
+
     @Environment(\.modelContext) private var modelContext
-    
+
     @State private var slowlyAppear = false
     @State private var activityStore = ActivityStore()
+    @State private var showHealthKitPermissionSheet = false
     
     var body: some View {
         VStack {
@@ -29,11 +30,30 @@ struct ContentView: View {
         .onChange(of: onboardingCompleted) { _, newValue in
             if newValue {
                 withAnimation(.spring(duration: 1.5)) { slowlyAppear = true }
+                checkHealthKitPermissions()
             }
         }
         .onAppear {
             slowlyAppear = onboardingCompleted
             activityStore.modelContext = self.modelContext
+            if onboardingCompleted {
+                checkHealthKitPermissions()
+            }
+        }
+        .sheet(isPresented: $showHealthKitPermissionSheet) {
+            HealthKitPermissionSheet(
+                isPresented: $showHealthKitPermissionSheet,
+                onSetupNow: {
+                    showHealthKitPermissionSheet = false
+                    Task {
+                        await requestHealthKitPermissions()
+                    }
+                },
+                onSetupLater: {
+                    showHealthKitPermissionSheet = false
+                    UserDefaults.standard.set(true, forKey: .UserDefault.healthKitSleepPermissionsRequested)
+                }
+            )
         }
     }
     
@@ -65,6 +85,26 @@ struct ContentView: View {
         }
         .background(Color.background)
         .accentColor(.primary)
+    }
+
+    // MARK: - HealthKit Permission Management
+
+    private func checkHealthKitPermissions() {
+        let hasRequestedBefore = UserDefaults.standard.bool(forKey: .UserDefault.healthKitSleepPermissionsRequested)
+
+        guard !hasRequestedBefore else { return }
+
+        // Show permission sheet after a brief delay to allow UI to settle
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            showHealthKitPermissionSheet = true
+        }
+    }
+
+    private func requestHealthKitPermissions() async {
+        let granted = await HealthStore.shared.requestSleepPermissions()
+        await MainActor.run {
+            // Additional handling if needed
+        }
     }
 }
 

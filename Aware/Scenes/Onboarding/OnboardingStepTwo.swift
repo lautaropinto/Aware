@@ -64,7 +64,8 @@ struct OnboardingStepTwo: View {
             Button("Next") {
                 nextButton()
             }
-            .buttonStyle(.defaultCapsule)
+            .buttonStyle(DefaultBigButton(color: .accent))
+            .glassEffect(.regular.interactive(!createdTags.isEmpty))
             .opacity(didParagraphFinish ? 1.0 : 0.0)
             .transition(.opacity)
             .disabled(createdTags.isEmpty)
