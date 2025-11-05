@@ -12,6 +12,8 @@ struct AboutListSection: View {
     
     var body: some View {
         Section {
+            HealthKitButton()
+            
             NavigationLink {
                 AboutView()
             } label: {
