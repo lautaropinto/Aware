@@ -10,6 +10,10 @@ import HealthKit
 import SwiftUI
 import AwareData
 
+extension String {
+    static let sleepColor = "#6155f5"
+}
+
 extension HKCategorySample: @retroactive TimelineEntry {
     public var id: UUID {
         UUID(uuidString: uuid.uuidString) ?? UUID()
@@ -55,26 +59,12 @@ extension HKCategorySample: @retroactive TimelineEntry {
     }
 
     public var swiftUIColor: Color {
-        guard categoryType.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue else {
+        guard categoryType.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue,
+              let color = Color(hex: .sleepColor) else {
             return .gray
         }
 
-        switch HKCategoryValueSleepAnalysis(rawValue: value) {
-        case .inBed:
-            return Color.blue.opacity(0.3)
-        case .asleepCore:
-            return Color.blue
-        case .asleepDeep:
-            return Color.indigo
-        case .asleepREM:
-            return Color.purple
-        case .awake:
-            return Color.orange
-        case .asleepUnspecified:
-            return Color.blue
-        default:
-            return Color.blue
-        }
+        return color
     }
 
     public var image: String {
@@ -82,20 +72,8 @@ extension HKCategorySample: @retroactive TimelineEntry {
             return "questionmark"
         }
 
-        switch HKCategoryValueSleepAnalysis(rawValue: value) {
-        case .inBed:
-            return "bed.double.fill"
-        case .asleepCore, .asleepUnspecified:
-            return "moon.fill"
-        case .asleepDeep:
-            return "moon.zzz.fill"
-        case .asleepREM:
-            return "brain.head.profile"
-        case .awake:
-            return "sun.max.fill"
-        default:
-            return "moon.fill"
-        }
+        
+        return "moon.fill"
     }
 
     public var type: TimelineEntryType {
