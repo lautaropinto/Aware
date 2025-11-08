@@ -19,7 +19,7 @@ struct SleepRow: View {
                 TagIconView(color: entry.swiftUIColor, icon: entry.image)
                     .scaleEffect(0.86)
 
-                VStack(alignment: .leading, spacing: 2.0) {
+                VStack(alignment: .leading, spacing: 4.0) {
                     Text(entry.name)
                         .font(.subheadline)
                         .fontWeight(.medium)
@@ -40,6 +40,15 @@ struct SleepRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
+                
+                HStack {
+                    Text("Imported from Health")
+                        .font(.caption2.italic())
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "heart.fill")
+                        .imageScale(.small)
+                        .foregroundStyle(.pink.gradient)
+                }
             }
         }
         .listRowBackground(
