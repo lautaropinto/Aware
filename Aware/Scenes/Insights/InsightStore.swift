@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import AwareData
+import HealthKit
 import OSLog
 
 private var logger = Logger(subsystem: "Aware", category: "InsightStore")
@@ -39,7 +40,8 @@ class InsightStore {
     var selectedMonthDate: Date = Date().startOfMonth
     var selectedYearDate: Date = Date().startOfYear
     var showUntrackedTime: Bool = false
-    
+
+    private var sleepData: [HKCategorySample] = []
 
     private var modelContext: ModelContext?
 
@@ -95,7 +97,8 @@ class InsightStore {
 
         do {
             let timers = try modelContext.fetch(descriptor)
-            let entries: [any TimelineEntry] = timers
+            var entries: [any TimelineEntry] = timers
+            entries.append(contentsOf: sleepData)
             var tagData = aggregateTimersByTag(entries)
 
             // Add untracked time for daily view
@@ -114,19 +117,39 @@ class InsightStore {
 
     private func aggregateTimersByTag(_ entries: [any TimelineEntry]) -> [TagInsightData] {
         var tagData: [UUID: (tag: Tag, totalTime: TimeInterval, sessionCount: Int)] = [:]
+        var sleepTotalTime: TimeInterval = 0
+        var sleepSessionCount: Int = 0
 
         for entry in entries {
-            guard let timekeeper = entry as? Timekeeper,
-                  let tag = timekeeper.mainTag else { continue }
+            switch entry.type {
+            case .timekeeper:
+                guard let timekeeper = entry as? Timekeeper,
+                      let tag = timekeeper.mainTag else { continue }
 
-            if let existing = tagData[tag.id] {
-                tagData[tag.id] = (tag: existing.tag, totalTime: existing.totalTime + timekeeper.totalElapsedSeconds, sessionCount: existing.sessionCount + 1)
-            } else {
-                tagData[tag.id] = (tag: tag, totalTime: timekeeper.totalElapsedSeconds, sessionCount: 1)
+                if let existing = tagData[tag.id] {
+                    tagData[tag.id] = (tag: existing.tag, totalTime: existing.totalTime + timekeeper.totalElapsedSeconds, sessionCount: existing.sessionCount + 1)
+                } else {
+                    tagData[tag.id] = (tag: tag, totalTime: timekeeper.totalElapsedSeconds, sessionCount: 1)
+                }
+
+            case .sleep:
+                sleepTotalTime += entry.duration
+                sleepSessionCount += 1
+
+            case .workout:
+                // Future: handle workout data
+                break
             }
         }
 
-        let totalTrackedTime = tagData.values.reduce(0) { $0 + $1.totalTime }
+        let totalTrackedTime = tagData.values.reduce(0) { $0 + $1.totalTime } + sleepTotalTime
+
+        // Add sleep data as a synthetic tag if we have sleep data
+        if sleepTotalTime > 0 {
+            let sleepTag = Tag(name: "Sleep", color: "#4A90E2", image: "moon.fill")
+            let sleepTagData = (tag: sleepTag, totalTime: sleepTotalTime, sessionCount: sleepSessionCount)
+            tagData[sleepTag.id] = sleepTagData
+        }
 
         // Calculate percentages based on total time (including untracked for daily view)
         let totalTimeForPercentage: TimeInterval
@@ -173,5 +196,44 @@ class InsightStore {
 
     var totalTimeForPeriod: TimeInterval {
         getInsightData().reduce(0) { $0 + $1.totalTime }
+    }
+
+    // MARK: - Sleep Data Management
+
+    func loadSleepData() {
+        guard HealthStore.shared.hasSleepPermissions() else {
+            logger.debug("No sleep permissions. Will not load sleep data.")
+            sleepData = []
+            return
+        }
+
+        logger.debug("Loading sleep data for insights")
+
+        Task {
+            do {
+                let dateInterval: DateInterval
+
+                if let range = currentTimeFrame.dateRange {
+                    dateInterval = DateInterval(start: range.start, end: range.end)
+                } else {
+                    // All time - fetch last 90 days as a reasonable limit
+                    let endDate = Date()
+                    let startDate = Calendar.current.date(byAdding: .day, value: -90, to: endDate) ?? endDate
+                    dateInterval = DateInterval(start: startDate, end: endDate)
+                }
+
+                let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
+
+                await MainActor.run {
+                    logger.debug("Loaded \(fetchedSleepData.count) sleep entries for insights")
+                    self.sleepData = fetchedSleepData
+                }
+            } catch {
+                logger.error("Error loading sleep data for insights: \(error)")
+                await MainActor.run {
+                    self.sleepData = []
+                }
+            }
+        }
     }
 }
