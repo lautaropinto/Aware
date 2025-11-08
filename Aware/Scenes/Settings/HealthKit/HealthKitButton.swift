@@ -9,13 +9,18 @@ import SwiftUI
 
 struct HealthKitButton: View {
     @State private var showHealthKitPermissionSheet = false
+    @State private var healthKitTrigger = false
     
     @Environment(\.openURL) private var openURL
     
     var body: some View {
         Button {
-            let settingsURL = URL(string: UIApplication.openSettingsURLString)!
-            openURL(settingsURL)
+            if HealthStore.shared.hasSleepPermissions() {
+                let settingsURL = URL(string: UIApplication.openSettingsURLString)!
+                openURL(settingsURL)
+            } else {
+                showHealthKitPermissionSheet = true
+            }
         } label: {
             HStack {
                 Label("Health Kit", systemImage: "heart.fill")
@@ -37,14 +42,13 @@ struct HealthKitButton: View {
             .listRowBackground(Color.gray.opacity(0.1))
         }
         .listRowBackground(Color.gray.opacity(0.1))
+        .healthKitSetUp(trigger: $healthKitTrigger)
         .sheet(isPresented: $showHealthKitPermissionSheet) {
             HealthKitPermissionSheet(
                 isPresented: $showHealthKitPermissionSheet,
                 onSetupNow: {
+                    healthKitTrigger.toggle()
                     showHealthKitPermissionSheet = false
-                    Task {
-                        await HealthStore.shared.requestSleepPermissions()
-                    }
                 },
                 onSetupLater: {
                     showHealthKitPermissionSheet = false

@@ -66,9 +66,6 @@ struct OnboardingStepThree: View {
             .glassEffect(.regular.interactive())
         }
         .padding()
-        .onAppear {
-            print("Onb 3 - tags? \(tags.count)")
-        }
     }
 }
 

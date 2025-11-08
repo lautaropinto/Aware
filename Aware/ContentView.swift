@@ -45,9 +45,7 @@ struct ContentView: View {
                 isPresented: $showHealthKitPermissionSheet,
                 onSetupNow: {
                     showHealthKitPermissionSheet = false
-                    Task {
-                        await requestHealthKitPermissions()
-                    }
+                    requestHealthKitPermissions()   
                 },
                 onSetupLater: {
                     showHealthKitPermissionSheet = false
@@ -100,11 +98,8 @@ struct ContentView: View {
         }
     }
 
-    private func requestHealthKitPermissions() async {
-        let granted = await HealthStore.shared.requestSleepPermissions()
-        await MainActor.run {
-            // Additional handling if needed
-        }
+    private func requestHealthKitPermissions() {
+        HealthStore.shared.requestSleepPermissions()
     }
 }
 

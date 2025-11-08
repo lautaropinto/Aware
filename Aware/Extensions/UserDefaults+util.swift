@@ -195,5 +195,8 @@ extension UserDefaults {
         // static let userName = "user_name"
         // static let isFirstLaunch = "is_first_launch"
         // static let lastSyncDate = "last_sync_date"
+
+        // HealthKit permissions
+        static let hasGrantedSleepReadPermission = "has_granted_sleep_read_permission"
     }
 }

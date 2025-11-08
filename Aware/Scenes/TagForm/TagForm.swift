@@ -141,15 +141,9 @@ struct TagForm: View {
     }
     
     private func fillForm() {
-        print("fill form")
         guard let tagToEdit else {
-            print("ke")
             return
         }
-        print("toy aca -..-", tagToEdit)
-        print("toy aca -..-", tagToEdit.name)
-        print("toy aca -..-", tagToEdit.color)
-        print("toy aca -..-", tagToEdit.image)
         tagName = tagToEdit.name
         selectedColor = tagToEdit.swiftUIColor
         tagImage = tagToEdit.image

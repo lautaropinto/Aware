@@ -8,6 +8,10 @@
 import SwiftUI
 import SwiftData
 import AwareData
+import HealthKit
+import OSLog
+
+private var logger = Logger(subsystem: "HistoryScene", category: "Scene")
 
 struct HistoryScene: View {
     @Environment(\.modelContext) private var modelContext
@@ -16,13 +20,24 @@ struct HistoryScene: View {
     @Query(
         sort: [SortDescriptor(\Timekeeper.creationDate, order: .reverse)]
     ) private var allTimers: [Timekeeper]
-    
+
     @State private var selectedTag: Tag?
+    @State private var sleepData: [HKCategorySample] = []
     
-    // Filter timers based on tag selection
+    // Combine timers and sleep data
+    private var combinedEntries: [any TimelineEntry] {
+        var entries: [any TimelineEntry] = allTimers
+        entries.append(contentsOf: sleepData)
+        return entries
+    }
+
+    // Filter timers based on tag selection (sleep data has no tags, so always included)
     private var filteredTimers: [any TimelineEntry] {
-        guard let selectedTag = selectedTag else { return allTimers }
-        return allTimers.filter { $0.mainTag?.id == selectedTag.id }
+        guard let selectedTag = selectedTag else { return combinedEntries }
+        let filteredTimers = allTimers.filter { $0.mainTag?.id == selectedTag.id }
+        var result: [any TimelineEntry] = filteredTimers
+        result.append(contentsOf: sleepData)
+        return result
     }
     
     // Group entries by day
@@ -81,6 +96,12 @@ struct HistoryScene: View {
             }
             .applyBackgroundGradient()
         }
+        .onAppear {
+            loadSleepData()
+        }
+        .onChange(of: selectedTag) { _, _ in
+            loadSleepData()
+        }
     }
     
     // MARK: - Computed Views
@@ -132,8 +153,8 @@ struct HistoryScene: View {
         List {
             ForEach(sortedDates, id: \.self) { date in
                 Section {
-                    ForEach(sortedTimers(for: date), id: \.id) { timekeeper in
-                        timerRowView(for: timekeeper)
+                    ForEach(sortedTimers(for: date), id: \.id) { entry in
+                        timerRowView(for: entry)
                     }
                 } header: {
                     HStack(alignment: .lastTextBaseline) {
@@ -151,16 +172,27 @@ struct HistoryScene: View {
     }
     
     @ViewBuilder
-    private func timerRowView(for timekeeper: any TimelineEntry) -> some View {
-        RecentTimerRow(entry: timekeeper)
-            .transition(.scale.combined(with: .opacity))
-            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                if let timekeeper = timekeeper as? Timekeeper {
-                    Button("Delete", role: .destructive) {
-                        deleteTimer(timekeeper)
-                    }
+    private func timerRowView(for entry: any TimelineEntry) -> some View {
+        Group {
+            switch entry.type {
+            case .timekeeper:
+                RecentTimerRow(entry: entry)
+            case .sleep:
+                SleepRow(entry: entry)
+            case .workout:
+                // Future: WorkoutRow(entry: entry)
+                RecentTimerRow(entry: entry)
+            }
+        }
+        .transition(.scale.combined(with: .opacity))
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            // Only allow deletion of Timekeeper entries
+            if let timekeeper = entry as? Timekeeper {
+                Button("Delete", role: .destructive) {
+                    deleteTimer(timekeeper)
                 }
             }
+        }
     }
     
     // MARK: - Actions
@@ -181,6 +213,38 @@ struct HistoryScene: View {
         withAnimation {
             modelContext.delete(timer)
             try? modelContext.save()
+        }
+    }
+
+    // MARK: - Sleep Data Management
+
+    private func loadSleepData() {
+        guard HealthStore.shared.hasSleepPermissions() else {
+            logger.error("Has no permission. Will not load sleep data.")
+            return
+        }
+
+        logger.debug("Load sleep data")
+        
+        Task {
+            do {
+                // Fetch sleep data for the last 30 days
+                let endDate = Date()
+                let startDate = Calendar.current.date(byAdding: .day, value: -30, to: endDate) ?? endDate
+                let dateInterval = DateInterval(start: startDate, end: endDate)
+
+                let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
+
+                await MainActor.run {
+                    logger.debug("Sleep data. \(fetchedSleepData.count)")
+                    self.sleepData = fetchedSleepData
+                }
+            } catch(let error) {
+                logger.error("Error loading sleep data. Error: \(error)")
+                await MainActor.run {
+                    self.sleepData = []
+                }
+            }
         }
     }
 }

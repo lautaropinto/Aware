@@ -25,30 +25,35 @@ final class HealthStore: Sendable {
     // MARK: - Permission Management
 
     func hasSleepPermissions() -> Bool {
-        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
-            return false
-        }
-        return healthStore.authorizationStatus(for: sleepType) == .sharingAuthorized
+        let hasPermission = UserDefaults.standard.bool(for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+        logger.debug("UserDefaults sleep permission status: \(hasPermission)")
+
+        return hasPermission
     }
 
-    func requestSleepPermissions() async -> Bool {
-        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
-            logger.error("Failed to create sleep analysis type")
-            return false
+    func requestSleepPermissions() {
+        logger.debug("Trying to request sleep permissions")
+        guard HKHealthStore.isHealthDataAvailable() else {
+            logger.error("HealthKit is not available on this device")
+            UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+            
+            return
         }
 
-        do {
-            try await healthStore.requestAuthorization(toShare: [], read: [sleepType])
-            let granted = hasSleepPermissions()
-
-            UserDefaults.standard.set(true, forKey: .UserDefault.healthKitSleepPermissionsRequested)
-            UserDefaults.standard.set(granted, forKey: .UserDefault.healthKitSleepPermissionsGranted)
-
-            logger.info("Sleep permissions requested. Granted: \(granted)")
-            return granted
-        } catch {
-            logger.error("Failed to request sleep permissions: \(error)")
-            return false
+        let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+        let typesToRead: Set<HKObjectType> = [sleepType]
+        
+        healthStore.requestAuthorization(toShare: nil, read: typesToRead) { (success, error) in
+            if success {
+                logger.debug("HealthKit auth result: \(success)")
+                UserDefaults.standard.setBool(true, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+            } else if let error {
+                logger.error("HealthKit authorization failed: \(error.localizedDescription)")
+                UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+            } else {
+                logger.error("Permission denied")
+                UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+            }
         }
     }
 
@@ -86,12 +91,19 @@ final class HealthStore: Sendable {
 
                 if let error = error {
                     logger.error("Failed to fetch sleep data: \(error)")
+
+                    // Check if this is a permission error and reset the flag if needed
+                    if let hkError = error as? HKError,
+                       hkError.code == .errorAuthorizationDenied || hkError.code == .errorAuthorizationNotDetermined {
+                        logger.info("Sleep data access was denied or revoked, resetting permission flag")
+                        UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+                    }
+
                     continuation.resume(throwing: error)
                     return
                 }
 
                 let sleepSamples = samples?.compactMap { $0 as? HKCategorySample } ?? []
-                logger.info("Fetched \(sleepSamples.count) sleep samples")
 
                 // Cache the results
                 self?.cacheSleepData(sleepSamples, for: cacheKey)

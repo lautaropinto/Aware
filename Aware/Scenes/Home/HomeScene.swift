@@ -65,7 +65,6 @@ struct HomeScene: View {
                 .navigationTransition(.zoom(sourceID: "settings", in: settingsTransition))
         }
         .onAppear {
-            logger.debug("onAppear()")
             findCurrentTimer()
         }
         .onChange(of: currentTimer) { _, newValue in

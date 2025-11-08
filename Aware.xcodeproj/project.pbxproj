@@ -678,8 +678,7 @@
 				INFOPLIST_FILE = Aware/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "'Aware' uses HealthKit data to show you insights about how your time affects your state of mind.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "'Aware' uses HealthKit data to show you insights about how your time affects your state of mind.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "'Aware' uses HealthKit data to show you insights about how you use your time.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -720,8 +719,7 @@
 				INFOPLIST_FILE = Aware/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "'Aware' uses HealthKit data to show you insights about how your time affects your state of mind.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "'Aware' uses HealthKit data to show you insights about how your time affects your state of mind.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "'Aware' uses HealthKit data to show you insights about how you use your time.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
