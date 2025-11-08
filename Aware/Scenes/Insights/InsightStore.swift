@@ -40,6 +40,7 @@ class InsightStore {
     var selectedMonthDate: Date = Date().startOfMonth
     var selectedYearDate: Date = Date().startOfYear
     var showUntrackedTime: Bool = false
+    var sleepDataEnabled: Bool = false
 
     private var sleepData: [HKCategorySample] = []
 
@@ -55,8 +56,14 @@ class InsightStore {
         case 4: self.selectedTimeFrame = .allTime
         default: self.selectedTimeFrame = .daily(.now)
         }
-        
+
         showUntrackedTime = UserDefaults.standard.bool(forKey: .UserDefault.showUntrackedTime)
+
+        // Set default to true if not previously set
+        if !UserDefaults.standard.exists(key: .UserDefault.sleepDataInsights) {
+            UserDefaults.standard.set(true, forKey: .UserDefault.sleepDataInsights)
+        }
+        sleepDataEnabled = UserDefaults.standard.bool(forKey: .UserDefault.sleepDataInsights)
     }
 
     func setModelContext(_ context: ModelContext) {
@@ -201,6 +208,12 @@ class InsightStore {
     // MARK: - Sleep Data Management
 
     func loadSleepData() {
+        guard sleepDataEnabled else {
+            logger.debug("Sleep data disabled by user preference.")
+            sleepData = []
+            return
+        }
+
         guard HealthStore.shared.hasSleepPermissions() else {
             logger.debug("No sleep permissions. Will not load sleep data.")
             sleepData = []
@@ -234,6 +247,15 @@ class InsightStore {
                     self.sleepData = []
                 }
             }
+        }
+    }
+
+    func updateSleepDataVisibility(to isEnabled: Bool) {
+        sleepDataEnabled = isEnabled
+        if isEnabled {
+            loadSleepData()
+        } else {
+            sleepData = []
         }
     }
 }

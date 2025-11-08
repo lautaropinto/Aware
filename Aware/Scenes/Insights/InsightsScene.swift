@@ -36,6 +36,11 @@ struct InsightsScene: View {
             }
             .applyBackgroundGradient()
             .navigationTitle("Insights")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    DataToggleButton()
+                }
+            }
         }
         .onAppear {
             insightStore.setModelContext(modelContext)

@@ -13,5 +13,6 @@ extension String {
         static let selectedTimeFrame = "aware-insights-selectedTimeFrame"
         static let healthKitSleepPermissionsRequested = "aware-healthkit-sleep-permissions-requested"
         static let healthKitSleepPermissionsGranted = "aware-healthkit-sleep-permissions-granted"
+        static let sleepDataInsights = "sleepDataInsights"
     }
 }
