@@ -13,21 +13,6 @@ import OSLog
 
 private var logger = Logger(subsystem: "HistoryScene", category: "Scene")
 
-// Untracked time entry for display in history
-private struct UntrackedTimeEntry: TimelineEntry {
-    let id = UUID()
-    let duration: TimeInterval
-    let gapStart: Date
-    let gapEnd: Date
-
-    var name: String { "Untracked" }
-    var creationDate: Date { gapStart }
-    var startTime: Date? { gapStart }
-    var endTime: Date? { gapEnd }
-    var swiftUIColor: Color { .gray }
-    var image: String { "clock" }
-    var type: TimelineEntryType { .timekeeper }
-}
 
 // Aggregated sleep entry for a single day
 private struct DailySleepEntry: TimelineEntry {
@@ -100,16 +85,15 @@ struct HistoryScene: View {
         return result
     }
     
-    // Group entries by day and insert untracked time indicators
+    // Group entries by day
     private var groupedEntries: [Date: [any TimelineEntry]] {
         let grouped = Dictionary(grouping: filteredTimers) { entry in
             Calendar.current.startOfDay(for: entry.creationDate)
         }
 
-        // Sort entries and insert untracked time indicators
+        // Sort entries
         return grouped.mapValues { entries in
-            let sortedEntries = entries.sorted(by: { $0.creationDate < $1.creationDate })
-            return insertUntrackedTimeIndicators(in: sortedEntries).reversed()
+            entries.sorted(by: { $0.creationDate > $1.creationDate })
         }
     }
     
@@ -121,56 +105,10 @@ struct HistoryScene: View {
         groupedEntries[date] ?? []
     }
     
-    private func insertUntrackedTimeIndicators(in entries: [any TimelineEntry]) -> [any TimelineEntry] {
-        guard entries.count > 1 else { return entries }
-
-        var result: [any TimelineEntry] = []
-
-        for i in 0..<entries.count {
-            result.append(entries[i])
-
-            // Check for gap to next entry
-            if i < entries.count - 1 {
-                let currentEntry = entries[i]
-                let nextEntry = entries[i + 1]
-
-                // Determine end time of current entry
-                let currentEndTime: Date?
-                if let timekeeper = currentEntry as? Timekeeper {
-                    currentEndTime = timekeeper.endTime ?? timekeeper.creationDate
-                } else {
-                    currentEndTime = currentEntry.endTime ?? currentEntry.creationDate
-                }
-
-                // Determine start time of next entry
-                let nextStartTime = nextEntry.startTime ?? nextEntry.creationDate
-
-                if let endTime = currentEndTime {
-                    let gap = nextStartTime.timeIntervalSince(endTime)
-
-                    // Only show gap if it's more than 10 minutes (600 seconds)
-                    if gap > 600 {
-                        let untrackedEntry = UntrackedTimeEntry(
-                            duration: gap,
-                            gapStart: endTime,
-                            gapEnd: nextStartTime
-                        )
-                        result.append(untrackedEntry)
-                    }
-                }
-            }
-        }
-
-        return result
-    }
 
     private func totalElapsedTime(for date: Date) -> String {
         let timers = sortedTimers(for: date)
         let totalTime = timers.reduce(0) { partialResult, timer in
-            // Exclude untracked time entries from total calculation
-            if timer is UntrackedTimeEntry {
-                return partialResult
-            }
             return partialResult + timer.duration
         }
 
@@ -286,20 +224,14 @@ struct HistoryScene: View {
     @ViewBuilder
     private func timerRowView(for entry: any TimelineEntry) -> some View {
         Group {
-            if let untrackedEntry = entry as? UntrackedTimeEntry {
-                UntrackedTimeIndicator(duration: untrackedEntry.duration)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-            } else {
-                switch entry.type {
-                case .timekeeper:
-                    RecentTimerRow(entry: entry)
-                case .sleep:
-                    SleepRow(entry: entry)
-                case .workout:
-                    // Future: WorkoutRow(entry: entry)
-                    RecentTimerRow(entry: entry)
-                }
+            switch entry.type {
+            case .timekeeper:
+                RecentTimerRow(entry: entry)
+            case .sleep:
+                SleepRow(entry: entry)
+            case .workout:
+                // Future: WorkoutRow(entry: entry)
+                RecentTimerRow(entry: entry)
             }
         }
         .transition(.scale.combined(with: .opacity))
