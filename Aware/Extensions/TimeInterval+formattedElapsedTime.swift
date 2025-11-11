@@ -8,6 +8,8 @@
 import Foundation
 
 extension TimeInterval {
+    public static var halfHour = 1800.0
+    
     public var formattedElapsedTime: String {
         let time = self
         let hours = Int(time) / 3600

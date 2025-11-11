@@ -106,13 +106,20 @@ struct HistoryScene: View {
     }
     
 
-    private func totalElapsedTime(for date: Date) -> String {
+    private func totalIntentionalTimeInSeconds(for date: Date) -> TimeInterval {
         let timers = sortedTimers(for: date)
-        let totalTime = timers.reduce(0) { partialResult, timer in
-            return partialResult + timer.duration
+        return timers.reduce(0) { partialResult, timer in
+            // Only count Timekeeper entries (intentional time tracking)
+            if timer is Timekeeper {
+                return partialResult + timer.duration
+            }
+            return partialResult
         }
+    }
 
-        return TimeInterval(floatLiteral: totalTime).formattedElapsedTime
+    private func totalIntentionalTime(for date: Date) -> String {
+        let totalTime = totalIntentionalTimeInSeconds(for: date)
+        return TimeInterval(floatLiteral: totalTime).compactFormattedTime
     }
     
     private var hasFilteredResults: Bool {
@@ -206,14 +213,15 @@ struct HistoryScene: View {
                             .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                     }
                 } header: {
-                    HStack(alignment: .lastTextBaseline) {
+                    VStack(alignment: .leading) {
                         Text("\(date.smartFormattedDate)")
-                        Text("Total time: \(totalElapsedTime(for: date))")
-                            .font(.caption2.italic())
-                            .opacity(0.8)
-                            .contentTransition(.numericText())
+                        if totalIntentionalTimeInSeconds(for: date) > .halfHour {
+                            Text("\(totalIntentionalTime(for: date)) spent with intention")
+                                .font(.caption2.italic())
+                                .opacity(0.8)
+                                .contentTransition(.numericText())
+                        }
                     }
-                    .padding(.bottom, 8)
                 }
             }
         }
