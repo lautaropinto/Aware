@@ -27,11 +27,14 @@ extension TimeInterval {
         let time = self
         let hours = Int(time) / 3600
         let minutes = Int(time) % 3600 / 60
+        let seconds = Int(time) % 60
 
         if hours > 0 {
             return "\(hours)h \(String(format: "%02d", minutes))m"
+        } else if minutes > 0 {
+            return "\(String(format: "%02d", minutes))mins"
         } else {
-            return "\(minutes)m"
+            return "0mins \(String(format: "%02d", seconds))secs"
         }
     }
 }
