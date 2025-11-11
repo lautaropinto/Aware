@@ -76,13 +76,11 @@ struct HistoryScene: View {
         return entries
     }
 
-    // Filter timers based on tag selection (sleep data has no tags, so always included)
+    // Filter timers based on tag selection
     private var filteredTimers: [any TimelineEntry] {
         guard let selectedTag = selectedTag else { return combinedEntries }
-        let filteredTimers = allTimers.filter { $0.mainTag?.id == selectedTag.id }
-        var result: [any TimelineEntry] = filteredTimers
-        result.append(contentsOf: aggregatedSleepEntries)
-        return result
+        // When filtering by tag, only show Timekeeper entries with that tag (exclude HealthKit data)
+        return allTimers.filter { $0.mainTag?.id == selectedTag.id }
     }
     
     // Group entries by day

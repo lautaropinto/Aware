@@ -50,7 +50,7 @@ struct TagForm: View {
                             SFSymbolPicker(selection: $tagImage)
                         }
                     
-                    TextField("Enter tag name", text: $tagName)
+                    TextField("Enter activity name", text: $tagName)
                         .font(.body)
                 }
                 
@@ -59,7 +59,7 @@ struct TagForm: View {
                     
                     // Color Preview
                     HStack {
-                        Text("Tag Color")
+                        Text("Activity Color")
                             .font(.headline)
                             .fontWeight(.semibold)
                         

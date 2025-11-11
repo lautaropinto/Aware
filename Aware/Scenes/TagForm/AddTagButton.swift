@@ -24,10 +24,6 @@ struct AddTagButton: View {
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.background)
         }
-//        .frame(width: 30.0, height: 30.0)
-//        .buttonStyle(.borderedProminent)
-//        .tint(.primary)
-//        .clipShape(Circle())
         .sheet(isPresented: $isShowingTagForm) {
             TagForm()
         }
