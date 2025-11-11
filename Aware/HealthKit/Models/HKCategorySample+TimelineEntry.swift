@@ -23,23 +23,8 @@ extension HKCategorySample: @retroactive TimelineEntry {
         guard categoryType.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue else {
             return "Unknown"
         }
-
-        switch HKCategoryValueSleepAnalysis(rawValue: value) {
-        case .inBed:
-            return "In Bed"
-        case .asleepCore:
-            return "Core Sleep"
-        case .asleepDeep:
-            return "Deep Sleep"
-        case .asleepREM:
-            return "REM Sleep"
-        case .awake:
-            return "Awake"
-        case .asleepUnspecified:
-            return "Sleep"
-        default:
-            return "Sleep"
-        }
+        
+        return "Sleep"
     }
 
     public var creationDate: Date {
@@ -71,7 +56,6 @@ extension HKCategorySample: @retroactive TimelineEntry {
         guard categoryType.identifier == HKCategoryTypeIdentifier.sleepAnalysis.rawValue else {
             return "questionmark"
         }
-
         
         return "moon.fill"
     }

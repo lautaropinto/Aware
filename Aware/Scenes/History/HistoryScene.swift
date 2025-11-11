@@ -13,6 +13,27 @@ import OSLog
 
 private var logger = Logger(subsystem: "HistoryScene", category: "Scene")
 
+// Aggregated sleep entry for a single day
+private struct DailySleepEntry: TimelineEntry {
+    let id = UUID()
+    let date: Date
+    let totalDuration: TimeInterval
+    let startTime: Date?
+    let endTime: Date?
+
+    var name: String { "Sleep" }
+    var creationDate: Date { date }
+    var duration: TimeInterval { totalDuration }
+    var swiftUIColor: Color {
+        if let color = Color(hex: .sleepColor) {
+            return color
+        }
+        return .blue
+    }
+    var image: String { "moon.fill" }
+    var type: TimelineEntryType { .sleep }
+}
+
 struct HistoryScene: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage(.UserDefault.hasGrantedSleepReadPermission) var hasSleepPermission: Bool = false
@@ -24,11 +45,33 @@ struct HistoryScene: View {
 
     @State private var selectedTag: Tag?
     @State private var sleepData: [HKCategorySample] = []
-    
-    // Combine timers and sleep data
+
+    // Aggregate sleep data by day into single entries
+    private var aggregatedSleepEntries: [DailySleepEntry] {
+        let groupedSleep = Dictionary(grouping: sleepData) { sample in
+            Calendar.current.startOfDay(for: sample.startDate)
+        }
+
+        return groupedSleep.compactMap { (date, samples) -> DailySleepEntry? in
+            guard !samples.isEmpty else { return nil }
+
+            let totalDuration = samples.reduce(0) { $0 + $1.duration }
+            let earliestStart = samples.min(by: { $0.startDate < $1.startDate })?.startDate
+            let latestEnd = samples.max(by: { $0.endDate < $1.endDate })?.endDate
+
+            return DailySleepEntry(
+                date: date,
+                totalDuration: totalDuration,
+                startTime: earliestStart,
+                endTime: latestEnd
+            )
+        }
+    }
+
+    // Combine timers and aggregated sleep data
     private var combinedEntries: [any TimelineEntry] {
         var entries: [any TimelineEntry] = allTimers
-        entries.append(contentsOf: sleepData)
+        entries.append(contentsOf: aggregatedSleepEntries)
         return entries
     }
 
@@ -37,7 +80,7 @@ struct HistoryScene: View {
         guard let selectedTag = selectedTag else { return combinedEntries }
         let filteredTimers = allTimers.filter { $0.mainTag?.id == selectedTag.id }
         var result: [any TimelineEntry] = filteredTimers
-        result.append(contentsOf: sleepData)
+        result.append(contentsOf: aggregatedSleepEntries)
         return result
     }
     
@@ -46,8 +89,8 @@ struct HistoryScene: View {
         let grouped = Dictionary(grouping: filteredTimers) { entry in
             Calendar.current.startOfDay(for: entry.creationDate)
         }
-        
-        // Sort entries within each group once during grouping
+
+        // Sort entries within each group
         return grouped.mapValues { entries in
             entries.sorted(by: { $0.creationDate > $1.creationDate })
         }
