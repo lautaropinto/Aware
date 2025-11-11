@@ -15,6 +15,7 @@ private var logger = Logger(subsystem: "HistoryScene", category: "Scene")
 
 struct HistoryScene: View {
     @Environment(\.modelContext) private var modelContext
+    @AppStorage(.UserDefault.hasGrantedSleepReadPermission) var hasSleepPermission: Bool = false
     
     @Query private var tags: [Tag]
     @Query(
@@ -219,7 +220,7 @@ struct HistoryScene: View {
     // MARK: - Sleep Data Management
 
     private func loadSleepData() {
-        guard HealthStore.shared.hasSleepPermissions() else {
+        guard self.hasSleepPermission else {
             logger.error("Has no permission. Will not load sleep data.")
             return
         }

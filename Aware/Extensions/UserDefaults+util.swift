@@ -185,18 +185,3 @@ extension UserDefaults {
         keys.forEach { removeObject(forKey: $0) }
     }
 }
-
-// MARK: - UserDefaults Keys Management
-extension UserDefaults {
-    
-    /// A namespace for organizing UserDefaults keys
-    struct Keys {
-        // Add your app-specific keys here, for example:
-        // static let userName = "user_name"
-        // static let isFirstLaunch = "is_first_launch"
-        // static let lastSyncDate = "last_sync_date"
-
-        // HealthKit permissions
-        static let hasGrantedSleepReadPermission = "has_granted_sleep_read_permission"
-    }
-}

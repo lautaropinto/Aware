@@ -8,18 +8,19 @@
 import SwiftUI
 
 struct HealthKitButton: View {
-    @State private var showHealthKitPermissionSheet = false
-    @State private var healthKitTrigger = false
-    
     @Environment(\.openURL) private var openURL
-    
+    @AppStorage(.UserDefault.hasGrantedSleepReadPermission) var hasSleepPermission: Bool = false
+    @State private var healthKitTrigger = false
+
     var body: some View {
         Button {
-            if HealthStore.shared.hasSleepPermissions() {
+            guard !self.hasSleepPermission else { return }
+            
+            if self.hasSleepPermission {
                 let settingsURL = URL(string: UIApplication.openSettingsURLString)!
                 openURL(settingsURL)
             } else {
-                showHealthKitPermissionSheet = true
+                healthKitTrigger.toggle()
             }
         } label: {
             HStack {
@@ -28,33 +29,21 @@ struct HealthKitButton: View {
                 
                 Spacer()
                 
-                if HealthStore.shared.hasSleepPermissions() {
+                if self.hasSleepPermission {
                     Text("Connected")
                         .foregroundStyle(.green)
                 } else {
                     Text("Not Connected")
                         .foregroundStyle(.secondary)
+                    Image(systemName: "arrow.up.right")
+                        .imageScale(.small)
+                        .foregroundStyle(Color.secondary)
                 }
-                Image(systemName: "arrow.up.right")
-                    .imageScale(.small)
-                    .foregroundStyle(Color.secondary)
             }
             .listRowBackground(Color.gray.opacity(0.1))
         }
         .listRowBackground(Color.gray.opacity(0.1))
         .healthKitSetUp(trigger: $healthKitTrigger)
-        .sheet(isPresented: $showHealthKitPermissionSheet) {
-            HealthKitPermissionSheet(
-                isPresented: $showHealthKitPermissionSheet,
-                onSetupNow: {
-                    healthKitTrigger.toggle()
-                    showHealthKitPermissionSheet = false
-                },
-                onSetupLater: {
-                    showHealthKitPermissionSheet = false
-                }
-            )
-        }
     }
 }
 

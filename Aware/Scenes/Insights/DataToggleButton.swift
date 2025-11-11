@@ -9,16 +9,8 @@ import SwiftUI
 
 struct DataToggleButton: View {
     @Environment(InsightStore.self) private var insightStore
-    @State private var sleepDataEnabled: Bool = UserDefaults.standard.bool(forKey: .UserDefault.sleepDataInsights)
-    @State private var hasSleepPermissions: Bool = false
-
-    init() {
-        // Set default to true if not previously set
-        if !UserDefaults.standard.exists(key: .UserDefault.sleepDataInsights) {
-            UserDefaults.standard.set(true, forKey: .UserDefault.sleepDataInsights)
-            _sleepDataEnabled = State(initialValue: true)
-        }
-    }
+    @AppStorage(.UserDefault.hasGrantedSleepReadPermission) private var hasSleepPermissions: Bool = false
+    @AppStorage(.UserDefault.sleepDataInsights) private var sleepDataEnabled: Bool = true
 
     var body: some View {
         Group {
@@ -40,10 +32,6 @@ struct DataToggleButton: View {
                         .foregroundColor(.primary)
                 }
             }
-        }
-        .onAppear {
-            sleepDataEnabled = UserDefaults.standard.bool(forKey: .UserDefault.sleepDataInsights)
-            hasSleepPermissions = HealthStore.shared.hasSleepPermissions()
         }
     }
 

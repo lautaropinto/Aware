@@ -23,9 +23,8 @@ final class HealthStore: Sendable {
     private init() { }
 
     // MARK: - Permission Management
-
     func hasSleepPermissions() -> Bool {
-        let hasPermission = UserDefaults.standard.bool(for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+        let hasPermission = UserDefaults.standard.bool(for: .UserDefault.hasGrantedSleepReadPermission)
         logger.debug("UserDefaults sleep permission status: \(hasPermission)")
 
         return hasPermission
@@ -35,7 +34,7 @@ final class HealthStore: Sendable {
         logger.debug("Trying to request sleep permissions")
         guard HKHealthStore.isHealthDataAvailable() else {
             logger.error("HealthKit is not available on this device")
-            UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+            UserDefaults.standard.setBool(false, for: .UserDefault.hasGrantedSleepReadPermission)
             
             return
         }
@@ -46,13 +45,13 @@ final class HealthStore: Sendable {
         healthStore.requestAuthorization(toShare: nil, read: typesToRead) { (success, error) in
             if success {
                 logger.debug("HealthKit auth result: \(success)")
-                UserDefaults.standard.setBool(true, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+                UserDefaults.standard.setBool(true, for: .UserDefault.hasGrantedSleepReadPermission)
             } else if let error {
                 logger.error("HealthKit authorization failed: \(error.localizedDescription)")
-                UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+                UserDefaults.standard.setBool(false, for: .UserDefault.hasGrantedSleepReadPermission)
             } else {
                 logger.error("Permission denied")
-                UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+                UserDefaults.standard.setBool(false, for: .UserDefault.hasGrantedSleepReadPermission)
             }
         }
     }
@@ -96,7 +95,7 @@ final class HealthStore: Sendable {
                     if let hkError = error as? HKError,
                        hkError.code == .errorAuthorizationDenied || hkError.code == .errorAuthorizationNotDetermined {
                         logger.info("Sleep data access was denied or revoked, resetting permission flag")
-                        UserDefaults.standard.setBool(false, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+                        UserDefaults.standard.setBool(false, for: .UserDefault.hasGrantedSleepReadPermission)
                     }
 
                     continuation.resume(throwing: error)

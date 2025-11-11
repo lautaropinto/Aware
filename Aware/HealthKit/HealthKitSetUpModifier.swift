@@ -32,7 +32,7 @@ private struct HealthKitSetUpModifier: ViewModifier {
                 switch result {
                 case .success:
                     logger.info("HealthKit permissions granted correctly.")
-                    UserDefaults.standard.setBool(true, for: UserDefaults.Keys.hasGrantedSleepReadPermission)
+                    UserDefaults.standard.setBool(true, for: .UserDefault.hasGrantedSleepReadPermission)
                 case .failure(let error):
                     let errorString = String(describing: error)
                     logger.error("Error when requesting HealthKit read authorizations: \(errorString)")
