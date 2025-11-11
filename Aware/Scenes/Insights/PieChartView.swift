@@ -96,7 +96,7 @@ struct PieChartView: View {
                                 .foregroundColor(.primary)
 
                             HStack(alignment: .center) {
-                                Text(item.totalTime.formattedElapsedTime)
+                                Text(item.totalTime.compactFormattedTime)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                     .contentTransition(.numericText())
