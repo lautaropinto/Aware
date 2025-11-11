@@ -59,7 +59,7 @@ struct SleepRow: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(entry.swiftUIColor.opacity(0.64), lineWidth: 1.2)
+                .stroke(entry.swiftUIColor.gradient.opacity(0.64), lineWidth: 1.2)
         )
     }
 }
