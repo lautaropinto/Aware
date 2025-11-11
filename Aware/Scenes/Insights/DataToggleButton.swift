@@ -22,7 +22,7 @@ struct DataToggleButton: View {
                         }) {
                             Label(
                                 sleepDataEnabled ? "Hide Sleep Data" : "Show Sleep Data",
-                                systemImage: sleepDataEnabled ? "moon.fill" : "moon"
+                                systemImage: sleepDataEnabled ? "bed.double.fill" : "moon"
                             )
                         }
                     }

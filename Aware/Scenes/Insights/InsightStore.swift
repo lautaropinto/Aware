@@ -153,7 +153,7 @@ class InsightStore {
 
         // Add sleep data as a synthetic tag if we have sleep data
         if sleepTotalTime > 0 {
-            let sleepTag = Tag(name: "Sleep", color: .sleepColor, image: "moon.fill")
+            let sleepTag = Tag(name: "Sleep", color: .sleepColor, image: "bed.double.fill")
             let sleepTagData = (tag: sleepTag, totalTime: sleepTotalTime, sessionCount: sleepSessionCount)
             tagData[sleepTag.id] = sleepTagData
         }

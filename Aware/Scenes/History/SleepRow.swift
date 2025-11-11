@@ -91,6 +91,6 @@ private struct PreviewSleepEntry: TimelineEntry {
         return end.timeIntervalSince(start)
     }
     var swiftUIColor: SwiftUI.Color { .blue }
-    var image: String { "moon.fill" }
+    var image: String { "bed.double.fill" }
     var type: TimelineEntryType { .sleep }
 }

@@ -57,7 +57,7 @@ extension HKCategorySample: @retroactive TimelineEntry {
             return "questionmark"
         }
         
-        return "moon.fill"
+        return "bed.double.fill"
     }
 
     public var type: TimelineEntryType {

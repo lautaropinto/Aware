@@ -30,7 +30,7 @@ private struct DailySleepEntry: TimelineEntry {
         }
         return .blue
     }
-    var image: String { "moon.fill" }
+    var image: String { "bed.double.fill" }
     var type: TimelineEntryType { .sleep }
 }
 
