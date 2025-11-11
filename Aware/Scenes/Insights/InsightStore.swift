@@ -207,6 +207,22 @@ class InsightStore {
 
     // MARK: - Sleep Data Management
 
+    private func firstTimekeeperDate() -> Date? {
+        guard let modelContext = modelContext else { return nil }
+
+        let descriptor = FetchDescriptor<Timekeeper>(
+            sortBy: [SortDescriptor(\.creationDate, order: .forward)]
+        )
+
+        do {
+            let timers = try modelContext.fetch(descriptor)
+            return timers.first?.creationDate
+        } catch {
+            logger.error("Failed to fetch first timekeeper date: \(error)")
+            return nil
+        }
+    }
+
     func loadSleepData() {
         guard sleepDataEnabled else {
             logger.debug("Sleep data disabled by user preference.")
@@ -220,6 +236,13 @@ class InsightStore {
             return
         }
 
+        // Don't load sleep data if there are no timekeepers
+        guard let firstDate = firstTimekeeperDate() else {
+            logger.debug("No timekeepers found. Will not load sleep data.")
+            sleepData = []
+            return
+        }
+
         logger.debug("Loading sleep data for insights")
 
         Task {
@@ -227,12 +250,13 @@ class InsightStore {
                 let dateInterval: DateInterval
 
                 if let range = currentTimeFrame.dateRange {
-                    dateInterval = DateInterval(start: range.start, end: range.end)
+                    // For specific time ranges, limit to first Timekeeper date if earlier
+                    let startDate = max(range.start, firstDate)
+                    dateInterval = DateInterval(start: startDate, end: range.end)
                 } else {
-                    // All time - fetch last 90 days as a reasonable limit
+                    // All time - fetch from first Timekeeper date onwards
                     let endDate = Date()
-                    let startDate = Calendar.current.date(byAdding: .day, value: -90, to: endDate) ?? endDate
-                    dateInterval = DateInterval(start: startDate, end: endDate)
+                    dateInterval = DateInterval(start: firstDate, end: endDate)
                 }
 
                 let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)

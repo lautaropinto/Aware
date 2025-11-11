@@ -262,19 +262,30 @@ struct HistoryScene: View {
 
     // MARK: - Sleep Data Management
 
+    private func firstTimekeeperDate() -> Date? {
+        return allTimers.min(by: { $0.creationDate < $1.creationDate })?.creationDate
+    }
+
     private func loadSleepData() {
         guard self.hasSleepPermission else {
             logger.error("Has no permission. Will not load sleep data.")
             return
         }
 
+        // Don't load sleep data if there are no timekeepers
+        guard let firstDate = firstTimekeeperDate() else {
+            logger.debug("No timekeepers found. Will not load sleep data.")
+            sleepData = []
+            return
+        }
+
         logger.debug("Load sleep data")
-        
+
         Task {
             do {
-                // Fetch sleep data for the last 30 days
+                // Fetch sleep data only from the first Timekeeper date onwards
                 let endDate = Date()
-                let startDate = Calendar.current.date(byAdding: .day, value: -30, to: endDate) ?? endDate
+                let startDate = firstDate
                 let dateInterval = DateInterval(start: startDate, end: endDate)
 
                 let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
