@@ -51,9 +51,15 @@ struct SleepRow: View {
                 }
             }
         }
-        .listRowBackground(
-            ConcentricRectangle()
-                .fill(.ultraThinMaterial.opacity(0.3))
+        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(entry.swiftUIColor.opacity(0.15))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(entry.swiftUIColor.opacity(0.64), lineWidth: 1.2)
         )
     }
 }

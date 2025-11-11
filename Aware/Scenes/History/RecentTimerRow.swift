@@ -54,9 +54,12 @@ struct RecentTimerRow: View {
             }
         }
         }
-        .listRowBackground(
-            ConcentricRectangle()
-                .fill(.ultraThinMaterial.opacity(0.3))
+        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         )
         .onReceive(timeUpdateTimer) { _ in
             if let timekeeper = entry as? Timekeeper, timekeeper.isRunning {
