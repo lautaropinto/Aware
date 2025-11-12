@@ -19,7 +19,8 @@ private struct HealthKitSetUpModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         let readTypes: Set<HKObjectType> = [
-            HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+            HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!,
+            HKObjectType.workoutType(),
         ]
         
         content
@@ -33,6 +34,7 @@ private struct HealthKitSetUpModifier: ViewModifier {
                 case .success:
                     logger.info("HealthKit permissions granted correctly.")
                     UserDefaults.standard.setBool(true, for: .UserDefault.hasGrantedSleepReadPermission)
+                    UserDefaults.standard.setBool(true, for: .UserDefault.hasGrantedWorkoutReadPermission)
                 case .failure(let error):
                     let errorString = String(describing: error)
                     logger.error("Error when requesting HealthKit read authorizations: \(errorString)")

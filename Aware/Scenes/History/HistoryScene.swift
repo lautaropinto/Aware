@@ -35,10 +35,12 @@ private struct DailySleepEntry: TimelineEntry {
     var type: TimelineEntryType { .sleep }
 }
 
+
 struct HistoryScene: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage(.UserDefault.hasGrantedSleepReadPermission) var hasSleepPermission: Bool = false
-    
+    @AppStorage(.UserDefault.hasGrantedWorkoutReadPermission) var hasWorkoutPermission: Bool = false
+
     @Query private var tags: [Tag]
     @Query(
         sort: [SortDescriptor(\Timekeeper.creationDate, order: .reverse)]
@@ -46,6 +48,7 @@ struct HistoryScene: View {
 
     @State private var selectedTag: Tag?
     @State private var sleepData: [HKCategorySample] = []
+    @State private var workoutData: [HKWorkout] = []
 
     // Aggregate sleep data by day into single entries
     private var aggregatedSleepEntries: [DailySleepEntry] {
@@ -69,10 +72,12 @@ struct HistoryScene: View {
         }
     }
 
-    // Combine timers and aggregated sleep data
+
+    // Combine timers, aggregated sleep data, and individual workout data
     private var combinedEntries: [any TimelineEntry] {
         var entries: [any TimelineEntry] = allTimers
         entries.append(contentsOf: aggregatedSleepEntries)
+        entries.append(contentsOf: workoutData)
         return entries
     }
 
@@ -149,9 +154,11 @@ struct HistoryScene: View {
         }
         .onAppear {
             loadSleepData()
+            loadWorkoutData()
         }
         .onChange(of: selectedTag) { _, _ in
             loadSleepData()
+            loadWorkoutData()
         }
     }
     
@@ -236,8 +243,7 @@ struct HistoryScene: View {
             case .sleep:
                 SleepRow(entry: entry)
             case .workout:
-                // Future: WorkoutRow(entry: entry)
-                RecentTimerRow(entry: entry)
+                WorkoutRow(entry: entry)
             }
         }
         .transition(.scale.combined(with: .opacity))
@@ -310,6 +316,43 @@ struct HistoryScene: View {
                 logger.error("Error loading sleep data. Error: \(error)")
                 await MainActor.run {
                     self.sleepData = []
+                }
+            }
+        }
+    }
+
+    private func loadWorkoutData() {
+        guard self.hasWorkoutPermission else {
+            logger.error("Has no permission. Will not load workout data.")
+            return
+        }
+
+        // Don't load workout data if there are no timekeepers
+        guard let firstDate = firstTimekeeperDate() else {
+            logger.debug("No timekeepers found. Will not load workout data.")
+            workoutData = []
+            return
+        }
+
+        logger.debug("Load workout data")
+
+        Task {
+            do {
+                // Fetch workout data only from the first Timekeeper date onwards
+                let endDate = Date()
+                let startDate = firstDate
+                let dateInterval = DateInterval(start: startDate, end: endDate)
+
+                let fetchedWorkoutData = try await HealthStore.shared.fetchWorkoutData(for: dateInterval)
+
+                await MainActor.run {
+                    logger.debug("Workout data. \(fetchedWorkoutData.count)")
+                    self.workoutData = fetchedWorkoutData
+                }
+            } catch(let error) {
+                logger.error("Error loading workout data. Error: \(error)")
+                await MainActor.run {
+                    self.workoutData = []
                 }
             }
         }
