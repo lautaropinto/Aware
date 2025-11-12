@@ -46,10 +46,12 @@ struct InsightsScene: View {
             insightStore.setModelContext(modelContext)
             insightStore.updateTimeFrame(to: store.selectedTimeFrame)
             insightStore.loadSleepData()
+            insightStore.loadWorkoutData()
         }
         .onChange(of: store.selectedTimeFrame) { _, newTimeFrame in
             insightStore.updateTimeFrame(to: newTimeFrame)
             insightStore.loadSleepData()
+            insightStore.loadWorkoutData()
         }
         .onChange(of: store.showUntrackedTime) { _, newValue in
             insightStore.updateShowUntrackedTime(to: newValue)

@@ -14,6 +14,7 @@ extension String {
         static let healthKitSleepPermissionsRequested = "aware-healthkit-sleep-permissions-requested"
         static let healthKitSleepPermissionsGranted = "aware-healthkit-sleep-permissions-granted"
         static let sleepDataInsights = "sleepDataInsights"
+        static let workoutDataInsights = "workoutDataInsights"
         static let hasGrantedSleepReadPermission = "has_granted_sleep_read_permission"
         static let hasGrantedWorkoutReadPermission = "has_granted_workout_read_permission"
     }

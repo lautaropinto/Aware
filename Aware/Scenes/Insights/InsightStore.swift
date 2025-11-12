@@ -41,8 +41,10 @@ class InsightStore {
     var selectedYearDate: Date = Date().startOfYear
     var showUntrackedTime: Bool = false
     var sleepDataEnabled: Bool = false
+    var workoutDataEnabled: Bool = false
 
     private var sleepData: [HKCategorySample] = []
+    private var workoutData: [HKWorkout] = []
 
     private var modelContext: ModelContext?
 
@@ -64,6 +66,12 @@ class InsightStore {
             UserDefaults.standard.set(true, forKey: .UserDefault.sleepDataInsights)
         }
         sleepDataEnabled = UserDefaults.standard.bool(forKey: .UserDefault.sleepDataInsights)
+
+        // Set default to true for workout data if not previously set
+        if !UserDefaults.standard.exists(key: .UserDefault.workoutDataInsights) {
+            UserDefaults.standard.set(true, forKey: .UserDefault.workoutDataInsights)
+        }
+        workoutDataEnabled = UserDefaults.standard.bool(forKey: .UserDefault.workoutDataInsights)
     }
 
     func setModelContext(_ context: ModelContext) {
@@ -106,6 +114,7 @@ class InsightStore {
             let timers = try modelContext.fetch(descriptor)
             var entries: [any TimelineEntry] = timers
             entries.append(contentsOf: sleepData)
+            entries.append(contentsOf: workoutData)
             var tagData = aggregateTimersByTag(entries)
 
             // Add untracked time for daily view
@@ -126,6 +135,8 @@ class InsightStore {
         var tagData: [UUID: (tag: Tag, totalTime: TimeInterval, sessionCount: Int)] = [:]
         var sleepTotalTime: TimeInterval = 0
         var sleepSessionCount: Int = 0
+        var workoutTotalTime: TimeInterval = 0
+        var workoutSessionCount: Int = 0
 
         for entry in entries {
             switch entry.type {
@@ -144,18 +155,25 @@ class InsightStore {
                 sleepSessionCount += 1
 
             case .workout:
-                // Future: handle workout data
-                break
+                workoutTotalTime += entry.duration
+                workoutSessionCount += 1
             }
         }
 
-        let totalTrackedTime = tagData.values.reduce(0) { $0 + $1.totalTime } + sleepTotalTime
+        let totalTrackedTime = tagData.values.reduce(0) { $0 + $1.totalTime } + sleepTotalTime + workoutTotalTime
 
         // Add sleep data as a synthetic tag if we have sleep data
         if sleepTotalTime > 0 {
             let sleepTag = Tag(name: "Sleep", color: .sleepColor, image: "bed.double.fill")
             let sleepTagData = (tag: sleepTag, totalTime: sleepTotalTime, sessionCount: sleepSessionCount)
             tagData[sleepTag.id] = sleepTagData
+        }
+
+        // Add workout data as a synthetic tag if we have workout data
+        if workoutTotalTime > 0 {
+            let workoutTag = Tag(name: "Workouts", color: .workoutColor, image: "figure.mixed.cardio")
+            let workoutTagData = (tag: workoutTag, totalTime: workoutTotalTime, sessionCount: workoutSessionCount)
+            tagData[workoutTag.id] = workoutTagData
         }
 
         // Calculate percentages based on total time (including untracked for daily view)
@@ -280,6 +298,68 @@ class InsightStore {
             loadSleepData()
         } else {
             sleepData = []
+        }
+    }
+
+    // MARK: - Workout Data Management
+
+    func loadWorkoutData() {
+        guard workoutDataEnabled else {
+            logger.debug("Workout data disabled by user preference.")
+            workoutData = []
+            return
+        }
+
+        guard HealthStore.shared.hasWorkoutPermissions() else {
+            logger.debug("No workout permissions. Will not load workout data.")
+            workoutData = []
+            return
+        }
+
+        // Don't load workout data if there are no timekeepers
+        guard let firstDate = firstTimekeeperDate() else {
+            logger.debug("No timekeepers found. Will not load workout data.")
+            workoutData = []
+            return
+        }
+
+        logger.debug("Loading workout data for insights")
+
+        Task {
+            do {
+                let dateInterval: DateInterval
+
+                if let range = currentTimeFrame.dateRange {
+                    // For specific time ranges, limit to first Timekeeper date if earlier
+                    let startDate = max(range.start, firstDate)
+                    dateInterval = DateInterval(start: startDate, end: range.end)
+                } else {
+                    // All time - fetch from first Timekeeper date onwards
+                    let endDate = Date()
+                    dateInterval = DateInterval(start: firstDate, end: endDate)
+                }
+
+                let fetchedWorkoutData = try await HealthStore.shared.fetchWorkoutData(for: dateInterval)
+
+                await MainActor.run {
+                    logger.debug("Loaded \(fetchedWorkoutData.count) workout entries for insights")
+                    self.workoutData = fetchedWorkoutData
+                }
+            } catch {
+                logger.error("Error loading workout data for insights: \(error)")
+                await MainActor.run {
+                    self.workoutData = []
+                }
+            }
+        }
+    }
+
+    func updateWorkoutDataVisibility(to isEnabled: Bool) {
+        workoutDataEnabled = isEnabled
+        if isEnabled {
+            loadWorkoutData()
+        } else {
+            workoutData = []
         }
     }
 }
