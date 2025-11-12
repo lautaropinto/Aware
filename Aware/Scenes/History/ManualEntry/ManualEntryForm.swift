@@ -33,12 +33,14 @@ extension ManualEntryButton {
                 Form {
                     IntentionPicker()
                         .listRowBackground(Color.clear)
+                        .rounded()
                     
                     Section {
                         DatePicker("Started at", selection: $startTime)
                         DatePicker("Ended at", selection: $endTime)
                     }
                     .listRowBackground(Color.gray.opacity(0.1))
+                    .rounded()
                     
                     HStack {
                         Text("Time spent")
@@ -61,6 +63,7 @@ extension ManualEntryButton {
                         Button("Cancel") {
                             dismiss()
                         }
+                        .rounded()
                     }
                     
                     ToolbarItem(placement: .confirmationAction) {
@@ -68,6 +71,7 @@ extension ManualEntryButton {
                             saveTimer()
                         }
                         .disabled(!canSave)
+                        .rounded()
                     }
                 }
             }

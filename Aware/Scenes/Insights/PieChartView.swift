@@ -94,6 +94,7 @@ struct PieChartView: View {
                             Text(item.tag.name)
                                 .font(.body.weight(.medium))
                                 .foregroundColor(.primary)
+                                .rounded()
 
                             HStack(alignment: .center) {
                                 Text(item.totalTime.compactFormattedTime)
@@ -119,6 +120,7 @@ struct PieChartView: View {
                             .font(.body.weight(.semibold))
                             .foregroundColor(.primary)
                             .contentTransition(.numericText())
+                            .rounded()
                     }
                 }
             }
@@ -156,6 +158,7 @@ struct PieChartView: View {
                     .foregroundColor(.secondary)
             }
         }
+        .rounded()
     }
 }
 

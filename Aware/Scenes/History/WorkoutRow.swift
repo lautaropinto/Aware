@@ -31,6 +31,7 @@ struct WorkoutRow: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .rounded()
             }
 
             Spacer()
@@ -40,6 +41,7 @@ struct WorkoutRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
+                    .rounded()
 
                 HStack {
                     Text("Imported from Health")

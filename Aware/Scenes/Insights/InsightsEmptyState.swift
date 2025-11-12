@@ -76,6 +76,7 @@ struct InsightsEmptyState: View {
                 .contentTransition(.numericText())
                 .frame(height: 56)
         }
+        .rounded()
         .frame(height: 320)
         .animation(.spring(), value: store.currentTimeFrame)
     }

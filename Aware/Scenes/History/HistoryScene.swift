@@ -49,6 +49,9 @@ struct HistoryScene: View {
     @State private var selectedTag: Tag?
     @State private var sleepData: [HKCategorySample] = []
     @State private var workoutData: [HKWorkout] = []
+    @State private var isLoadingSleepData = false
+    @State private var isLoadingWorkoutData = false
+    @State private var hasLoadedHealthData = false
 
     // Aggregate sleep data by day into single entries
     private var aggregatedSleepEntries: [DailySleepEntry] {
@@ -147,18 +150,19 @@ struct HistoryScene: View {
             .navigationTitle("History")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    ManualEntryButton()
+                    HStack {
+                        if isLoadingSleepData || isLoadingWorkoutData {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                        ManualEntryButton()
+                    }
                 }
             }
             .applyBackgroundGradient()
         }
         .onAppear {
-            loadSleepData()
-            loadWorkoutData()
-        }
-        .onChange(of: selectedTag) { _, _ in
-            loadSleepData()
-            loadWorkoutData()
+            loadHealthDataIfNeeded()
         }
     }
     
@@ -170,6 +174,7 @@ struct HistoryScene: View {
                 allFilterButton
                 tagFilterButtons
             }
+            .rounded()
             .padding(.horizontal, 16)
         }
         .padding(.vertical, 16)
@@ -220,6 +225,7 @@ struct HistoryScene: View {
                 } header: {
                     VStack(alignment: .leading) {
                         Text("\(date.smartFormattedDate)")
+                            .rounded()
                         if totalIntentionalTimeInSeconds(for: date) > .halfHour {
                             Text("\(totalIntentionalTime(for: date)) spent with intention")
                                 .font(.caption2.italic())
@@ -284,11 +290,30 @@ struct HistoryScene: View {
         return allTimers.min(by: { $0.creationDate < $1.creationDate })?.creationDate
     }
 
-    private func loadSleepData() {
-        guard self.hasSleepPermission else {
-            logger.error("Has no permission. Will not load sleep data.")
-            return
+    // MARK: - Optimized Data Loading
+
+    private func loadHealthDataIfNeeded() {
+        guard !hasLoadedHealthData else { return }
+        hasLoadedHealthData = true
+
+        Task {
+            await withTaskGroup(of: Void.self) { group in
+                // Load sleep data in background
+                group.addTask {
+                    await self.loadSleepData()
+                }
+
+                // Load workout data in background
+                group.addTask {
+                    await self.loadWorkoutData()
+                }
+            }
         }
+    }
+
+    @MainActor
+    private func loadSleepData() async {
+        guard hasSleepPermission && !isLoadingSleepData else { return }
 
         // Don't load sleep data if there are no timekeepers
         guard let firstDate = firstTimekeeperDate() else {
@@ -297,35 +322,27 @@ struct HistoryScene: View {
             return
         }
 
-        logger.debug("Load sleep data")
+        isLoadingSleepData = true
 
-        Task {
-            do {
-                // Fetch sleep data only from the first Timekeeper date onwards
-                let endDate = Date()
-                let startDate = firstDate
-                let dateInterval = DateInterval(start: startDate, end: endDate)
+        do {
+            let endDate = Date()
+            let dateInterval = DateInterval(start: firstDate, end: endDate)
 
-                let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
+            let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
 
-                await MainActor.run {
-                    logger.debug("Sleep data. \(fetchedSleepData.count)")
-                    self.sleepData = fetchedSleepData
-                }
-            } catch(let error) {
-                logger.error("Error loading sleep data. Error: \(error)")
-                await MainActor.run {
-                    self.sleepData = []
-                }
-            }
+            logger.debug("Sleep data. \(fetchedSleepData.count)")
+            self.sleepData = fetchedSleepData
+        } catch {
+            logger.error("Error loading sleep data. Error: \(error)")
+            self.sleepData = []
         }
+
+        isLoadingSleepData = false
     }
 
-    private func loadWorkoutData() {
-        guard self.hasWorkoutPermission else {
-            logger.error("Has no permission. Will not load workout data.")
-            return
-        }
+    @MainActor
+    private func loadWorkoutData() async {
+        guard hasWorkoutPermission && !isLoadingWorkoutData else { return }
 
         // Don't load workout data if there are no timekeepers
         guard let firstDate = firstTimekeeperDate() else {
@@ -334,28 +351,22 @@ struct HistoryScene: View {
             return
         }
 
-        logger.debug("Load workout data")
+        isLoadingWorkoutData = true
 
-        Task {
-            do {
-                // Fetch workout data only from the first Timekeeper date onwards
-                let endDate = Date()
-                let startDate = firstDate
-                let dateInterval = DateInterval(start: startDate, end: endDate)
+        do {
+            let endDate = Date()
+            let dateInterval = DateInterval(start: firstDate, end: endDate)
 
-                let fetchedWorkoutData = try await HealthStore.shared.fetchWorkoutData(for: dateInterval)
+            let fetchedWorkoutData = try await HealthStore.shared.fetchWorkoutData(for: dateInterval)
 
-                await MainActor.run {
-                    logger.debug("Workout data. \(fetchedWorkoutData.count)")
-                    self.workoutData = fetchedWorkoutData
-                }
-            } catch(let error) {
-                logger.error("Error loading workout data. Error: \(error)")
-                await MainActor.run {
-                    self.workoutData = []
-                }
-            }
+            logger.debug("Workout data. \(fetchedWorkoutData.count)")
+            self.workoutData = fetchedWorkoutData
+        } catch {
+            logger.error("Error loading workout data. Error: \(error)")
+            self.workoutData = []
         }
+
+        isLoadingWorkoutData = false
     }
 }
 

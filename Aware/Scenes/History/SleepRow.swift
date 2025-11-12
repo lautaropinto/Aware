@@ -21,14 +21,16 @@ struct SleepRow: View {
 
                 VStack(alignment: .leading, spacing: 4.0) {
                     Text(entry.name)
-                        .font(.subheadline)
+                        .font(.headline)
                         .fontWeight(.medium)
+                        .rounded()
 
                     if let startTime = entry.startTime,
                        let endTime = entry.endTime {
                         Text("\(startTime.formattedTime) - \(endTime.formattedTime)")
                             .font(.caption2.bold())
                             .foregroundStyle(.secondary)
+                            .rounded()
                     }
                 }
             }
@@ -40,6 +42,7 @@ struct SleepRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
+                    .rounded()
                 
                 HStack {
                     Text("Imported from Health")

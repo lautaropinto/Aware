@@ -23,9 +23,9 @@ struct QuickStartSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
+            HStack(alignment: .center) {
                 Text("Set Your Intention")
-                    .font(.headline)
+                    .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(isDisabled ? .secondary : .primary)
                     .animation(.easeInOut(duration: 0.3), value: isDisabled)
@@ -63,6 +63,7 @@ struct QuickStartSection: View {
                 }
             )
         }
+        .rounded()
         .alert("Delete activity", isPresented: $showingDeleteAlert) {
             DeleteAlert
         } message: {
@@ -245,6 +246,7 @@ struct DraggableTagButton: View {
             .animation(.easeInOut(duration: 0.2), value: isDragging)
             .animation(.easeInOut(duration: 0.3), value: isDisabled)
         }
+        .rounded()
         .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
         .disabled(isDisabled)
         .draggable(tag) {

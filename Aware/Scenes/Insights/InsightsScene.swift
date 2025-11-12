@@ -26,6 +26,7 @@ struct InsightsScene: View {
                         selectedYearDate: $store.selectedYearDate,
                         showUntrackedTime: $store.showUntrackedTime
                     )
+                    .rounded()
                     
                     PieChartView(
                         data: insightStore.getInsightData(),
@@ -38,20 +39,23 @@ struct InsightsScene: View {
             .navigationTitle("Insights")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    DataToggleButton()
+                    HStack {
+                        if insightStore.isLoadingSleepData || insightStore.isLoadingWorkoutData {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                        DataToggleButton()
+                    }
                 }
             }
         }
         .onAppear {
             insightStore.setModelContext(modelContext)
             insightStore.updateTimeFrame(to: store.selectedTimeFrame)
-            insightStore.loadSleepData()
-            insightStore.loadWorkoutData()
+            insightStore.loadHealthDataIfNeeded()
         }
         .onChange(of: store.selectedTimeFrame) { _, newTimeFrame in
             insightStore.updateTimeFrame(to: newTimeFrame)
-            insightStore.loadSleepData()
-            insightStore.loadWorkoutData()
         }
         .onChange(of: store.showUntrackedTime) { _, newValue in
             insightStore.updateShowUntrackedTime(to: newValue)

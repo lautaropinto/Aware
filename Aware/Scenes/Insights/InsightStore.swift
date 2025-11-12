@@ -42,9 +42,12 @@ class InsightStore {
     var showUntrackedTime: Bool = false
     var sleepDataEnabled: Bool = false
     var workoutDataEnabled: Bool = false
+    var isLoadingSleepData: Bool = false
+    var isLoadingWorkoutData: Bool = false
 
     private var sleepData: [HKCategorySample] = []
     private var workoutData: [HKWorkout] = []
+    private var hasLoadedHealthData: Bool = false
 
     private var modelContext: ModelContext?
 
@@ -80,6 +83,40 @@ class InsightStore {
 
     func updateTimeFrame(to newFrame: TimeFrame) {
         currentTimeFrame = newFrame
+
+        // Only reload if data has been loaded before
+        if hasLoadedHealthData {
+            Task {
+                await loadHealthDataInBackground()
+            }
+        }
+    }
+
+    func loadHealthDataIfNeeded() {
+        guard !hasLoadedHealthData else { return }
+        hasLoadedHealthData = true
+
+        Task {
+            await loadHealthDataInBackground()
+        }
+    }
+
+    private func loadHealthDataInBackground() async {
+        await withTaskGroup(of: Void.self) { group in
+            // Load sleep data in background
+            if sleepDataEnabled {
+                group.addTask {
+                    await self.loadSleepDataAsync()
+                }
+            }
+
+            // Load workout data in background
+            if workoutDataEnabled {
+                group.addTask {
+                    await self.loadWorkoutDataAsync()
+                }
+            }
+        }
     }
 
     func updateShowUntrackedTime(to newValue: Bool) {
@@ -243,10 +280,18 @@ class InsightStore {
 
     func loadSleepData() {
         guard sleepDataEnabled else {
-            logger.debug("Sleep data disabled by user preference.")
             sleepData = []
             return
         }
+
+        Task {
+            await loadSleepDataAsync()
+        }
+    }
+
+    @MainActor
+    private func loadSleepDataAsync() async {
+        guard sleepDataEnabled && !isLoadingSleepData else { return }
 
         guard HealthStore.shared.hasSleepPermissions() else {
             logger.debug("No sleep permissions. Will not load sleep data.")
@@ -261,41 +306,39 @@ class InsightStore {
             return
         }
 
-        logger.debug("Loading sleep data for insights")
+        isLoadingSleepData = true
 
-        Task {
-            do {
-                let dateInterval: DateInterval
+        do {
+            let dateInterval: DateInterval
 
-                if let range = currentTimeFrame.dateRange {
-                    // For specific time ranges, limit to first Timekeeper date if earlier
-                    let startDate = max(range.start, firstDate)
-                    dateInterval = DateInterval(start: startDate, end: range.end)
-                } else {
-                    // All time - fetch from first Timekeeper date onwards
-                    let endDate = Date()
-                    dateInterval = DateInterval(start: firstDate, end: endDate)
-                }
-
-                let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
-
-                await MainActor.run {
-                    logger.debug("Loaded \(fetchedSleepData.count) sleep entries for insights")
-                    self.sleepData = fetchedSleepData
-                }
-            } catch {
-                logger.error("Error loading sleep data for insights: \(error)")
-                await MainActor.run {
-                    self.sleepData = []
-                }
+            if let range = currentTimeFrame.dateRange {
+                // For specific time ranges, limit to first Timekeeper date if earlier
+                let startDate = max(range.start, firstDate)
+                dateInterval = DateInterval(start: startDate, end: range.end)
+            } else {
+                // All time - fetch from first Timekeeper date onwards
+                let endDate = Date()
+                dateInterval = DateInterval(start: firstDate, end: endDate)
             }
+
+            let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
+
+            logger.debug("Loaded \(fetchedSleepData.count) sleep entries for insights")
+            self.sleepData = fetchedSleepData
+        } catch {
+            logger.error("Error loading sleep data for insights: \(error)")
+            self.sleepData = []
         }
+
+        isLoadingSleepData = false
     }
 
     func updateSleepDataVisibility(to isEnabled: Bool) {
         sleepDataEnabled = isEnabled
         if isEnabled {
-            loadSleepData()
+            Task {
+                await loadSleepDataAsync()
+            }
         } else {
             sleepData = []
         }
@@ -305,10 +348,18 @@ class InsightStore {
 
     func loadWorkoutData() {
         guard workoutDataEnabled else {
-            logger.debug("Workout data disabled by user preference.")
             workoutData = []
             return
         }
+
+        Task {
+            await loadWorkoutDataAsync()
+        }
+    }
+
+    @MainActor
+    private func loadWorkoutDataAsync() async {
+        guard workoutDataEnabled && !isLoadingWorkoutData else { return }
 
         guard HealthStore.shared.hasWorkoutPermissions() else {
             logger.debug("No workout permissions. Will not load workout data.")
@@ -323,41 +374,39 @@ class InsightStore {
             return
         }
 
-        logger.debug("Loading workout data for insights")
+        isLoadingWorkoutData = true
 
-        Task {
-            do {
-                let dateInterval: DateInterval
+        do {
+            let dateInterval: DateInterval
 
-                if let range = currentTimeFrame.dateRange {
-                    // For specific time ranges, limit to first Timekeeper date if earlier
-                    let startDate = max(range.start, firstDate)
-                    dateInterval = DateInterval(start: startDate, end: range.end)
-                } else {
-                    // All time - fetch from first Timekeeper date onwards
-                    let endDate = Date()
-                    dateInterval = DateInterval(start: firstDate, end: endDate)
-                }
-
-                let fetchedWorkoutData = try await HealthStore.shared.fetchWorkoutData(for: dateInterval)
-
-                await MainActor.run {
-                    logger.debug("Loaded \(fetchedWorkoutData.count) workout entries for insights")
-                    self.workoutData = fetchedWorkoutData
-                }
-            } catch {
-                logger.error("Error loading workout data for insights: \(error)")
-                await MainActor.run {
-                    self.workoutData = []
-                }
+            if let range = currentTimeFrame.dateRange {
+                // For specific time ranges, limit to first Timekeeper date if earlier
+                let startDate = max(range.start, firstDate)
+                dateInterval = DateInterval(start: startDate, end: range.end)
+            } else {
+                // All time - fetch from first Timekeeper date onwards
+                let endDate = Date()
+                dateInterval = DateInterval(start: firstDate, end: endDate)
             }
+
+            let fetchedWorkoutData = try await HealthStore.shared.fetchWorkoutData(for: dateInterval)
+
+            logger.debug("Loaded \(fetchedWorkoutData.count) workout entries for insights")
+            self.workoutData = fetchedWorkoutData
+        } catch {
+            logger.error("Error loading workout data for insights: \(error)")
+            self.workoutData = []
         }
+
+        isLoadingWorkoutData = false
     }
 
     func updateWorkoutDataVisibility(to isEnabled: Bool) {
         workoutDataEnabled = isEnabled
         if isEnabled {
-            loadWorkoutData()
+            Task {
+                await loadWorkoutDataAsync()
+            }
         } else {
             workoutData = []
         }

@@ -46,6 +46,7 @@ struct DataToggleButton: View {
                         .font(.title3)
                         .foregroundColor(.primary)
                 }
+                .rounded()
             }
         }
     }

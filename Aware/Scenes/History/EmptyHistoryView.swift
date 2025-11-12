@@ -25,6 +25,7 @@ struct EmptyHistoryView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
+        .rounded()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.clear)
     }
