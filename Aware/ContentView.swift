@@ -40,7 +40,9 @@ struct ContentView: View {
                 checkHealthKitPermissions()
             }
         }
-        .sheet(isPresented: $showHealthKitPermissionSheet) {
+        .sheet(isPresented: $showHealthKitPermissionSheet, onDismiss: {
+            UserDefaults.standard.set(true, forKey: .UserDefault.healthKitSleepPermissionsRequested)
+        }) {
             HealthKitPermissionSheet(
                 isPresented: $showHealthKitPermissionSheet,
                 onSetupNow: {
