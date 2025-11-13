@@ -11,9 +11,14 @@ import AwareData
 
 struct RecentTimerRow: View {
     let entry: any TimelineEntry
-    
-    @State private var currentTime = Date()
-    private let timeUpdateTimer = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var timerInterval: ClosedRange<Date>? {
+        guard let timekeeper = entry as? Timekeeper,
+              timekeeper.isRunning,
+              let startTime = timekeeper.startTime else { return nil }
+        let adjustedStartTime = startTime.addingTimeInterval(-timekeeper.totalElapsedSeconds)
+        return adjustedStartTime...Date.distantFuture
+    }
     
     var body: some View {
         HStack {
@@ -39,12 +44,19 @@ struct RecentTimerRow: View {
             
             if let timekeeper = entry as? Timekeeper {
                VStack(alignment: .trailing, spacing: 4) {
-                Text(displayTime)
-                    .font(timekeeper.isRunning ? .subheadline.bold() : .subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(timekeeper.isRunning ? .primary : .secondary)
-                    .contentTransition(.numericText())
-                    .animation(.spring, value: displayTime)
+                Group {
+                    if let timerInterval = timerInterval {
+                        Text(timerInterval: timerInterval, countsDown: false)
+                            .contentTransition(.numericText())
+                            .fontDesign(.monospaced)
+                    } else {
+                        Text(displayTime)
+                            .contentTransition(.numericText())
+                    }
+                }
+                .font(timekeeper.isRunning ? .subheadline.bold() : .subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(timekeeper.isRunning ? .primary : .secondary)
                 
                 if timekeeper.isRunning {
                     Text("Running")
@@ -61,21 +73,13 @@ struct RecentTimerRow: View {
                 .fill(.ultraThinMaterial)
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         )
-        .onReceive(timeUpdateTimer) { _ in
-            if let timekeeper = entry as? Timekeeper, timekeeper.isRunning {
-                currentTime = Date()
-            }
-        }
     }
-    
+
     private var displayTime: String {
         guard let timekeeper = entry as? Timekeeper else {
             return "00:00"
         }
-        // Reference currentTime to ensure this property depends on it for running timers
-        if timekeeper.isRunning {
-            _ = currentTime
-        }
+        // For non-running timers, use the formatted elapsed time
         return timekeeper.formattedElapsedTime
     }
 }
