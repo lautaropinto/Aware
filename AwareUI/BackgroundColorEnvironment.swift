@@ -22,14 +22,9 @@ public class CrossConfig {
 // Protocol to avoid circular dependencies
 internal protocol GradientEngineProtocol {
     func updateBaseColor(_ color: Color)
-    func startAnimationIfNeeded()
-    func stopAnimation()
-    func pauseAnimation()
-    func resumeAnimation()
 
     var meshPoints: [SIMD2<Float>] { get }
     var meshColors: [Color] { get }
-    var isAnimating: Bool { get }
 }
 
 public extension EnvironmentValues {

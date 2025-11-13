@@ -17,9 +17,6 @@ private class GradientEngine: @MainActor GradientEngineProtocol {
     ]
 
     private(set) var meshColors: [Color] = []
-    private(set) var isAnimating = false
-
-    private var animationTask: Task<Void, Never>?
     private var currentBaseColor: Color = .accentColor
 
     init() {
@@ -39,58 +36,6 @@ private class GradientEngine: @MainActor GradientEngineProtocol {
 
         withAnimation(.easeInOut(duration: 0.6)) {
             meshColors = newColors
-        }
-    }
-
-    func startAnimationIfNeeded() {
-        guard !isAnimating else { return }
-        isAnimating = true
-
-        animationTask = Task {
-            await startContinuousAnimation()
-        }
-    }
-
-    func stopAnimation() {
-        isAnimating = false
-        animationTask?.cancel()
-        animationTask = nil
-    }
-
-    func pauseAnimation() {
-        // Pause animation but keep state
-        animationTask?.cancel()
-        animationTask = nil
-        // Don't set isAnimating to false - we want to resume where we left off
-    }
-
-    func resumeAnimation() {
-        guard isAnimating else { return }
-        // Resume animation if it was running
-        animationTask = Task {
-            await startContinuousAnimation()
-        }
-    }
-
-    private func startContinuousAnimation() async {
-        while isAnimating && !Task.isCancelled {
-            await shuffleColors()
-
-            // Wait for 10 seconds before next shuffle
-            do {
-                try await Task.sleep(for: .seconds(10))
-            } catch {
-                // Task was cancelled, exit gracefully
-                break
-            }
-        }
-    }
-
-    private func shuffleColors() async {
-        guard isAnimating && !Task.isCancelled else { return }
-
-        withAnimation(.easeInOut(duration: 10.0)) {
-            meshColors = meshColors.randomSample(count: meshColors.count)
         }
     }
 
@@ -134,6 +79,7 @@ private struct SharedBackgroundMeshGradient: View {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
+        let _ = Self._printChanges()
         Group {
             if let engine = engine {
                 MeshGradient(
@@ -163,14 +109,6 @@ private struct SharedBackgroundMeshGradient: View {
                 setupEngine()
             }
         }
-        .onDisappear {
-            // Don't stop the engine - let it continue for other views
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            Task { @MainActor in
-                handleScenePhaseChange(newPhase)
-            }
-        }
     }
 
     @MainActor
@@ -182,21 +120,6 @@ private struct SharedBackgroundMeshGradient: View {
 
         if let sharedEngine = config.gradientEngine as? GradientEngine {
             engine = sharedEngine
-            sharedEngine.startAnimationIfNeeded()
-        }
-    }
-
-    @MainActor
-    private func handleScenePhaseChange(_ phase: ScenePhase) {
-        guard let engine = config.gradientEngine else { return }
-
-        switch phase {
-        case .active:
-            engine.resumeAnimation()
-        case .inactive, .background:
-            engine.pauseAnimation()
-        @unknown default:
-            break
         }
     }
 }
