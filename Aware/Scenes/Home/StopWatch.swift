@@ -23,32 +23,23 @@ public struct StopWatch: View {
     
     @Environment(\.appConfig) private var appConfig
     @Environment(ActivityStore.self) private var activityStore
-    
-    @State private var currentTime = Date()
-    
-    private let timeUpdateTimer = Foundation.Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-    // Computed property that forces recalculation when currentTime changes
+
+    private var timerInterval: ClosedRange<Date>? {
+        guard let timer = timer, timer.isRunning, let startTime = timer.startTime else { return nil }
+        let adjustedStartTime = startTime.addingTimeInterval(-timer.totalElapsedSeconds)
+        return adjustedStartTime...Date.distantFuture
+    }
+
     private var displayTime: String {
         guard let timer = timer else { return "00:00" }
-        
-        // Reference currentTime to ensure this property depends on it
-        _ = currentTime
-        
-        if timer.isRunning {
-            let elapsed = timer.totalElapsedSeconds + (timer.startTime?.timeIntervalSinceNow ?? 0) * -1
-            let hours = Int(elapsed) / 3600
-            let minutes = Int(elapsed) % 3600 / 60
-            let seconds = Int(elapsed) % 60
-            
-            if hours > 0 {
-                return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-            } else {
-                return String(format: "%02d:%02d", minutes, seconds)
-            }
-        } else {
+
+        if !timer.isRunning {
             return timer.formattedElapsedTime
         }
+
+        // For running timers, we'll use the Text with timerInterval
+        // This is just a fallback that shouldn't be used
+        return timer.formattedElapsedTime
     }
     
     private var hasActiveTimer: Bool {
@@ -56,6 +47,7 @@ public struct StopWatch: View {
     }
     
     public var body: some View {
+        let _ = Self._printChanges()
         VStack(spacing: 16) {
             // Timer Info (shows when active)
             VStack(spacing: 8) {
@@ -78,12 +70,19 @@ public struct StopWatch: View {
             .animation(.spring(response: 0.6, dampingFraction: 0.8), value: hasActiveTimer)
             
             // Time Display
-            Text(displayTime)
-                .font(.system(size: 48, weight: .bold, design: .monospaced))
-                .foregroundColor(hasActiveTimer ? (timer?.isRunning == true ? .primary : .secondary) : .secondary)
-                .contentTransition(.numericText())
-                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: displayTime)
-                .animation(.easeInOut(duration: 0.3), value: hasActiveTimer)
+            Group {
+                if let timerInterval = timerInterval {
+                    Text(timerInterval: timerInterval, countsDown: false)
+                        .contentTransition(.numericText())
+                        .fontDesign(.monospaced)
+                } else {
+                    Text(displayTime)
+                        .contentTransition(.numericText())
+                }
+            }
+            .font(.system(size: 48, weight: .bold, design: .monospaced))
+            .foregroundColor(hasActiveTimer ? (timer?.isRunning == true ? .primary : .secondary) : .secondary)
+            .animation(.easeInOut(duration: 0.3), value: hasActiveTimer)
             
             // Control Buttons (shows when active)
             VStack(spacing: 16) {
@@ -164,12 +163,5 @@ public struct StopWatch: View {
         .glassEffect(.clear, in: .containerRelative)
         #endif
         .animation(.spring(response: 0.8, dampingFraction: 0.8), value: hasActiveTimer)
-        .onReceive(timeUpdateTimer) { _ in
-//            if let timer {
-//                activityStore.updateLiveActivity(elapsedTime: timer.currentElapsedTime)
-//            }
-            
-            currentTime = Date()
-        }
     }
 }
