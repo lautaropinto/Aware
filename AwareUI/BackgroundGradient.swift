@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@MainActor
 @Observable
 private class GradientEngine: @MainActor GradientEngineProtocol {
     private(set) var meshPoints: [SIMD2<Float>] = [
@@ -76,10 +75,8 @@ private struct SharedBackgroundMeshGradient: View {
     let config: CrossConfig
 
     @State private var engine: GradientEngine?
-    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        let _ = Self._printChanges()
         Group {
             if let engine = engine {
                 MeshGradient(
@@ -88,9 +85,7 @@ private struct SharedBackgroundMeshGradient: View {
                     points: engine.meshPoints,
                     colors: engine.meshColors
                 )
-                #if !os(watchOS)
                 .colorEffect(ShaderLibrary.parameterizedNoise(.float(0.5), .float(1.0), .float(0.2)))
-                #endif
                 .ignoresSafeArea()
                 .onChange(of: config.backgroundColor) { _, newColor in
                     Task { @MainActor in
@@ -98,28 +93,10 @@ private struct SharedBackgroundMeshGradient: View {
                     }
                 }
             } else {
-                // Fallback while engine is being set up
                 Rectangle()
                     .fill(config.backgroundColor.mix(with: .black, by: 0.7))
                     .ignoresSafeArea()
             }
-        }
-        .onAppear {
-            Task { @MainActor in
-                setupEngine()
-            }
-        }
-    }
-
-    @MainActor
-    private func setupEngine() {
-        if config.gradientEngine == nil {
-            let newEngine = GradientEngine()
-            config.setGradientEngine(newEngine)
-        }
-
-        if let sharedEngine = config.gradientEngine as? GradientEngine {
-            engine = sharedEngine
         }
     }
 }

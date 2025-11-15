@@ -17,7 +17,7 @@ extension Timekeeper: TimelineEntry {
 }
 
 @Model
-public class Timekeeper: Codable {
+public class Timekeeper: Codable, Equatable {
     enum CodingKeys: String, CodingKey {
         case id, name, creationDate, startTime, endTime, totalElapsedSeconds, isRunning, tags
     }
@@ -48,12 +48,14 @@ public class Timekeeper: Codable {
     }
     
     public func start() {
+        print("Sran - start ")
         guard !isRunning else { return }
         startTime = Date()
         isRunning = true
     }
     
     public func stop() {
+        print("Sran - stop")
         if isRunning, let startTime = startTime {
             // Timer is running, add current session time
             let sessionTime = Date().timeIntervalSince(startTime)
@@ -66,6 +68,7 @@ public class Timekeeper: Codable {
     }
     
     public func pause() {
+        print("Sran - pause ")
         guard isRunning, let startTime = startTime else { return }
         let sessionTime = Date().timeIntervalSince(startTime)
         totalElapsedSeconds += sessionTime
@@ -74,12 +77,14 @@ public class Timekeeper: Codable {
     }
     
     public func resume() {
+        print("Sran - resume ")
         guard !isRunning else { return }
         startTime = Date()
         isRunning = true
     }
     
     public func reset() {
+        print("Sran - reset ")
         startTime = nil
         endTime = nil
         totalElapsedSeconds = 0

@@ -11,7 +11,7 @@ import SwiftData
 // MARK: - Tag Model
 
 @Model
-public class Tag: Codable {
+public class Tag: Codable, Equatable {
     public var id: UUID = UUID()
     public var name: String = ""
     public var color: String = ""// Store color as hex string
@@ -64,17 +64,19 @@ public class Tag: Codable {
     }
     
     public var totalTimeSpent: TimeInterval {
-        guard let timers else { return 0 }
-        
-        return timers.reduce(0) { total, timekeeper in
-            total + timekeeper.totalElapsedSeconds
-        }
+        return 0
+//        guard let timers else { return 0 }
+//        
+//        return timers.reduce(0) { total, timekeeper in
+//            total + timekeeper.totalElapsedSeconds
+//        }
     }
     
     public var activeTimersCount: Int {
-        guard let timers else { return 0 }
-        
-        return timers.filter { $0.isRunning }.count
+        return 0
+//        guard let timers else { return 0 }
+//        
+//        return timers.filter { $0.isRunning }.count
     }
     
     public var formattedTotalTime: String {

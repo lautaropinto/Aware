@@ -13,10 +13,9 @@ import OSLog
 private var logger = Logger(subsystem: "Aware", category: "Intent Notification Receiver")
 
 private struct IntentNotificationModifier: ViewModifier {
-    static let today = Date.now.startOfDay
-    @Query(filter: #Predicate<Timekeeper> {
-        $0.creationDate >= today
-    }) var timers: [Timekeeper]
+    @Environment(Storage.self) private var storage
+    
+    var timers: [Timekeeper] { storage.timers }
     
     @Environment(LiveActivityStore.self) var activityStore
     
@@ -46,6 +45,14 @@ private struct IntentNotificationModifier: ViewModifier {
                 }
                 
                 handleResumeTimer(timerID: timerID)
+            }
+            .onAppear {
+                let today = Date.now.startOfDay
+                let predicate = #Predicate<Timekeeper> {
+                    $0.creationDate >= today
+                }
+                
+                storage.fetchTimers(predicate)
             }
     }
     

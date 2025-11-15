@@ -1,0 +1,12 @@
+//
+//  AnimationExtension.swift
+//  Aware
+//
+//  Created by Lautaro Pinto on 11/15/25.
+//
+
+import SwiftUI
+
+extension Animation {
+    static let stopWatch: Animation = .spring(duration: 0.4, bounce: 0.2)
+}

@@ -11,9 +11,9 @@ import StoreKit
 import AwareData
 
 struct RateAppPromptModifier: ViewModifier {
-    @Query(filter: #Predicate<Timekeeper> { $0.endTime != nil })
-    private var completedTimers: [Timekeeper]
-
+    @Environment(Storage.self) private var storage
+    
+    @State private var completedTimers: [Timekeeper] = []
     @State private var shouldShowPrompt = false
 
     private enum UserDefaultsKeys {
@@ -36,6 +36,10 @@ struct RateAppPromptModifier: ViewModifier {
             }
             .onReceive(NotificationCenter.default.publisher(for: .timerDidStop)) { _ in
                 checkAndShowPromptIfNeeded()
+            }
+            .onAppear {
+                let predicate = #Predicate<Timekeeper> { $0.endTime != nil }
+                self.completedTimers = storage.getTimers(predicate)
             }
     }
 

@@ -19,10 +19,9 @@ struct HomeScene: View {
     @Namespace private var settingsTransition
     
     var body: some View {
-        let _ = Self._printChanges()
         NavigationView {
             ScrollView {
-                LazyVStack(spacing: 24) {
+                VStack(spacing: 24) {
                     StopWatch()
                         .rateAppPrompt()
                         .padding(.horizontal)
@@ -31,9 +30,8 @@ struct HomeScene: View {
                 }
                 .padding()
             }
-//             Confirm that this is a problem
             .scrollBounceBehavior(.basedOnSize)
-            .applyBackgroundGradient()
+//            .applyBackgroundGradient()
             .navigationTitle("Timer")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
