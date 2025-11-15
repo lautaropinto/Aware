@@ -14,7 +14,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var slowlyAppear = false
-    @State private var activityStore = ActivityStore()
+    @State private var liveActivityStore = LiveActivityStore()
     @State private var showHealthKitPermissionSheet = false
     
     var body: some View {
@@ -35,7 +35,8 @@ struct ContentView: View {
         }
         .onAppear {
             slowlyAppear = onboardingCompleted
-            activityStore.modelContext = self.modelContext
+            liveActivityStore.modelContext = self.modelContext
+
             if onboardingCompleted {
                 checkHealthKitPermissions()
             }
@@ -67,7 +68,7 @@ struct ContentView: View {
                 }
                 .tag(0)
                 .setUpIntentNotificationListener()
-                .environment(activityStore)
+                .environment(liveActivityStore)
 
             HistoryScene()
                 .tabItem {

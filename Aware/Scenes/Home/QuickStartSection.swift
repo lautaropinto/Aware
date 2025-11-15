@@ -10,16 +10,21 @@ import SwiftData
 import AwareData
 
 struct QuickStartSection: View {
-    @Query(sort: \Tag.displayOrder) private var tags: [Tag]
     @Environment(\.modelContext) private var modelContext
-    let isDisabled: Bool
-    let onTagSelected: (Tag) -> Void
+    @Environment(\.appConfig) private var appConfig
+    @Environment(LiveActivityStore.self) private var liveActivity
+
+    @Query(sort: \Tag.displayOrder) private var tags: [Tag]
     
     @State private var draggedTag: Tag?
     @State private var tagMode: TagMode = .play
     @State private var showingDeleteAlert = false
     @State private var tagToDelete: Tag?
     @State private var tagToEdit: Tag?
+    
+    var isDisabled: Bool {
+        appConfig.isTimerRunning
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -50,7 +55,7 @@ struct QuickStartSection: View {
                     if !isDisabled {
                         switch tagMode {
                         case .play:
-                            onTagSelected(tag)
+                            createAndStartTimer(with: tag)
                         case .delete:
                             onDelete(tag)
                         case .edit:
@@ -75,35 +80,6 @@ struct QuickStartSection: View {
             tagToEdit = nil
         }) { tag in
             TagForm(tagToEdit: tag)
-        }
-    }
-    
-    private func reorderTags(sourceTag: Tag, targetTag: Tag) {
-        guard sourceTag.id != targetTag.id else { return }
-        
-        // Create a mutable copy of the current tags array
-        var reorderedTags = Array(tags)
-        
-        // Find the indices
-        guard let sourceIndex = reorderedTags.firstIndex(where: { $0.id == sourceTag.id }),
-              let targetIndex = reorderedTags.firstIndex(where: { $0.id == targetTag.id }) else {
-            return
-        }
-        
-        // Remove the source tag and insert it at the target position
-        let movedTag = reorderedTags.remove(at: sourceIndex)
-        reorderedTags.insert(movedTag, at: targetIndex)
-        
-        // Reassign displayOrder values based on the new positions
-        for (index, tag) in reorderedTags.enumerated() {
-            tag.displayOrder = index
-        }
-        
-        // Save the changes
-        do {
-            try modelContext.save()
-        } catch {
-            print("Failed to reorder tags: \(error)")
         }
     }
     
@@ -181,6 +157,45 @@ struct QuickStartSection: View {
             }
         }
     }
+    
+    private func createAndStartTimer(with tag: Tag) {
+        let timer = Timekeeper(name: "\(tag.name) Session", tags: [tag])
+        modelContext.insert(timer)
+        timer.start()
+        liveActivity.timer = timer
+        liveActivity.startLiveActivity(with: timer)
+        appConfig.isTimerRunning = true
+        try? modelContext.save()
+    }
+    
+    private func reorderTags(sourceTag: Tag, targetTag: Tag) {
+        guard sourceTag.id != targetTag.id else { return }
+        
+        // Create a mutable copy of the current tags array
+        var reorderedTags = Array(tags)
+        
+        // Find the indices
+        guard let sourceIndex = reorderedTags.firstIndex(where: { $0.id == sourceTag.id }),
+              let targetIndex = reorderedTags.firstIndex(where: { $0.id == targetTag.id }) else {
+            return
+        }
+        
+        // Remove the source tag and insert it at the target position
+        let movedTag = reorderedTags.remove(at: sourceIndex)
+        reorderedTags.insert(movedTag, at: targetIndex)
+        
+        // Reassign displayOrder values based on the new positions
+        for (index, tag) in reorderedTags.enumerated() {
+            tag.displayOrder = index
+        }
+        
+        // Save the changes
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to reorder tags: \(error)")
+        }
+    }
 }
 
 // MARK: - DraggableTagGrid Component
@@ -247,7 +262,7 @@ struct DraggableTagButton: View {
             .animation(.easeInOut(duration: 0.3), value: isDisabled)
         }
         .rounded()
-        .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
+//        .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
         .disabled(isDisabled)
         .draggable(tag) {
             // Drag preview

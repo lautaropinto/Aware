@@ -96,10 +96,10 @@
 		E96D582D2E82398E009B178D /* Exceptions for "Aware" folder in "WidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				LiveActivity/ActivityStore.swift,
 				LiveActivity/Intents/IntentNotifications.swift,
 				LiveActivity/Intents/StopLiveIntent.swift,
 				LiveActivity/LiveActivityAttributes.swift,
+				LiveActivity/LiveActivityStore.swift,
 			);
 			target = E95870CE2E814E56009E47C4 /* WidgetExtension */;
 		};

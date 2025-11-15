@@ -6,23 +6,21 @@
 //
 
 import SwiftUI
+import SwiftData
 import AwareData
 import OSLog
 
 private var logger = Logger(subsystem: "Aware", category: "iOS StopWatch")
 
 public struct StopWatch: View {
-    let timer: Timekeeper?
-    let onStateChange: () -> Void
-    
-    public init(timer: Timekeeper?,
-                onStateChange: @escaping () -> Void) {
-        self.timer = timer
-        self.onStateChange = onStateChange
-    }
-    
     @Environment(\.appConfig) private var appConfig
-    @Environment(ActivityStore.self) private var activityStore
+    @Environment(LiveActivityStore.self) private var activityStore
+    
+    @Query private var activeTimers: [Timekeeper]
+    
+    var timer: Timekeeper? {
+        activeTimers.first
+    }
 
     private var timerInterval: ClosedRange<Date>? {
         guard let timer = timer, timer.isRunning, let startTime = timer.startTime else { return nil }
@@ -46,18 +44,18 @@ public struct StopWatch: View {
         timer != nil
     }
     
+    public init() {
+        let predicate = #Predicate<Timekeeper> { $0.endTime == nil }
+        self._activeTimers = Query(filter: predicate)
+    }
+    
     public var body: some View {
         let _ = Self._printChanges()
         VStack(spacing: 16) {
-            // Timer Info (shows when active)
             VStack(spacing: 8) {
                 if let timer = timer {
                     Text(timer.name)
-                        #if os(watchOS)
-                        .font(.headline)
-                        #else
                         .font(.title2)
-                        #endif
                         .fontWeight(.semibold)
                         .fontDesign(.rounded)
                         .transition(.scale.combined(with: .opacity))
@@ -95,6 +93,7 @@ public struct StopWatch: View {
                             onAction: {
                                 logger.debug("Play/Pause tap")
                                 activityStore.timer = timer
+                                appConfig.isTimerRunning = true
                                 if let storedTimer = activityStore.timer {
                                     logger.debug("Activity stored name: \(storedTimer.name)")
                                 }
@@ -114,7 +113,6 @@ public struct StopWatch: View {
                                     timer.start()
                                     activityStore.startLiveActivity(with: timer)
                                 }
-                                onStateChange()
                             }
                         )
                         
@@ -125,11 +123,11 @@ public struct StopWatch: View {
                                 onAction: {
                                     withAnimation {
                                         appConfig.backgroundColor = .accentColor
+                                        appConfig.isTimerRunning = false
                                     }
                                     timer.stop()
                                     NotificationCenter.default.post(name: .timerDidStop, object: nil)
                                     activityStore.endLiveActivity()
-                                    onStateChange()
                                 }
                             )
                             .transition(.scale.combined(with: .opacity))
@@ -155,13 +153,25 @@ public struct StopWatch: View {
                     .transition(.opacity.combined(with: .scale))
             }
         }
-        #if os(watchOS)
-        .padding(12)
-        #else
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .center)
         .glassEffect(.clear, in: .containerRelative)
-        #endif
         .animation(.spring(response: 0.8, dampingFraction: 0.8), value: hasActiveTimer)
+        .onAppear() {
+            onAppear()
+        }
+    }
+    
+    private func onAppear() {
+        checkIfThereIsTimerRunning()
+    }
+    
+    private func checkIfThereIsTimerRunning() {
+        guard let timer else { return }
+        
+        appConfig.isTimerRunning = true
+        activityStore.timer = timer
+        logger.debug("Starting activity with timer: \(timer.formattedElapsedTime)")
+        activityStore.startLiveActivity(with: timer)
     }
 }

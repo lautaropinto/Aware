@@ -1,5 +1,5 @@
 //
-//  ActivityStore.swift
+//  LiveActivityStore.swift
 //  AwareWatchApp
 //
 //  Created by Lautaro Pinto on 9/22/25.
@@ -12,10 +12,10 @@ import AwareData
 import OSLog
 import SwiftData
 
-private var logger = Logger(subsystem: "Aware", category: "ActivityStore")
+private var logger = Logger(subsystem: "Aware", category: "LiveActivityStore")
 
 @Observable
-final class ActivityStore {
+final class LiveActivityStore {
     var timer: Timekeeper?
     var activity: Activity<TimerAttributes>? = nil
     var modelContext: ModelContext?
@@ -32,7 +32,7 @@ final class ActivityStore {
             return
         }
         
-        guard ActivityStore.getLiveActivity(for: timer.id) == nil else {
+        guard LiveActivityStore.getLiveActivity(for: timer.id) == nil else {
             let formattedElapsedTime = timer.totalElapsedSeconds.formattedElapsedTime
             let notRunningAction: IntentAction = timer.endTime == nil ? .pause : .stop
 

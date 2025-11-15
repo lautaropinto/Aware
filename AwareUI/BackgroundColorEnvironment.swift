@@ -4,6 +4,7 @@ import Observation
 
 @Observable
 public class CrossConfig {
+    public var isTimerRunning: Bool = false
     public var backgroundColor = Color.accentColor
 
     // Internal gradient engine - will be initialized by BackgroundGradient

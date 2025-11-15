@@ -18,7 +18,7 @@ private struct IntentNotificationModifier: ViewModifier {
         $0.creationDate >= today
     }) var timers: [Timekeeper]
     
-    @Environment(ActivityStore.self) var activityStore
+    @Environment(LiveActivityStore.self) var activityStore
     
     func body(content: Content) -> some View {
         let center = NotificationCenter.default
