@@ -102,10 +102,9 @@ struct DraggableTagButton: View {
             .animation(.easeInOut(duration: 0.3), value: isDisabled)
         }
         .rounded()
-//        .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
+        .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
         .disabled(isDisabled)
         .draggable(tag) {
-            // Drag preview
             HStack {
                 Circle()
                     .fill(tag.swiftUIColor)

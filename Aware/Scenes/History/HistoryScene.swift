@@ -49,6 +49,7 @@ struct HistoryScene: View {
     }
 
     private func updateHistoryData() {
+//        storage.fetchTimers()
         history.processData(
             timers: storage.timers,
             sleepData: storage.sleepData,

@@ -12,6 +12,7 @@ import HealthKit
 struct HistoryList: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(History.self) private var history
+    @Environment(Storage.self) private var storage
 
     private func sortedTimers(for date: Date) -> [any TimelineEntry] {
         history.sortedTimers(for: date)
@@ -90,6 +91,7 @@ struct HistoryList: View {
         withAnimation {
             modelContext.delete(timer)
             try? modelContext.save()
+            storage.fetchTimers()
         }
     }
 }

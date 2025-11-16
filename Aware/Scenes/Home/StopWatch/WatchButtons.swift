@@ -63,6 +63,7 @@ struct WatchButtons: View {
                                     storage.timer = nil
                                     NotificationCenter.default.post(name: .timerDidStop, object: nil)
                                     liveActivityStore.endLiveActivity()
+                                    storage.fetchTimers()
                                 }
                             }
                         )
