@@ -2,30 +2,26 @@
 import SwiftUI
 import Observation
 
+extension Animation {
+    static let stopWatch: Animation = .spring(duration: 0.4, bounce: 0.2)
+    static let background: Animation = .spring(duration: 0.86, bounce: 0.6, blendDuration: 0.7)
+}
+
+
 @Observable
 public class CrossConfig {
     public var isTimerRunning: Bool = false
     public var backgroundColor = Color.accentColor
 
-    // Internal gradient engine - will be initialized by BackgroundGradient
-    internal var gradientEngine: GradientEngineProtocol?
-
     public init(backgroundColor: SwiftUICore.Color = Color.accentColor) {
         self.backgroundColor = backgroundColor
     }
-
-    internal func setGradientEngine(_ engine: GradientEngineProtocol) {
-        self.gradientEngine = engine
-        engine.updateBaseColor(backgroundColor)
+    
+    public func updateColor(_ color: Color) {
+        withAnimation(.background) {
+            self.backgroundColor = color
+        }
     }
-}
-
-// Protocol to avoid circular dependencies
-internal protocol GradientEngineProtocol {
-    func updateBaseColor(_ color: Color)
-
-    var meshPoints: [SIMD2<Float>] { get }
-    var meshColors: [Color] { get }
 }
 
 public extension EnvironmentValues {

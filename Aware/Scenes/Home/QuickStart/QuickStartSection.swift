@@ -142,6 +142,12 @@ struct QuickStartSection: View {
         storage.startNewTimer(with: tag)
         liveActivity.timer = storage.timer
         liveActivity.startLiveActivity(with: storage.timer)
+        if let timer = storage.timer {
+            withAnimation(.background) {
+                appConfig.backgroundColor = timer.swiftUIColor
+                appConfig.isTimerRunning = true
+            }
+        }
     }
 }
 

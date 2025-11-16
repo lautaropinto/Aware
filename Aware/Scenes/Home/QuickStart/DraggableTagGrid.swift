@@ -101,9 +101,14 @@ struct DraggableTagButton: View {
             .animation(.easeInOut(duration: 0.2), value: isDragging)
             .animation(.easeInOut(duration: 0.3), value: isDisabled)
         }
-        .rounded()
-        .glassEffect(.regular.interactive(!isDisabled), in: .containerRelative)
         .disabled(isDisabled)
+        .rounded()
+        .background(
+            Capsule()
+                .stroke(.gray.opacity(0.36), lineWidth: 1.0)
+                .fill(.ultraThinMaterial.opacity(0.36))
+                .shadow(color: .gray.opacity(0.46), radius: 2.0, x: 0.0, y: 1)
+        )
         .draggable(tag) {
             HStack {
                 Circle()
@@ -118,6 +123,12 @@ struct DraggableTagButton: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
+            .background(
+                Capsule()
+                    .stroke(.gray.opacity(0.36), lineWidth: 1.0)
+                    .fill(.ultraThinMaterial.opacity(0.36))
+                    .shadow(color: .gray.opacity(0.46), radius: 2.0, x: 0.0, y: 1)
+            )
         }
         .dropDestination(for: Tag.self) { droppedTags, location in
             guard let droppedTag = droppedTags.first else { return false }

@@ -31,7 +31,7 @@ struct HomeScene: View {
                 .padding()
             }
             .scrollBounceBehavior(.basedOnSize)
-//            .applyBackgroundGradient()
+            .applyBackgroundGradient()
             .navigationTitle("Timer")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

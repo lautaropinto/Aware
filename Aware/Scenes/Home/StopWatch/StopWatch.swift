@@ -41,6 +41,7 @@ public struct StopWatch: View {
         guard let timer = storage.timer else { return }
         
         appConfig.isTimerRunning = true
+        appConfig.updateColor(timer.swiftUIColor)
         activityStore.timer = timer
         logger.debug("Starting activity with timer: \(timer.formattedElapsedTime)")
         activityStore.startLiveActivity(with: timer)

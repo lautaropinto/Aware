@@ -47,6 +47,7 @@ struct InsightsScene: View {
                     }
                 }
             }
+            .applyBackgroundGradient()
         }
         .onAppear {
             insightStore.setModelContext(modelContext)

@@ -29,6 +29,7 @@ struct WatchButtons: View {
                             logger.debug("Play/Pause tap")
                             liveActivityStore.timer = timer
                             appConfig.isTimerRunning = true
+                            appConfig.updateColor(timer.swiftUIColor) 
                             if let storedTimer = liveActivityStore.timer {
                                 logger.debug("Activity stored name: \(storedTimer.name)")
                             }
@@ -57,7 +58,7 @@ struct WatchButtons: View {
                             isRunning: timer.isRunning,
                             onAction: {
                                 withAnimation(.stopWatch) {
-                                    appConfig.backgroundColor = .accentColor
+                                    appConfig.updateColor(.accent)
                                     appConfig.isTimerRunning = false
                                     timer.stop()
                                     storage.timer = nil

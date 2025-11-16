@@ -10,12 +10,14 @@ import SwiftData
 import AwareData
 import HealthKit
 import OSLog
+import AwareUI
 
 private var logger = Logger(subsystem: "HistoryScene", category: "Scene")
 
 
 struct HistoryScene: View {
     @Environment(Storage.self) private var storage
+    @Environment(\.appConfig) private var appConfig
 
     @State private var history = History()
 
@@ -33,6 +35,7 @@ struct HistoryScene: View {
                 }
             }
             .environment(history)
+            .applyBackgroundGradient()
             .onChange(of: storage.timers) { _, newTimers in
                 updateHistoryData()
             }
@@ -49,7 +52,6 @@ struct HistoryScene: View {
     }
 
     private func updateHistoryData() {
-//        storage.fetchTimers()
         history.processData(
             timers: storage.timers,
             sleepData: storage.sleepData,
