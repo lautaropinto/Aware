@@ -46,14 +46,6 @@ private struct IntentNotificationModifier: ViewModifier {
                 
                 handleResumeTimer(timerID: timerID)
             }
-            .onAppear {
-                let today = Date.now.startOfDay
-                let predicate = #Predicate<Timekeeper> {
-                    $0.creationDate >= today
-                }
-                
-                storage.fetchTimers(predicate)
-            }
     }
     
     func handleStopTimer(timerID: String) {

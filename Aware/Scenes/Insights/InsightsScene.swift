@@ -35,7 +35,6 @@ struct InsightsScene: View {
                 }
                 .padding()
             }
-            .applyBackgroundGradient()
             .navigationTitle("Insights")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
