@@ -15,6 +15,8 @@ struct TagForm: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(Storage.self) private var storage
+    
     @Query private var existingTags: [Tag]
     
     @State private var tagName: String = ""
@@ -136,7 +138,7 @@ struct TagForm: View {
                 fillForm()
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.fraction(0.56)])
         .presentationCornerRadius(42)
     }
     
@@ -161,6 +163,7 @@ struct TagForm: View {
         } else {
             editTag()
         }
+        storage.fetchTags()
     }
     
     private func editTag() {

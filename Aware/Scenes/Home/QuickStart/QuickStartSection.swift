@@ -86,6 +86,27 @@ struct QuickStartSection: View {
     }
     
     @ViewBuilder
+    func QuickStartHeader() -> some View {
+        HStack(alignment: .center) {
+            Text("Set Your Intention")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .foregroundColor(isDisabled ? .secondary : .primary)
+                .animation(.easeInOut(duration: 0.3), value: isDisabled)
+            
+            Spacer()
+            
+            HStack {
+                EditModeButton()
+                DeleteModeButton()
+            }
+            
+            AddTagButton(mode: $tagMode)
+                .disabled(isDisabled)
+        }
+    }
+    
+    @ViewBuilder
     func EditModeButton() -> some View {
         Button(action: {
             withAnimation { tagMode = .edit }

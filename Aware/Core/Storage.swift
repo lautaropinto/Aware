@@ -37,7 +37,7 @@ final class Storage {
         }
     }
     
-    private func fetchTags() {
+    func fetchTags() {
         print("Sran dale capo")
         let descriptor = FetchDescriptor<Tag>(sortBy: [SortDescriptor(\.displayOrder, order: .reverse)])
         tags = try! modelContext.fetch(descriptor)
