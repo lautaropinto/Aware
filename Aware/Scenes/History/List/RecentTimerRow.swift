@@ -70,8 +70,9 @@ struct RecentTimerRow: View {
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(.ultraThinMaterial)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                .stroke(.gray.gradient.opacity(0.32), lineWidth: 1.0)
+                .fill(.ultraThinMaterial.opacity(0.36))
+                .shadow(color: .gray.opacity(0.46), radius: 2.0, x: 0.0, y: 1)
         )
     }
 

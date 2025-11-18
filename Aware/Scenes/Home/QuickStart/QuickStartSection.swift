@@ -73,19 +73,6 @@ struct QuickStartSection: View {
     }
     
     @ViewBuilder
-    func DeleteModeButton() -> some View {
-        Button(action: {
-            withAnimation { tagMode = .delete }
-        }) {
-            Image(systemName: "trash")
-                .imageScale(.small)
-                .font(.system(size: 16, weight: .semibold))
-        }
-        .buttonStyle(CircledSmallButton(color: .red))
-        .disabled(isDisabled)
-    }
-    
-    @ViewBuilder
     func QuickStartHeader() -> some View {
         HStack(alignment: .center) {
             Text("Set Your Intention")
@@ -114,8 +101,21 @@ struct QuickStartSection: View {
             Image(systemName: "pencil")
                 .font(.system(size: 16, weight: .semibold))
         }
-        .buttonStyle(CircledSmallButton(color: .yellow))
         .disabled(isDisabled)
+        .buttonStyle(CircledSmallButton(color: .yellow))
+    }
+    
+    @ViewBuilder
+    func DeleteModeButton() -> some View {
+        Button(action: {
+            withAnimation { tagMode = .delete }
+        }) {
+            Image(systemName: "trash")
+                .imageScale(.small)
+                .font(.system(size: 16, weight: .semibold))
+        }
+        .disabled(isDisabled)
+        .buttonStyle(CircledSmallButton(color: .red))
     }
     
     @ViewBuilder
@@ -124,7 +124,7 @@ struct QuickStartSection: View {
         Button("Delete", role: .destructive) {
             guard let tagToDelete else { return }
             withAnimation {
-//                modelContext.delete(tagToDelete)
+                storage.delete(tagToDelete)
                 
                 self.tagToDelete = nil
             }

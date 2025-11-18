@@ -37,6 +37,12 @@ final class Storage {
         }
     }
     
+    func delete(_ tag: Tag) {
+        modelContext.delete(tag)
+        try? modelContext.save()
+        fetchTags()
+    }
+    
     func fetchTags() {
         print("Sran dale capo")
         let descriptor = FetchDescriptor<Tag>(sortBy: [SortDescriptor(\.displayOrder, order: .reverse)])

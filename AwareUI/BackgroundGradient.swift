@@ -34,9 +34,9 @@ private struct BackgroundModifier: ViewModifier {
                     startPoint: .top,
                     endPoint: .bottom
                 )
-//                .colorEffect(ShaderLibrary.parameterizedNoise(.float(0.5), .float(1.0), .float(0.2)))
+                .colorEffect(ShaderLibrary.parameterizedNoise(.float(0.5), .float(1.0), .float(0.2)))
+                .edgesIgnoringSafeArea(.all)
             )
-//            .edgesIgnoringSafeArea(.all)
             .scrollContentBackground(.hidden)
     }
 }
