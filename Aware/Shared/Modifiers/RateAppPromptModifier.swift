@@ -98,6 +98,4 @@ extension View {
     }
 }
 
-extension Notification.Name {
-    static let timerDidStop = Notification.Name("timerDidStop")
-}
+// timerDidStop notification is defined in AwarenessSession.swift

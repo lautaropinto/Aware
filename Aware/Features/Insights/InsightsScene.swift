@@ -11,6 +11,7 @@ import AwareData
 
 struct InsightsScene: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(Storage.self) private var storage
     @State private var insightStore = InsightStore()
     
     var body: some View {
@@ -19,43 +20,36 @@ struct InsightsScene: View {
             ScrollView {
                 VStack(spacing: 24) {
                     TimeFramePicker(
-                        selectedTimeFrame: $store.selectedTimeFrame,
-                        selectedDayDate: $store.selectedDayDate,
-                        selectedWeekDate: $store.selectedWeekDate,
-                        selectedMonthDate: $store.selectedMonthDate,
-                        selectedYearDate: $store.selectedYearDate,
+                        selectedDayDate: $store.selectedDate,
                         showUntrackedTime: $store.showUntrackedTime
                     )
                     .rounded()
-                    
-                    PieChartView(
-                        data: insightStore.getInsightData(),
-                        totalTime: insightStore.totalTimeForPeriod
-                    )
+
+                    if insightStore.hasData {
+                        PieChartView(
+                            data: insightStore.insightData,
+                            totalTime: insightStore.totalTimeForPeriod
+                        )
+                    } else {
+                        InsightsEmptyState()
+                    }
                 }
                 .padding()
             }
             .navigationTitle("Insights")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    HStack {
-                        if insightStore.isLoadingSleepData || insightStore.isLoadingWorkoutData {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                        }
-                        DataToggleButton()
-                    }
+                    DataToggleButton()
                 }
             }
             .applyBackgroundGradient()
         }
         .onAppear {
-            insightStore.setModelContext(modelContext)
-            insightStore.updateTimeFrame(to: store.selectedTimeFrame)
-            insightStore.loadHealthDataIfNeeded()
+            insightStore.configure(storage: storage, healthKitManager: HealthKitManager.shared)
+            insightStore.refreshData()
         }
-        .onChange(of: store.selectedTimeFrame) { _, newTimeFrame in
-            insightStore.updateTimeFrame(to: newTimeFrame)
+        .onChange(of: store.selectedDate) { _, newDate in
+            insightStore.updateDate(to: newDate)
         }
         .onChange(of: store.showUntrackedTime) { _, newValue in
             insightStore.updateShowUntrackedTime(to: newValue)

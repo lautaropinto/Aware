@@ -20,12 +20,7 @@ struct PieChartView: View {
     @State private var hasEverAppeared = false
 
     private var isDailyTimeFrame: Bool {
-        switch store.currentTimeFrame {
-        case .daily:
-            return true
-        default:
-            return false
-        }
+        true // Always daily now
     }
 
     var body: some View {

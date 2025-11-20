@@ -15,7 +15,7 @@ private var logger = Logger(subsystem: "HealthKit", category: "SetUpModifier")
 private struct HealthKitSetUpModifier: ViewModifier {
     @Binding var toggleHealthDataAuthorization: Bool
     
-    private let healthStore = HealthStore.shared.healthStore
+    private let healthStore = HealthKitManager.shared.healthStore
 
     func body(content: Content) -> some View {
         let readTypes: Set<HKObjectType> = [

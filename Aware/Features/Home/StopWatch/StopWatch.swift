@@ -14,8 +14,7 @@ private var logger = Logger(subsystem: "Aware", category: "iOS StopWatch")
 
 public struct StopWatch: View {
     @Environment(\.appConfig) private var appConfig
-    @Environment(LiveActivityStore.self) private var activityStore
-    @Environment(Storage.self) private var storage
+    @Environment(AwarenessSession.self) private var awarenessSession
     
     public var body: some View {
         VStack(spacing: 16) {
@@ -41,14 +40,12 @@ public struct StopWatch: View {
     private func onAppear() {
         checkIfThereIsTimerRunning()
     }
-    
+
     private func checkIfThereIsTimerRunning() {
-        guard let timer = storage.timer else { return }
-        
-        appConfig.isTimerRunning = true
-        appConfig.updateColor(timer.swiftUIColor)
-        activityStore.timer = timer
-        logger.debug("Starting activity with timer: \(timer.formattedElapsedTime)")
-        activityStore.startLiveActivity(with: timer)
+        awarenessSession.resumeIfNeeded()
+
+        if let timer = awarenessSession.activeTimer {
+            logger.debug("Resuming session with timer: \(timer.formattedElapsedTime)")
+        }
     }
 }

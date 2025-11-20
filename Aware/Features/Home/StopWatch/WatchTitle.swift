@@ -11,7 +11,9 @@ import AwareData
 struct WatchTitle: View {
     @Environment(Storage.self) private var storage
     
-    private var timer: Timekeeper? { storage.timer }
+    @Environment(AwarenessSession.self) private var awarenessSession
+
+    private var timer: Timekeeper? { awarenessSession.activeTimer }
     
     var body: some View {
         VStack(spacing: 8) {

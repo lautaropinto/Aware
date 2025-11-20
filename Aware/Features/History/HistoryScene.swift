@@ -19,7 +19,7 @@ struct HistoryScene: View {
     @Environment(Storage.self) private var storage
     @Environment(\.appConfig) private var appConfig
 
-    @State private var history = History()
+    @State private var history = HistoryStore()
 
     var body: some View {
         NavigationView {
@@ -36,28 +36,17 @@ struct HistoryScene: View {
             }
             .environment(history)
             .applyBackgroundGradient()
-            .onChange(of: storage.timers) { _, newTimers in
-                updateHistoryData()
-            }
-            .onChange(of: storage.sleepData) { _, newSleepData in
-                updateHistoryData()
-            }
-            .onChange(of: storage.workoutData) { _, newWorkoutData in
-                updateHistoryData()
+            .onChange(of: storage.changeToken) { _, _ in
+                history.refreshData()
             }
             .onAppear {
-                updateHistoryData()
+                history.configure(storage: storage, healthKitManager: HealthKitManager.shared)
+                history.refreshData()
             }
         }
     }
 
-    private func updateHistoryData() {
-        history.processData(
-            timers: storage.timers,
-            sleepData: storage.sleepData,
-            workoutData: storage.workoutData
-        )
-    }
+    // updateHistoryData is no longer needed - HistoryStore handles its own data loading
 }
 
 #Preview {

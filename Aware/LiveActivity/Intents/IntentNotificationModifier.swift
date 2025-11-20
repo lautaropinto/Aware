@@ -14,10 +14,9 @@ private var logger = Logger(subsystem: "Aware", category: "Intent Notification R
 
 private struct IntentNotificationModifier: ViewModifier {
     @Environment(Storage.self) private var storage
-    
+    @Environment(AwarenessSession.self) private var awarenessSession
+
     var timers: [Timekeeper] { storage.timers }
-    
-    @Environment(LiveActivityStore.self) var activityStore
     
     func body(content: Content) -> some View {
         let center = NotificationCenter.default
@@ -60,11 +59,8 @@ private struct IntentNotificationModifier: ViewModifier {
             return
         }
         
-        timer.stop()
         logger.debug("Stopping timer from stopTimer notification.")
-        
-        logger.debug("Ending live activity")
-        activityStore.endLiveActivity()
+        awarenessSession.stopTimer()
     }
     
     func handlePauseTimer(timerID: String) {
@@ -74,13 +70,8 @@ private struct IntentNotificationModifier: ViewModifier {
         }
         
         
-        timer.pause()
         logger.debug("Pausing timer from pauseTimer notification.")
-        
-        activityStore.updateLiveActivity(
-            elapsedTime: timer.totalElapsedSeconds,
-            intentAction: .pause
-        )
+        awarenessSession.pauseTimer()
     }
     
     func handleResumeTimer(timerID: String) {
@@ -89,13 +80,8 @@ private struct IntentNotificationModifier: ViewModifier {
             return
         }
         
-        timer.resume()
         logger.debug("Resuming timer from resumeTimer notification.")
-        
-        activityStore.updateLiveActivity(
-            elapsedTime: timer.totalElapsedSeconds,
-            intentAction: .resume
-        )
+        awarenessSession.resumeTimer()
     }
 }
 

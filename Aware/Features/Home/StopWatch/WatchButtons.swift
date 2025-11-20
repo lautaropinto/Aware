@@ -13,10 +13,9 @@ private var logger = Logger(subsystem: "StopWatch", category: "WatchButtons")
 
 struct WatchButtons: View {
     @Environment(\.appConfig) private var appConfig
-    @Environment(LiveActivityStore.self) private var liveActivityStore
-    @Environment(Storage.self) private var storage
-    
-    private var timer: Timekeeper? { storage.timer }
+    @Environment(AwarenessSession.self) private var awarenessSession
+
+    private var timer: Timekeeper? { awarenessSession.activeTimer }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -27,27 +26,13 @@ struct WatchButtons: View {
                         hasElapsedTime: timer.totalElapsedSeconds > 0,
                         onAction: {
                             logger.debug("Play/Pause tap")
-                            liveActivityStore.timer = timer
-                            appConfig.isTimerRunning = true
-                            appConfig.updateColor(timer.swiftUIColor) 
-                            if let storedTimer = liveActivityStore.timer {
-                                logger.debug("Activity stored name: \(storedTimer.name)")
-                            }
                             if timer.isRunning {
-                                timer.pause()
-                                liveActivityStore.updateLiveActivity(
-                                    elapsedTime: timer.currentElapsedTime,
-                                    intentAction: .pause
-                                )
+                                awarenessSession.pauseTimer()
                             } else if timer.totalElapsedSeconds > 0 {
-                                timer.resume()
-                                liveActivityStore.updateLiveActivity(
-                                    elapsedTime: timer.currentElapsedTime,
-                                    intentAction: .resume
-                                )
+                                awarenessSession.resumeTimer()
                             } else {
-                                timer.start()
-                                liveActivityStore.startLiveActivity(with: timer)
+                                // This shouldn't happen as timer creation is handled in QuickStart
+                                logger.warning("Attempting to start timer from play button")
                             }
                         }
                     )
@@ -58,13 +43,7 @@ struct WatchButtons: View {
                             isRunning: timer.isRunning,
                             onAction: {
                                 withAnimation(.stopWatch) {
-                                    appConfig.updateColor(.accent)
-                                    appConfig.isTimerRunning = false
-                                    timer.stop()
-                                    storage.timer = nil
-                                    NotificationCenter.default.post(name: .timerDidStop, object: nil)
-                                    liveActivityStore.endLiveActivity()
-                                    storage.fetchTimers()
+                                    awarenessSession.stopTimer()
                                 }
                             }
                         )

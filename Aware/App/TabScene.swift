@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import AwareUI
 
 struct TabScene: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var liveActivityStore = LiveActivityStore()
     @State private var showHealthKitPermissionSheet = false
-    @State private var storage = Storage()
+    @State private var storage = Storage.shared
+    @State private var awarenessSession = AwarenessSession.shared
+    @State private var healthKitManager = HealthKitManager.shared
+    @State private var liveActivityManager = LiveActivityManager.shared
     
     var body: some View {
         TabView {
@@ -22,7 +25,7 @@ struct TabScene: View {
                 }
                 .tag(0)
                 .setUpIntentNotificationListener()
-                .environment(liveActivityStore)
+                .environment(awarenessSession)
 
             HistoryScene()
                 .tabItem {
@@ -57,8 +60,12 @@ struct TabScene: View {
             )
         }
         .onAppear {
-            liveActivityStore.modelContext = self.modelContext
-            storage.modelContext = self.modelContext
+            storage.configure(context: self.modelContext)
+            awarenessSession.configure(
+                storage: storage,
+                liveActivityManager: liveActivityManager,
+                appConfig: CrossConfig(backgroundColor: Color.accent) // This should come from environment
+            )
             checkHealthKitPermissions()
         }
     }
@@ -75,7 +82,7 @@ struct TabScene: View {
     }
 
     private func requestHealthKitPermissions() {
-        HealthStore.shared.requestSleepPermissions()
+        healthKitManager.requestSleepPermissions()
     }
 }
 

@@ -11,7 +11,7 @@ import AwareData
 
 struct QuickStartSection: View {
     @Environment(\.appConfig) private var appConfig
-    @Environment(LiveActivityStore.self) private var liveActivity
+    @Environment(AwarenessSession.self) private var awarenessSession
     @Environment(Storage.self) private var storage
     
     @State private var draggedTag: Tag?
@@ -21,7 +21,7 @@ struct QuickStartSection: View {
     @State private var tagToEdit: Tag?
     
     var isDisabled: Bool {
-        appConfig.isTimerRunning
+        awarenessSession.isTimerRunning
     }
     
     var body: some View {
@@ -125,7 +125,8 @@ struct QuickStartSection: View {
             guard let tagToDelete else { return }
             withAnimation {
                 storage.delete(tagToDelete)
-                
+                storage.save()
+
                 self.tagToDelete = nil
             }
         }
@@ -160,15 +161,7 @@ struct QuickStartSection: View {
     }
     
     private func createAndStartTimer(with tag: Tag) {
-        storage.startNewTimer(with: tag)
-        liveActivity.timer = storage.timer
-        liveActivity.startLiveActivity(with: storage.timer)
-        if let timer = storage.timer {
-            withAnimation(.background) {
-                appConfig.backgroundColor = timer.swiftUIColor
-                appConfig.isTimerRunning = true
-            }
-        }
+        awarenessSession.startTimer(with: tag)
     }
 }
 

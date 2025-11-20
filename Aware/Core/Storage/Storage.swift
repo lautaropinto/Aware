@@ -3,154 +3,116 @@
 //  Aware
 //
 //  Created by Lautaro Pinto on 11/15/25.
+//  Refactored by Claude on 11/20/25 to pure CRUD operations
 //
 
 import Foundation
 import SwiftData
 import Observation
 import AwareData
-import Combine
-import HealthKit
 import OSLog
 
 private var logger = Logger(subsystem: "Aware", category: "Storage")
 
 @Observable
 final class Storage {
+    static let shared = Storage()
+
+    // MARK: - App State Properties
     var tags: [Tag] = []
     var timers: [Timekeeper] = []
-    var timer: Timekeeper?
-    var sleepData: [HKCategorySample] = []
-    var workoutData: [HKWorkout] = []
+
+    private var _context: ModelContext!
+    private(set) var changeToken = UUID() // For triggering updates
+
+    private init() {}
+
+    func configure(context: ModelContext) {
+        guard _context == nil else { fatalError("Storage already configured") }
+        _context = context
+        // Load initial data
+        refreshTags()
+        refreshTimers()
+    }
+
+    // MARK: - Change Notification
+
+    func triggerRefresh() {
+        changeToken = UUID()
+    }
     
-    
-    private var hasLoadedHealthData = false
-    private var hasSleepPermission = UserDefaults.standard.bool(forKey: .UserDefault.hasGrantedSleepReadPermission)
-    private var hasWorkoutPermission = UserDefaults.standard.bool(forKey: .UserDefault.hasGrantedWorkoutReadPermission)
-    
-    var modelContext: ModelContext! {
-        didSet {
-            fetchTags()
-            fetchActiveTimer()
-            fetchTimers()
-            loadHealthDataIfNeeded()
+    // MARK: - Generic CRUD Operations
+
+    func fetchAll<T: PersistentModel>(_ type: T.Type) -> [T] {
+        let descriptor = FetchDescriptor<T>()
+        return (try? _context.fetch(descriptor)) ?? []
+    }
+
+    func fetch<T: PersistentModel>(_ descriptor: FetchDescriptor<T>) -> [T] {
+        return (try? _context.fetch(descriptor)) ?? []
+    }
+
+    // MARK: - State Refresh Methods
+
+    func refreshTags() {
+        let descriptor = FetchDescriptor<Tag>(sortBy: [SortDescriptor(\.displayOrder, order: .reverse)])
+        tags = fetch(descriptor)
+        triggerRefresh()
+    }
+
+    func refreshTimers() {
+        let descriptor = FetchDescriptor<Timekeeper>(sortBy: [SortDescriptor(\.creationDate)])
+        timers = fetch(descriptor)
+        triggerRefresh()
+    }
+
+    func insert<T: PersistentModel>(_ model: T) {
+        _context.insert(model)
+    }
+
+    func delete<T: PersistentModel>(_ model: T) {
+        _context.delete(model)
+    }
+
+    func save() {
+        do {
+            try _context.save()
+            refreshTags()
+            refreshTimers()
+            logger.debug("Storage saved successfully")
+        } catch {
+            logger.error("Failed to save storage: \(error)")
         }
     }
-    
-    func delete(_ tag: Tag) {
-        modelContext.delete(tag)
-        try? modelContext.save()
-        fetchTags()
-    }
-    
-    func fetchTags() {
-        print("Sran dale capo")
+
+    // MARK: - Specific Data Operations
+
+    func fetchTags() -> [Tag] {
         let descriptor = FetchDescriptor<Tag>(sortBy: [SortDescriptor(\.displayOrder, order: .reverse)])
-        tags = try! modelContext.fetch(descriptor)
-        print("Result: \(tags.count)")
+        return fetch(descriptor)
     }
-    
-    private func fetchActiveTimer() {
+
+    func fetchActiveTimer() -> Timekeeper? {
         let predicate = #Predicate<Timekeeper> {
             $0.endTime == nil
         }
-        
+
         let descriptor = FetchDescriptor<Timekeeper>(predicate: predicate)
-        let timers = try! modelContext.fetch(descriptor)
-        self.timer = timers.first
+        return fetch(descriptor).first
     }
-    
-    func fetchTimers(_ predicate: Predicate<Timekeeper>? = nil) {
+
+    func fetchTimers(_ predicate: Predicate<Timekeeper>? = nil) -> [Timekeeper] {
         let descriptor = FetchDescriptor(predicate: predicate, sortBy: [SortDescriptor(\.creationDate)])
-        self.timers = try! modelContext.fetch(descriptor)
-        print("Timers fetched: \(timers.count)")
+        return fetch(descriptor)
     }
-    
+
     func getTimers(_ predicate: Predicate<Timekeeper>) -> [Timekeeper] {
         let descriptor = FetchDescriptor(predicate: predicate)
-        let timers = try! modelContext.fetch(descriptor)
-        
-        return timers
+        return fetch(descriptor)
     }
-    
-    func startNewTimer(with tag: Tag) {
-        let timer = Timekeeper(name: "\(tag.name) Session", tags: [tag])
-        modelContext.insert(timer)
-        timer.start()
-        try? modelContext.save()
-        fetchActiveTimer()
-    }
-    
+
     func firstTimekeeperDate() -> Date? {
-        return timers.min(by: { $0.creationDate < $1.creationDate })?.creationDate
-    }
-}
-
-extension Storage {
-    func loadHealthDataIfNeeded() {
-        guard !hasLoadedHealthData else { return }
-        hasLoadedHealthData = true
-
-        Task {
-            await withTaskGroup(of: Void.self) { group in
-                // Load sleep data in background
-                group.addTask {
-                    await self.loadSleepData()
-                }
-
-                // Load workout data in background
-                group.addTask {
-                    await self.loadWorkoutData()
-                }
-            }
-        }
-    }
-    
-    private func loadSleepData() async {
-        guard hasSleepPermission else { return }
-
-        // Don't load sleep data if there are no timekeepers
-        guard let firstDate = firstTimekeeperDate() else {
-            logger.debug("No timekeepers found. Will not load sleep data.")
-            sleepData = []
-            return
-        }
-
-        do {
-            let endDate = Date()
-            let dateInterval = DateInterval(start: firstDate, end: endDate)
-
-            let fetchedSleepData = try await HealthStore.shared.fetchSleepData(for: dateInterval)
-
-            logger.debug("Sleep data. \(fetchedSleepData.count)")
-            self.sleepData = fetchedSleepData
-        } catch {
-            logger.error("Error loading sleep data. Error: \(error)")
-            self.sleepData = []
-        }
-    }
-
-    private func loadWorkoutData() async {
-        guard hasWorkoutPermission else { return }
-
-        // Don't load workout data if there are no timekeepers
-        guard let firstDate = firstTimekeeperDate() else {
-            logger.debug("No timekeepers found. Will not load workout data.")
-            workoutData = []
-            return
-        }
-
-        do {
-            let endDate = Date()
-            let dateInterval = DateInterval(start: firstDate, end: endDate)
-
-            let fetchedWorkoutData = try await HealthStore.shared.fetchWorkoutData(for: dateInterval)
-
-            logger.debug("Workout data. \(fetchedWorkoutData.count)")
-            self.workoutData = fetchedWorkoutData
-        } catch {
-            logger.error("Error loading workout data. Error: \(error)")
-            self.workoutData = []
-        }
+        let allTimers = fetchTimers()
+        return allTimers.min(by: { $0.creationDate < $1.creationDate })?.creationDate
     }
 }

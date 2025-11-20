@@ -10,10 +10,10 @@ import AwareData
 
 struct HistoryFilter: View {
     @Environment(Storage.self) private var storage
-    @Environment(History.self) private var history
+    @Environment(HistoryStore.self) private var history
     
     private var tags: [Tag] {
-        storage.tags
+        []//storage.tags
     }
     
     private var selectedTag: Tag? {

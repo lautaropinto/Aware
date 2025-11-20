@@ -11,7 +11,9 @@ import AwareData
 struct WatchTimer: View {
     @Environment(Storage.self) private var storage
     
-    private var timer: Timekeeper? { storage.timer }
+    @Environment(AwarenessSession.self) private var awarenessSession
+
+    private var timer: Timekeeper? { awarenessSession.activeTimer }
     
     private var timerInterval: ClosedRange<Date>? {
         guard let timer = timer, timer.isRunning, let startTime = timer.startTime else { return nil }
