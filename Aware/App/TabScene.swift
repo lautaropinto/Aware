@@ -10,6 +10,7 @@ import AwareUI
 
 struct TabScene: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.appConfig) private var appConfig
     @State private var showHealthKitPermissionSheet = false
     @State private var storage = Storage.shared
     @State private var awarenessSession = AwarenessSession.shared
@@ -64,12 +65,26 @@ struct TabScene: View {
             awarenessSession.configure(
                 storage: storage,
                 liveActivityManager: liveActivityManager,
-                appConfig: CrossConfig(backgroundColor: Color.accent) // This should come from environment
+                appConfig: appConfig
             )
+            updateBackgroundColor()
             checkHealthKitPermissions()
+        }
+        .onChange(of: awarenessSession.activeTimer) { _, _ in
+            updateBackgroundColor()
         }
     }
     
+    private func updateBackgroundColor() {
+        if let timer = awarenessSession.activeTimer {
+            // Use the timer's color if there's an active timer
+            appConfig.updateColor(timer.swiftUIColor)
+        } else {
+            // Use accent color if no timer is active
+            appConfig.updateColor(.accent)
+        }
+    }
+
     private func checkHealthKitPermissions() {
         let hasRequestedBefore = UserDefaults.standard.bool(forKey: .UserDefault.healthKitSleepPermissionsRequested)
 
