@@ -16,6 +16,7 @@ extension Color {
 
 private struct BackgroundModifier: ViewModifier {
     @Environment(\.appConfig) var config
+    @Environment(\.colorScheme) var scheme
 
     private func palette() -> (main: Color, secondary: Color, tertiary: Color) {
         let base = config.backgroundColor
@@ -27,20 +28,32 @@ private struct BackgroundModifier: ViewModifier {
     }
     
     func body(content: Content) -> some View {
-        content
-            .background(
-                LinearGradient(
-                    colors: [palette().main, palette().secondary, palette().tertiary],
-                    startPoint: .top,
-                    endPoint: .bottom
+        if scheme == .dark {
+            content
+                .background(
+                    LinearGradient(
+                        colors: [palette().main, palette().secondary, palette().tertiary],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .colorEffect(ShaderLibrary.parameterizedNoise(.float(0.5), .float(1.0), .float(0.2)))
+                    .edgesIgnoringSafeArea(.all)
                 )
-                .colorEffect(ShaderLibrary.parameterizedNoise(.float(0.5), .float(1.0), .float(0.2)))
-                .edgesIgnoringSafeArea(.all)
-            )
-            .scrollContentBackground(.hidden)
+                .scrollContentBackground(.hidden)
+        } else {
+            content
+                .background(
+                    LinearGradient(
+                        colors: [palette().main, palette().secondary, palette().tertiary],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .edgesIgnoringSafeArea(.all)
+                )
+                .scrollContentBackground(.hidden)
+        }
     }
 }
-
 
 public extension View {
     func applyBackgroundGradient() -> some View {
