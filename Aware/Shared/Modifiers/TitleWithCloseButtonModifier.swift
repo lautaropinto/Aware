@@ -5,14 +5,6 @@
 //  Created by Lautaro Pinto on 10/6/25.
 //
 
-
-//
-//  TitleWithCloseButtonModifier.swift
-//  Sentimo
-//
-//  Created by Lautaro Pinto on 6/6/25.
-//
-
 import SwiftUI
 
 typealias DisplayMode = NavigationBarItem.TitleDisplayMode
