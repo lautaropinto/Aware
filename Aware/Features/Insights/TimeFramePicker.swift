@@ -80,7 +80,7 @@ extension TimeFramePicker {
 extension TimeFramePicker {
     @ViewBuilder
     private func DateSelectorSheet() -> some View {
-        VStack(spacing: 20) {
+        VStack {
             Text("Select day")
                 .font(.title2).bold()
                 .fontDesign(.rounded)
