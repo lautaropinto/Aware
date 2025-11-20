@@ -109,9 +109,16 @@ final class AwarenessSession {
         }
 
         logger.debug("Stopping timer: \(timer.name)")
-
         timer.stop()
         storage?.save()
+        
+        let finalElapsedTime = timer.totalElapsedSeconds // Get final time before stopping
+
+        // Update Live Activity to show completed state with final elapsed time
+        liveActivityManager?.updateLiveActivity(
+            elapsedTime: finalElapsedTime,
+            intentAction: .stop
+        )
 
         // Reset session state
         activeTimer = nil
@@ -119,7 +126,8 @@ final class AwarenessSession {
 
         // Coordinate with other managers
         resetAppConfig()
-        endLiveActivity()
+
+        // Keep Live Activity alive to show completion - no auto-dismissal
 
         // Trigger refresh and notification
         storage?.triggerRefresh()
@@ -178,6 +186,10 @@ final class AwarenessSession {
 
     private func endLiveActivity() {
         liveActivityManager?.endLiveActivity()
+    }
+
+    private func endLiveActivityForTimer(_ timerId: UUID) {
+        liveActivityManager?.endLiveActivityForTimer(timerId)
     }
 }
 

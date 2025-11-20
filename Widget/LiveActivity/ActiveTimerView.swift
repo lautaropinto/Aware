@@ -62,7 +62,7 @@ struct ActiveTimerView: View {
                         .contentTransition(.numericText())
                 }
                 
-                if !context.isStale {
+                if !context.isStale && context.state.intentAction != .stop {
                     HStack(spacing: 4.0) {
                         PauseResumeButton(displayText: false)
                             .frame(maxWidth: 36.0)
@@ -70,9 +70,9 @@ struct ActiveTimerView: View {
                             .frame(maxWidth: 36.0)
                     }
                 } else {
-                    Text("Finished")
+                    Text(context.state.intentAction == .stop ? "🎉 Done!" : "Finished")
                         .bold()
-                        .foregroundStyle(.red.opacity(0.6))
+                        .foregroundStyle(context.state.intentAction == .stop ? .green : .red.opacity(0.6))
                 }
             }
         }
@@ -105,15 +105,18 @@ struct ActiveTimerView: View {
                     .contentTransition(.numericText())
             }
             
-            if !context.isStale {
+            if !context.isStale && context.state.intentAction != .stop {
                 HStack {
                     PauseResumeToggle()
                     StopToggle()
                 }
             } else {
-                Text("Finished")
-                    .font(.headline)
-                    .foregroundStyle(.red.opacity(0.6))
+                VStack(spacing: 4) {
+                    Text(context.state.intentAction == .stop ? "🎉 Session Complete!" : "Finished")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(context.state.intentAction == .stop ? .green : .red.opacity(0.6))
+                }
             }
         }
         .padding()

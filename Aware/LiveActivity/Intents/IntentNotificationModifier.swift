@@ -52,15 +52,19 @@ private struct IntentNotificationModifier: ViewModifier {
             logger.error("No timer matching received ID. \(timerID)")
             return
         }
-        
+
         guard timer.endTime == nil else {
             logger.error("Trying to stop an already stopped timer.")
-            
             return
         }
-        
+
         logger.debug("Stopping timer from stopTimer notification.")
         awarenessSession.stopTimer()
+
+        // Trigger UI refresh after action
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            storage.triggerRefresh()
+        }
     }
     
     func handlePauseTimer(timerID: String) {
@@ -68,10 +72,14 @@ private struct IntentNotificationModifier: ViewModifier {
             logger.error("No timer matching received ID. \(timerID)")
             return
         }
-        
-        
+
         logger.debug("Pausing timer from pauseTimer notification.")
         awarenessSession.pauseTimer()
+
+        // Trigger UI refresh after action
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            storage.triggerRefresh()
+        }
     }
     
     func handleResumeTimer(timerID: String) {
@@ -79,9 +87,14 @@ private struct IntentNotificationModifier: ViewModifier {
             logger.error("No timer matching received ID. \(timerID)")
             return
         }
-        
+
         logger.debug("Resuming timer from resumeTimer notification.")
         awarenessSession.resumeTimer()
+
+        // Trigger UI refresh after action
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            storage.triggerRefresh()
+        }
     }
 }
 

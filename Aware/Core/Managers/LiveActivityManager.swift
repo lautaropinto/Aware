@@ -29,9 +29,11 @@ final class LiveActivityManager {
     func startLiveActivity(with timer: Timekeeper) {
         logger.debug("Starting live activity for timer: \(timer.name)")
 
-        // Check if activity already exists for this timer
-        guard getLiveActivity(for: timer.id) == nil else {
-            logger.info("Activity already exists, updating instead of creating new one")
+        // Check if activity already exists for this timer in the system
+        if let existingActivity = findExistingLiveActivity(for: timer.id) {
+            logger.info("Activity already exists in system, updating instead of creating new one")
+            activity = existingActivity
+            isActivityRunning = true
             updateLiveActivity(
                 elapsedTime: timer.currentElapsedTime,
                 intentAction: timer.isRunning ? .resume : .pause
@@ -66,37 +68,81 @@ final class LiveActivityManager {
             return
         }
 
+        let eventDescription = intentAction == .stop ? "🎉 Session completed!" : ""
         let updatedState = TimerAttributes.ContentState(
             totalElapsedSeconds: elapsedTime,
-            eventDescription: "",
+            eventDescription: eventDescription,
             intentAction: intentAction
         )
 
         Task {
-            logger.debug("Updating live activity - \(elapsedTime.formattedElapsedTime)")
+            let action = intentAction.rawValue
+            logger.debug("Updating live activity - \(elapsedTime.formattedElapsedTime) with action: \(action)")
             await activity.update(using: updatedState)
         }
     }
 
     func endLiveActivity() {
-        guard let activity = activity else {
-            logger.warning("No active live activity to end")
-            return
-        }
-
         Task {
             logger.info("Ending live activity")
-            await activity.end(dismissalPolicy: .default)
+
+            // End all active timer live activities
+            let allActivities = Activity<TimerAttributes>.activities
+            logger.debug("Found \(allActivities.count) active activities to end")
+
+            for activity in allActivities {
+                logger.debug("Ending activity for timer: \(activity.attributes.timer.name)")
+                await activity.end(dismissalPolicy: .default)
+            }
+
             await MainActor.run {
                 self.isActivityRunning = false
                 self.activity = nil
             }
+
+            logger.info("All live activities ended successfully")
         }
     }
 
     // MARK: - Helper Methods
 
-    private func getLiveActivity(for timerID: UUID) -> Activity<TimerAttributes>? {
+    private func findExistingLiveActivity(for timerID: UUID) -> Activity<TimerAttributes>? {
         return Activity<TimerAttributes>.activities.first { $0.attributes.timer.id == timerID }
+    }
+
+    func endLiveActivityForTimer(_ timerID: UUID) {
+        Task {
+            logger.info("Ending live activity for specific timer: \(timerID)")
+
+            // Find and end the specific timer's live activity
+            let activities = Activity<TimerAttributes>.activities
+            logger.debug("Found \(activities.count) total live activities to check")
+
+            var foundActivity = false
+            for activity in activities {
+                logger.debug("Checking activity for timer ID: \(activity.attributes.timer.id)")
+                if activity.attributes.timer.id == timerID {
+                    logger.info("Found matching activity for timer: \(activity.attributes.timer.name), ending it...")
+                    await activity.end(dismissalPolicy: .immediate)
+                    foundActivity = true
+                    break
+                }
+            }
+
+            if !foundActivity {
+                logger.warning("No live activity found for timer ID: \(timerID)")
+            }
+
+            // Update local state if this was our tracked activity
+            if let currentActivity = self.activity, currentActivity.attributes.timer.id == timerID {
+                await MainActor.run {
+                    logger.debug("Clearing local activity state")
+                    self.isActivityRunning = false
+                    self.activity = nil
+                }
+            } else {
+                logger.debug("Local activity state doesn't match timer ID or is nil")
+            }
+        }
     }
 }
