@@ -13,7 +13,7 @@ struct HistoryFilter: View {
     @Environment(HistoryStore.self) private var history
     
     private var tags: [Tag] {
-        []//storage.tags
+        storage.tags
     }
     
     private var selectedTag: Tag? {
