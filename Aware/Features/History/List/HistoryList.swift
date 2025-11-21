@@ -39,33 +39,40 @@ struct HistoryList: View {
     }
     
     var body: some View {
-        List {
-            ForEach(history.sortedDates, id: \.self) { date in
-                Section {
-                    ForEach(sortedTimers(for: date), id: \.id) { entry in
-                        TimerRowView(for: entry)
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                            .transition(.scale.combined(with: .opacity))
-                    }
-                } header: {
-                    VStack(alignment: .leading) {
-                        Text("\(date.smartFormattedDate)")
-                            .rounded()
-                        
-                        if totalIntentionalTimeInSeconds(for: date) > .halfHour {
-                            Text("\(totalIntentionalTime(for: date)) spent with intention")
-                                .font(.caption2.italic())
-                                .opacity(0.8)
-                                .contentTransition(.numericText())
+        if hasFilteredResults {
+            List {
+                ForEach(history.sortedDates, id: \.self) { date in
+                    Section {
+                        ForEach(sortedTimers(for: date), id: \.id) { entry in
+                            TimerRowView(for: entry)
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    } header: {
+                        VStack(alignment: .leading) {
+                            Text("\(date.smartFormattedDate)")
+                                .rounded()
+                            
+                            if totalIntentionalTimeInSeconds(for: date) > .halfHour {
+                                Text("\(totalIntentionalTime(for: date)) spent with intention")
+                                    .font(.caption2.italic())
+                                    .opacity(0.8)
+                                    .contentTransition(.numericText())
+                            }
                         }
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .transition(.opacity)
+        } else {
+            EmptyHistoryView(hasSearch: history.filterBy != nil)
+                .padding()
+            
+            Spacer()
         }
-        .scrollContentBackground(.hidden)
-        .transition(.opacity)
     }
     
     @ViewBuilder

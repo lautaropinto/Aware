@@ -27,14 +27,18 @@ struct HistoryFilter: View {
                     text: "All",
                     isSelected: selectedTag == nil,
                     color: .primary,
-                    onTap: { history.filterBy = nil }
+                    onTap: {
+                        withAnimation { history.filterBy = nil }
+                    }
                 )
                 
                 ForEach(tags, id: \.id) { tag in
                     TagFilterButton(
                         tag: tag,
                         isSelected: selectedTag?.id == tag.id,
-                        onTap: { history.filterBy = tag }
+                        onTap: {
+                            withAnimation { history.filterBy = tag }
+                        }
                     )
                 }
             }

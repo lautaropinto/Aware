@@ -15,18 +15,21 @@ struct EmptyHistoryView: View {
             Image(systemName: hasSearch ? "tag" : "clock")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
+                .contentTransition(.symbolEffect)
             
             Text(hasSearch ? "No Results Found" : "No Timer History")
                 .font(.title2)
                 .fontWeight(.semibold)
+                .contentTransition(.numericText())
             
             Text(hasSearch ? "Try selecting a different tag filter" : "Start timing activities to see them here")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+                .contentTransition(.numericText())
         }
         .rounded()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
         .background(Color.clear)
     }
 }
