@@ -95,10 +95,11 @@ struct HistoryList: View {
     }
     
     private func deleteTimer(_ timer: Timekeeper) {
+        modelContext.delete(timer)
+        try? modelContext.save()
+
         withAnimation {
-            modelContext.delete(timer)
-            try? modelContext.save()
-            storage.fetchTimers()
+            storage.refreshTimers()
         }
     }
 }
