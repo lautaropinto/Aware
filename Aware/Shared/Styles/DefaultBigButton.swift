@@ -24,9 +24,14 @@ struct DefaultBigButton: ButtonStyle {
             .foregroundColor(isEnabled ? Color.white : Color.gray)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Capsule().fill(isEnabled ? color : Color.gray))
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .opacity(opacity)
+            .glassEffect(
+                .regular
+                    .interactive(isEnabled)
+                    .tint(isEnabled ? color : Color.gray),
+                in: .containerRelative
+            )
             .clipShape(Capsule())
             .contentShape(.capsule)
     }

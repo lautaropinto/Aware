@@ -63,7 +63,6 @@ struct OnboardingStepThree: View {
             .buttonStyle(DefaultBigButton(color: .accent))
             .opacity(didParagraphFinish ? 1.0 : 0.0)
             .transition(.opacity)
-            .glassEffect(.regular.interactive())
         }
         .padding()
     }
