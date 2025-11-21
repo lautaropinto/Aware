@@ -29,8 +29,8 @@ public struct StopWatch: View {
         .background(
             RoundedRectangle(cornerRadius: 32.0)
                 .stroke(.gray.gradient.opacity(0.32), lineWidth: 1.0)
-                .fill(.ultraThinMaterial.opacity(0.36))
-                .shadow(color: .gray.opacity(0.46), radius: 2.0, x: 0.0, y: 1)
+                .fill(.ultraThinMaterial.opacity(0.24))
+                .shadow(color: .gray.opacity(0.4), radius: 2.0, x: 0.0, y: 1)
         )
         .onAppear() {
             onAppear()
