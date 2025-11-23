@@ -24,6 +24,16 @@ struct PlayPauseButton: View {
         }
     }
     
+    private var buttonSymbol: String {
+        if isRunning {
+            return "pause.fill"
+        } else if hasElapsedTime {
+            return "play.fill"
+        } else {
+            return "play.fill"
+        }
+    }
+    
     private var buttonColor: Color {
         if isRunning {
             return .orange
@@ -33,11 +43,12 @@ struct PlayPauseButton: View {
     }
     
     var body: some View {
-        Button(buttonText, action: onAction)
-            .buttonStyle(.borderedProminent)
-            .tint(buttonColor)
-            .clipShape(Capsule())
-            .animation(.easeInOut(duration: 0.2), value: buttonColor)
+        Button(action: onAction) {
+            Image(systemName: buttonSymbol)
+                .contentTransition(.symbolEffect)
+        }
+        .buttonStyle(WatchButtonStyle(color: buttonColor, prominent: true))
+        .animation(.easeInOut(duration: 0.2), value: buttonColor)
     }
 }
 
@@ -46,31 +57,33 @@ struct StopButton: View {
     let onAction: () -> Void
     
     var body: some View {
-        Button("Stop", action: onAction)
-            .buttonStyle(StopButtonStyle(isRunning: isRunning))
-            .tint(.red)
+        Button(action: onAction) {
+            Image(systemName: "stop.fill")
+        }
+        .buttonStyle(WatchButtonStyle(color: .red, prominent: isRunning))
     }
 }
 
-struct StopButtonStyle: ButtonStyle {
-    let isRunning: Bool
+struct WatchButtonStyle: ButtonStyle {
+    let color: Color
+    let prominent: Bool
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .padding()
+            .padding(.horizontal)
             .background(
-                Capsule()
-                    .fill(isRunning ? Color.red : Color.red.opacity(0.2))
-                    .animation(.easeInOut(duration: 0.2), value: isRunning)
+                RoundedRectangle(cornerRadius: 16.0)
+                    .fill(prominent ? color : color.opacity(0.2))
+                    .animation(.easeInOut(duration: 0.2), value: prominent)
             )
             .overlay(
-                Capsule()
-                    .stroke(Color.red, lineWidth: isRunning ? 0 : 1)
-                    .animation(.easeInOut(duration: 0.2), value: isRunning)
+                RoundedRectangle(cornerRadius: 16.0)
+                    .stroke(color, lineWidth: prominent ? 0 : 1)
+                    .animation(.easeInOut(duration: 0.2), value: prominent)
             )
-            .foregroundColor(isRunning ? .white : .red)
-            .animation(.easeInOut(duration: 0.2), value: isRunning)
+            .foregroundColor(prominent ? .white : color)
+            .animation(.easeInOut(duration: 0.4), value: prominent)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
