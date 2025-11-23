@@ -60,10 +60,10 @@ struct PieChartView: View {
                 angle: .value("Time", item.totalTime * chartProgress),
                 innerRadius: .ratio(totalTime > 3600 ? 0.6 : 0.48),
                 outerRadius: .ratio(totalTime > 3600 ? 0.9 : 0.8),
-                angularInset: 2
+                angularInset: 4
             )
+            .cornerRadius(16.0)
             .foregroundStyle(item.tag.swiftUIColor.gradient)
-            .opacity(0.8)
         }
         .frame(height: 300)
         .overlay {
