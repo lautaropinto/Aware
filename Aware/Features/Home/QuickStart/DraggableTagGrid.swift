@@ -87,7 +87,7 @@ struct DraggableTagButton: View {
                 
                 Text(tag.name)
                     .font(.headline)
-                    .fontWeight(.medium)
+                    .fontWeight(.semibold)
                 
                 Spacer()
                 

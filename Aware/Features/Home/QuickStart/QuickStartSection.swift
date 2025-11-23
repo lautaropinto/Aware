@@ -21,7 +21,7 @@ struct QuickStartSection: View {
     @State private var tagToEdit: Tag?
     
     var isDisabled: Bool {
-        awarenessSession.isTimerRunning
+        awarenessSession.activeTimer != nil
     }
     
     var body: some View {
