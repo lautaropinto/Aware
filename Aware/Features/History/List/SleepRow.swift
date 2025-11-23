@@ -21,7 +21,7 @@ struct SleepRow: View {
 
                 VStack(alignment: .leading, spacing: 2.0) {
                     Text(entry.name)
-                        .font(.headline)
+                        .font(.subheadline)
                         .fontWeight(.semibold)
                         .rounded()
 
@@ -57,11 +57,11 @@ struct SleepRow: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: .listRowCornerRadius)
                 .fill(entry.swiftUIColor.opacity(0.15))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: .listRowCornerRadius)
                 .stroke(entry.swiftUIColor.gradient.opacity(0.64), lineWidth: 1.2)
         )
     }

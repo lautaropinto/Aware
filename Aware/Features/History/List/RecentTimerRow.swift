@@ -9,6 +9,10 @@ import SwiftUI
 import SwiftData
 import AwareData
 
+extension CGFloat {
+    static var listRowCornerRadius : CGFloat { 12.0 }
+}
+
 struct RecentTimerRow: View {
     let entry: any TimelineEntry
 
@@ -29,7 +33,7 @@ struct RecentTimerRow: View {
                 VStack(alignment: .leading, spacing: 2.0) {
                     
                     Text(entry.name)
-                        .font(.headline)
+                        .font(.subheadline)
                         .fontWeight(.semibold)
                         
                     if let timekeeper = entry as? Timekeeper, !timekeeper.isRunning,
@@ -73,7 +77,7 @@ struct RecentTimerRow: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: .listRowCornerRadius)
                 .stroke(.gray.gradient.opacity(0.32), lineWidth: 1.0)
                 .fill(.ultraThinMaterial.opacity(0.24))
                 .shadow(color: .gray.opacity(0.4), radius: 2.0, x: 0.0, y: 1)
