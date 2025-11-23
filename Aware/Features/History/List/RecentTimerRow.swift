@@ -29,8 +29,9 @@ struct RecentTimerRow: View {
                 VStack(alignment: .leading, spacing: 2.0) {
                     
                     Text(entry.name)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        
                     if let timekeeper = entry as? Timekeeper, !timekeeper.isRunning,
                        let endTime = timekeeper.endTime {
                         Text("\(timekeeper.creationDate.formattedTime) - \(endTime.formattedTime)")
@@ -39,11 +40,12 @@ struct RecentTimerRow: View {
                     }
                 }
             }
+            .rounded()
             
             Spacer()
             
             if let timekeeper = entry as? Timekeeper {
-               VStack(alignment: .trailing, spacing: 4) {
+               VStack(alignment: .trailing, spacing: 2) {
                 Group {
                     if let timerInterval = timerInterval {
                         Text(timerInterval: timerInterval, countsDown: false)
@@ -61,7 +63,9 @@ struct RecentTimerRow: View {
                 if timekeeper.isRunning {
                     Text("Running")
                         .font(.caption)
+                        .bold()
                         .foregroundColor(.green)
+                        .rounded()
                 }
             }
         }

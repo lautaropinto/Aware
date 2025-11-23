@@ -73,12 +73,12 @@ struct WatchButtonStyle: ButtonStyle {
             .padding()
             .padding(.horizontal)
             .background(
-                RoundedRectangle(cornerRadius: 16.0)
+                RoundedRectangle(cornerRadius: 18.0)
                     .fill(prominent ? color : color.opacity(0.2))
                     .animation(.easeInOut(duration: 0.2), value: prominent)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 16.0)
+                RoundedRectangle(cornerRadius: 18.0)
                     .stroke(color, lineWidth: prominent ? 0 : 1)
                     .animation(.easeInOut(duration: 0.2), value: prominent)
             )

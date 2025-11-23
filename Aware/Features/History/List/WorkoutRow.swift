@@ -19,10 +19,10 @@ struct WorkoutRow: View {
                 TagIconView(color: entry.swiftUIColor, icon: entry.image)
                     .scaleEffect(0.86)
 
-                VStack(alignment: .leading, spacing: 4.0) {
+                VStack(alignment: .leading, spacing: 2.0) {
                     Text(entry.name)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .font(.headline)
+                        .fontWeight(.semibold)
 
                     if let startTime = entry.startTime,
                        let endTime = entry.endTime {
@@ -36,7 +36,7 @@ struct WorkoutRow: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .trailing, spacing: 2.0) {
                 Text(entry.duration.formattedElapsedTime)
                     .font(.subheadline)
                     .fontWeight(.medium)

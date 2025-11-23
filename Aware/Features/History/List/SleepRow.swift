@@ -19,10 +19,10 @@ struct SleepRow: View {
                 TagIconView(color: entry.swiftUIColor, icon: entry.image)
                     .scaleEffect(0.86)
 
-                VStack(alignment: .leading, spacing: 4.0) {
+                VStack(alignment: .leading, spacing: 2.0) {
                     Text(entry.name)
                         .font(.headline)
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
                         .rounded()
 
                     if let startTime = entry.startTime,
@@ -37,7 +37,7 @@ struct SleepRow: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .trailing, spacing: 2) {
                 Text(entry.duration.formattedElapsedTime)
                     .font(.subheadline)
                     .fontWeight(.medium)
