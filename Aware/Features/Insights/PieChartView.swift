@@ -62,7 +62,7 @@ struct PieChartView: View {
                 outerRadius: .ratio(totalTime > 3600 ? 0.9 : 0.8),
                 angularInset: 4
             )
-            .cornerRadius(16.0)
+            .cornerRadius(32.0)
             .foregroundStyle(item.tag.swiftUIColor.gradient)
         }
         .frame(height: 300)
