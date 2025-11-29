@@ -42,6 +42,7 @@ struct HistoryScene: View {
             .onAppear {
                 history.configure(storage: storage, healthKitManager: HealthKitManager.shared)
                 history.refreshData()
+                Tracker.signal("history.viewed")
             }
         }
     }

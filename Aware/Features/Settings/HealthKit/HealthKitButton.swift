@@ -16,6 +16,8 @@ struct HealthKitButton: View {
         Button {
             guard !self.hasSleepPermission else { return }
             
+            Tracker.signal("settings.health_kit_pressed")
+            
             if self.hasSleepPermission {
                 let settingsURL = URL(string: UIApplication.openSettingsURLString)!
                 openURL(settingsURL)

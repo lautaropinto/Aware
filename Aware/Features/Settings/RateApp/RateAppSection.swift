@@ -12,6 +12,7 @@ struct RateAppSection: View {
     var body: some View {
         Section {
             Button {
+                Tracker.signal("settings.rate_app_pressed")
                 requestAppStoreReview()
             } label: {
                 HStack {

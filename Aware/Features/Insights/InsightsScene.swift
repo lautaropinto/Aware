@@ -47,6 +47,10 @@ struct InsightsScene: View {
         .onAppear {
             insightStore.configure(storage: storage, healthKitManager: HealthKitManager.shared)
             insightStore.refreshData()
+            Tracker.signal("insights.viewed", params: [
+                "sleep_data": insightStore.sleepDataEnabled.description,
+                "workout_data": insightStore.workoutDataEnabled.description,
+            ])
         }
         .onChange(of: store.selectedDate) { _, newDate in
             insightStore.updateDate(to: newDate)

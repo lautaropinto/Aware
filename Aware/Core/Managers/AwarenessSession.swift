@@ -42,6 +42,7 @@ final class AwarenessSession {
     // MARK: - Public Timer Operations
 
     func startTimer(with tag: Tag) {
+        Tracker.signal("awareness.start_timer")
         guard let storage = storage else {
             logger.error("Storage not configured")
             return
@@ -67,6 +68,7 @@ final class AwarenessSession {
     }
 
     func pauseTimer() {
+        Tracker.signal("awareness.pause_timer")
         guard let timer = activeTimer, timer.isRunning else {
             logger.warning("No active running timer to pause")
             return
@@ -85,6 +87,7 @@ final class AwarenessSession {
     }
 
     func resumeTimer() {
+        Tracker.signal("awareness.resume_timer")
         guard let timer = activeTimer, !timer.isRunning else {
             logger.warning("No paused timer to resume")
             return
@@ -103,6 +106,7 @@ final class AwarenessSession {
     }
 
     func stopTimer() {
+        Tracker.signal("awareness.stop_timer")
         guard let timer = activeTimer else {
             logger.warning("No active timer to stop")
             return

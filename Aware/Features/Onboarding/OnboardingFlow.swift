@@ -25,14 +25,17 @@ struct OnboardingFlow: View {
                 switch step {
                 case .one:
                     OnboardingStepOne(onContinue: {
+                        Tracker.signal("onboarding.step_one_finished")
                         withAnimation { step = .two }
                     })
                 case .two:
                     OnboardingStepTwo(onContinue: {
+                        Tracker.signal("onboarding.step_two_finished")
                         withAnimation { step = .final }
                     })
                 case .final:
                     OnboardingStepThree(onContinue: {
+                        Tracker.signal("onboarding.step_three_finished")
                         finishOnboarding()
                     })
                     .opacity(slowlyFade ? 0.0 : 1.0)
@@ -42,6 +45,7 @@ struct OnboardingFlow: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     if allowSkip {
                         Button("Skip") {
+                            Tracker.signal("onboarding.skip_button_pressed")
                             finishOnboarding()
                         }
                     }

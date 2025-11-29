@@ -36,6 +36,7 @@ extension AboutListSection {
                 .navigationTitle("About Aware")
                 .applyBackgroundGradient()
                 .onAppear {
+                    Tracker.signal("settings.about_viewed")
                     withAnimation(.spring(duration: 1.2).delay(0.6)) {
                         showingTextOpacity = 1
                     }

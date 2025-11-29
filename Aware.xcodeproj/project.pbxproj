@@ -15,6 +15,7 @@
 		E96D595D2E8323DF009B178D /* AwareUI in Frameworks */ = {isa = PBXBuildFile; productRef = E96D595C2E8323DF009B178D /* AwareUI */; };
 		E97846112E79B04500A76B52 /* SFSymbolPicker in Frameworks */ = {isa = PBXBuildFile; productRef = E97846102E79B04500A76B52 /* SFSymbolPicker */; };
 		E9CEF03E2E720E0300F4F969 /* AwareData in Frameworks */ = {isa = PBXBuildFile; productRef = E9CEF03D2E720E0300F4F969 /* AwareData */; };
+		E9E1DDDF2EDB6CD6002C0DEB /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = E9E1DDDE2EDB6CD6002C0DEB /* TelemetryDeck */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -161,6 +162,7 @@
 				E9CEF03E2E720E0300F4F969 /* AwareData in Frameworks */,
 				E97846112E79B04500A76B52 /* SFSymbolPicker in Frameworks */,
 				E90350522E739632004ED425 /* AwareUI in Frameworks */,
+				E9E1DDDF2EDB6CD6002C0DEB /* TelemetryDeck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +276,7 @@
 				E9CEF03D2E720E0300F4F969 /* AwareData */,
 				E90350512E739632004ED425 /* AwareUI */,
 				E97846102E79B04500A76B52 /* SFSymbolPicker */,
+				E9E1DDDE2EDB6CD6002C0DEB /* TelemetryDeck */,
 			);
 			productName = Aware;
 			productReference = E9CD7FAE2E6FA70B00B4AB53 /* Aware.app */;
@@ -362,6 +365,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E978460F2E79AFE400A76B52 /* XCRemoteSwiftPackageReference "SFSymbolPicker" */,
+				E9E1DDDD2EDB6CD6002C0DEB /* XCRemoteSwiftPackageReference "SwiftSDK" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E9CD7FAF2E6FA70B00B4AB53 /* Products */;
@@ -877,6 +881,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		E9E1DDDD2EDB6CD6002C0DEB /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.10;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -900,6 +912,11 @@
 		E9CEF03D2E720E0300F4F969 /* AwareData */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AwareData;
+		};
+		E9E1DDDE2EDB6CD6002C0DEB /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E9E1DDDD2EDB6CD6002C0DEB /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryDeck;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

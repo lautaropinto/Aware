@@ -35,6 +35,9 @@ extension SettingsButton {
                             .foregroundStyle(.secondary.opacity(0.72))
                     )
                 }
+                .onAppear {
+                    Tracker.signal("settings.viewed")
+                }
             }
         }
     }

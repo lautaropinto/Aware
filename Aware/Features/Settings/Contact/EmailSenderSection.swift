@@ -16,6 +16,7 @@ struct EmailSenderSection: View {
     var body: some View {
         Section {
             Button {
+                Tracker.signal("settings.contact_pressed")
                 sendEmail()
             } label: {
                 HStack {
