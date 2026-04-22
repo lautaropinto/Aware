@@ -19,30 +19,37 @@ struct TabScene: View {
     
     var body: some View {
         TabView {
-            HomeScene()
+            AwarenessHomeScene()
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
                 }
                 .tag(0)
-                .setUpIntentNotificationListener()
-                .environment(awarenessSession)
+
+            HomeScene()
+                .tabItem {
+                    Image(systemName: "timer")
+                    Text("Timer")
+                }
+                .tag(1)
 
             HistoryScene()
                 .tabItem {
                     Image(systemName: "clock.fill")
                     Text("History")
                 }
-                .tag(1)
+                .tag(2)
 
             InsightsScene()
                 .tabItem {
                     Image(systemName: "chart.pie.fill")
                     Text("Insights")
                 }
-                .tag(2)
+                .tag(3)
         }
+        .setUpIntentNotificationListener()
         .environment(storage)
+        .environment(awarenessSession)
         .background(Color.background)
         .accentColor(.primary)
         .sheet(isPresented: $showHealthKitPermissionSheet, onDismiss: {

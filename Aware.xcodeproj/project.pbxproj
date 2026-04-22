@@ -71,7 +71,6 @@
 		E95870CF2E814E56009E47C4 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E95870D02E814E56009E47C4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
 		E95870D22E814E56009E47C4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
-		E9B3BC872E88952400893A89 /* Aware copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Aware copy-Info.plist"; path = "/Users/lautaropinto/Projects/Aware/Aware copy-Info.plist"; sourceTree = "<absolute>"; };
 		E9CD7FAE2E6FA70B00B4AB53 /* Aware.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aware.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9CD7FBB2E6FA70C00B4AB53 /* AwareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9CD7FC52E6FA70C00B4AB53 /* AwareUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AwareUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -202,7 +201,6 @@
 				E9CEF0382E720D8300F4F969 /* Frameworks */,
 				E9CD7FAF2E6FA70B00B4AB53 /* Products */,
 				E9B3BBF52E88937600893A89 /* Recovered References */,
-				E9B3BC872E88952400893A89 /* Aware copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};

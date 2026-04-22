@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @AppStorage("aware-onboarding-ftu-completed") var onboardingCompleted = false
+    @AppStorage("aware-onboarding-ftu-completed") var onboardingCompleted = true
     
     var body: some View {
         VStack {
