@@ -265,6 +265,13 @@ private struct TimerAccessoryDetailScene: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Storage.self) private var storage
     @Environment(AwarenessSession.self) private var awarenessSession
+    @FocusState private var isNewActivityNameFocused: Bool
+
+    @State private var isAddingNewActivity = false
+    @State private var newActivityName = ""
+    @State private var newActivityIcon = "heart.fill"
+    @State private var newActivityColor: Color = .accent
+    @Namespace private var addActivityNamespace
 
     private let columns = [
         GridItem(.flexible(), spacing: 10),
@@ -294,6 +301,17 @@ private struct TimerAccessoryDetailScene: View {
         return storage.tags.filter { $0.id != currentTagID }
     }
 
+    private var duplicateExistingTag: Tag? {
+        let normalizedName = normalizeActivityName(newActivityName)
+        guard !normalizedName.isEmpty else { return nil }
+
+        return storage.tags.first { normalizeActivityName($0.name) == normalizedName }
+    }
+
+    private var isCreateActivityEnabled: Bool {
+        !newActivityName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && duplicateExistingTag == nil
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -306,6 +324,13 @@ private struct TimerAccessoryDetailScene: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
             }
+            .contentShape(Rectangle())
+            .gesture(
+                TapGesture().onEnded {
+                    collapseAddActivityFormIfNeeded()
+                },
+                including: .gesture
+            )
             .applyBackgroundGradient(.toBottom)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -375,33 +400,115 @@ private struct TimerAccessoryDetailScene: View {
 
     private var addActivitySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Button {
-                // Intentionally left empty for now.
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(.secondary.opacity(0.72))
-
-                    Text("Add new activity")
-                        .font(.headline)
-                        .foregroundStyle(.secondary.opacity(0.82))
-
-                    Spacer(minLength: 0)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 13)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.secondary.opacity(0.12))
-                )
-                .overlay {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-                }
+            if isAddingNewActivity {
+                addActivityInlineForm
+                    .transition(
+                        .asymmetric(
+                            insertion: .opacity.combined(with: .scale(scale: 0.97)),
+                            removal: .opacity
+                        )
+                    )
+            } else {
+                addActivityButton
+                    .transition(
+                        .asymmetric(
+                            insertion: .opacity,
+                            removal: .opacity.combined(with: .scale(scale: 0.97))
+                        )
+                    )
             }
-            .buttonStyle(.plain)
         }
+        .animation(.spring(duration: 0.5, bounce: 0.28), value: isAddingNewActivity)
+    }
+
+    private var addActivityButton: some View {
+        Button {
+            withAnimation {
+                isAddingNewActivity = true
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                isNewActivityNameFocused = true
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "plus")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(.secondary.opacity(0.72))
+
+                Text("Add new activity")
+                    .font(.headline)
+                    .foregroundStyle(.secondary.opacity(0.82))
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 13)
+            .matchedGeometryEffect(id: "addActivityContainer", in: addActivityNamespace)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive())
+    }
+
+    private var addActivityInlineForm: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
+                ColorPicker("", selection: $newActivityColor)
+                    .labelsHidden()
+                    .frame(width: 20, height: 20)
+
+                TagIconPicker(selection: $newActivityIcon)
+                    .tint(newActivityColor)
+
+                TextField("Give this time a name", text: $newActivityName)
+                    .textInputAutocapitalization(.words)
+                    .focused($isNewActivityNameFocused)
+                    .submitLabel(.go)
+                    .onSubmit {
+                        createActivityAndStartTimer()
+                    }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 13)
+            .matchedGeometryEffect(id: "addActivityContainer", in: addActivityNamespace)
+            .glassEffect(.regular.interactive())
+            HStack(spacing: 8) {
+                if let duplicateExistingTag {
+                    Text("Activity \"\(duplicateExistingTag.name)\" already exists.")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.orange)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
+                }
+                
+                Spacer(minLength: 0)
+
+                Button {
+                    cancelAddingActivity()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 13, weight: .bold))
+                        .frame(width: 30, height: 30)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .background(.ultraThinMaterial, in: Circle())
+
+                Button {
+                    createActivityAndStartTimer()
+                } label: {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 13, weight: .bold))
+                        .frame(width: 30, height: 30)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.white)
+                .background(newActivityColor.gradient, in: Circle())
+                .disabled(!isCreateActivityEnabled)
+                .opacity(isCreateActivityEnabled ? 1 : 0.4)
+            }
+        }
+        
     }
 
     private var moreActionsSection: some View {
@@ -457,6 +564,60 @@ private struct TimerAccessoryDetailScene: View {
     private func stopCurrentActivity() {
         awarenessSession.stopTimer()
         dismiss()
+    }
+
+    private func cancelAddingActivity() {
+        withAnimation {
+            isAddingNewActivity = false
+        }
+        resetAddActivityForm()
+    }
+
+    private func collapseAddActivityFormIfNeeded() {
+        guard isAddingNewActivity else { return }
+        cancelAddingActivity()
+    }
+
+    private func createActivityAndStartTimer() {
+        let trimmedName = newActivityName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return }
+        guard duplicateExistingTag == nil else { return }
+
+        let nextDisplayOrder = (storage.tags.map(\.displayOrder).max() ?? -1) + 1
+        let newTag = Tag(
+            name: trimmedName,
+            color: newActivityColor.toHex(),
+            image: newActivityIcon,
+            displayOrder: nextDisplayOrder
+        )
+
+        storage.insert(newTag)
+        storage.save()
+
+        if awarenessSession.activeTimer != nil {
+            awarenessSession.stopTimer()
+        }
+        awarenessSession.startTimer(with: newTag)
+
+        resetAddActivityForm()
+        dismiss()
+    }
+
+    private func resetAddActivityForm() {
+        newActivityName = ""
+        newActivityIcon = "heart.fill"
+        newActivityColor = .accent
+        isNewActivityNameFocused = false
+    }
+
+    private func normalizeActivityName(_ rawValue: String) -> String {
+        let normalized = rawValue
+            .folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: .current)
+            .trimmingCharacters(in: .whitespacesAndNewlines.union(.punctuationCharacters).union(.symbols))
+
+        return normalized
+            .split(whereSeparator: \.isWhitespace)
+            .joined(separator: " ")
     }
 }
 
