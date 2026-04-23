@@ -26,9 +26,7 @@ struct TimerAccessoryView: View {
 
         TimerAccessoryContent(
             model: model,
-            onOpenDetail: { isDetailPresented = true },
-            onPrimaryAction: {},
-            onSecondaryAction: {}
+            onOpenDetail: { isDetailPresented = true }
         )
         .onAppear {
             store.configure(storage: storage, healthKitManager: HealthKitManager.shared)
@@ -49,7 +47,8 @@ struct TimerAccessoryView: View {
             if activeTimer.isRunning, let startTime = activeTimer.startTime {
                 timeDisplay = .ticking(
                     baseDuration: activeTimer.totalElapsedSeconds,
-                    referenceDate: startTime
+                    referenceDate: startTime,
+                    rebaseNotification: nil
                 )
             } else {
                 timeDisplay = .staticDuration(activeTimer.currentElapsedTime)
@@ -59,9 +58,7 @@ struct TimerAccessoryView: View {
                 title: activeTimer.mainTag?.name ?? activeTimer.name,
                 color: activeTimer.swiftUIColor,
                 timer: activeTimer,
-                timeDisplay: timeDisplay,
-                primarySystemImage: activeTimer.isRunning ? "pause.fill" : "play.fill",
-                secondarySystemImage: "stop.fill"
+                timeDisplay: timeDisplay
             )
         }
 
@@ -69,9 +66,11 @@ struct TimerAccessoryView: View {
             title: "Unclaimed time",
             color: .gray,
             timer: nil,
-            timeDisplay: .ticking(baseDuration: summary.unclaimedTime, referenceDate: .now),
-            primarySystemImage: "play.fill",
-            secondarySystemImage: "plus"
+            timeDisplay: .ticking(
+                baseDuration: summary.unclaimedTime,
+                referenceDate: .now,
+                rebaseNotification: .timerAccessorySummaryDidUpdate
+            )
         )
     }
 }
@@ -81,53 +80,48 @@ private struct TimerAccessoryModel {
     let color: Color
     let timer: Timekeeper?
     let timeDisplay: TimerAccessoryTimeDisplay
-    let primarySystemImage: String
-    let secondarySystemImage: String
 }
 
 private enum TimerAccessoryTimeDisplay {
-    case ticking(baseDuration: TimeInterval, referenceDate: Date)
+    case ticking(baseDuration: TimeInterval, referenceDate: Date, rebaseNotification: Notification.Name?)
     case staticDuration(TimeInterval)
 }
 
 private struct TimerAccessoryContent: View {
     let model: TimerAccessoryModel
     let onOpenDetail: () -> Void
-    let onPrimaryAction: () -> Void
-    let onSecondaryAction: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
-            Button(action: onOpenDetail) {
-                HStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(model.color.gradient)
-                        .frame(width: 34, height: 34)
-                        .overlay {
-                            Image(systemName: model.timer == nil ? "questionmark" : "timer")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(.white)
-                        }
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(model.title)
-                            .font(.subheadline.bold())
-                            .lineLimit(1)
-
-                        accessoryTime
+        Button(action: onOpenDetail) {
+            HStack(spacing: 10) {
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(model.color.gradient)
+                    .frame(width: 22, height: 22)
+                    .overlay {
+                        Image(systemName: model.timer == nil ? "questionmark" : "timer")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white)
+                            .imageScale(.small)
                     }
 
-                    Spacer(minLength: 0)
-                }
-                .contentShape(.rect)
-            }
-            .buttonStyle(.plain)
+                HStack(spacing: 7) {
+                    Text(model.title)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
 
-            HStack(spacing: 8) {
-                accessoryButton(systemImage: model.primarySystemImage, action: onPrimaryAction)
-                accessoryButton(systemImage: model.secondarySystemImage, action: onSecondaryAction)
+                    Circle()
+                        .fill(.secondary)
+                        .frame(width: 4, height: 4)
+                        .accessibilityHidden(true)
+
+                    accessoryTime
+                }
+
+                Spacer(minLength: 0)
             }
+            .contentShape(.rect)
         }
+        .buttonStyle(.plain)
         .padding(.horizontal, 12)
         .frame(height: 56)
         .padding(.horizontal, 12)
@@ -138,8 +132,12 @@ private struct TimerAccessoryContent: View {
     @ViewBuilder
     private var accessoryTime: some View {
         switch model.timeDisplay {
-        case let .ticking(baseDuration, referenceDate):
-            TickingElapsedText(baseDuration: baseDuration, referenceDate: referenceDate)
+        case let .ticking(baseDuration, referenceDate, rebaseNotification):
+            TickingElapsedText(
+                baseDuration: baseDuration,
+                referenceDate: referenceDate,
+                rebaseNotification: rebaseNotification
+            )
                 .frame(height: 16, alignment: .leading)
 
         case let .staticDuration(elapsedTime):
@@ -148,38 +146,37 @@ private struct TimerAccessoryContent: View {
                 .foregroundStyle(.secondary)
         }
     }
-
-    private func accessoryButton(systemImage: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(.primary)
-                .frame(width: 34, height: 34)
-                .background(.primary.opacity(0.08), in: Circle())
-        }
-        .buttonStyle(.plain)
-    }
 }
 
 private struct TickingElapsedText: UIViewRepresentable {
     let baseDuration: TimeInterval
     let referenceDate: Date
+    let rebaseNotification: Notification.Name?
 
     func makeUIView(context: Context) -> UILabel {
         let label = UILabel()
         label.font = .monospacedDigitSystemFont(ofSize: UIFont.preferredFont(forTextStyle: .caption1).pointSize, weight: .regular)
         label.textColor = .secondaryLabel
+        label.font = .monospacedSystemFont(ofSize: 14.0, weight: .bold)
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         context.coordinator.attach(label)
-        context.coordinator.configure(baseDuration: baseDuration, referenceDate: referenceDate)
+        context.coordinator.configure(
+            baseDuration: baseDuration,
+            referenceDate: referenceDate,
+            rebaseNotification: rebaseNotification
+        )
         return label
     }
 
     func updateUIView(_ label: UILabel, context: Context) {
         context.coordinator.attach(label)
-        context.coordinator.configure(baseDuration: baseDuration, referenceDate: referenceDate)
+        context.coordinator.configure(
+            baseDuration: baseDuration,
+            referenceDate: referenceDate,
+            rebaseNotification: rebaseNotification
+        )
     }
 
     func makeCoordinator() -> Coordinator {
@@ -191,9 +188,14 @@ private struct TickingElapsedText: UIViewRepresentable {
         private var timer: Timer?
         private var baseDuration: TimeInterval = 0
         private var referenceDate = Date()
+        private var notificationObserver: NSObjectProtocol?
+        private var rebaseNotification: Notification.Name?
 
         deinit {
             timer?.invalidate()
+            if let notificationObserver {
+                NotificationCenter.default.removeObserver(notificationObserver)
+            }
         }
 
         func attach(_ label: UILabel) {
@@ -208,9 +210,46 @@ private struct TickingElapsedText: UIViewRepresentable {
             self.timer = timer
         }
 
-        func configure(baseDuration: TimeInterval, referenceDate: Date) {
+        func configure(
+            baseDuration: TimeInterval,
+            referenceDate: Date,
+            rebaseNotification: Notification.Name?
+        ) {
             self.baseDuration = baseDuration
             self.referenceDate = referenceDate
+            configureRebaseNotification(rebaseNotification)
+            updateLabel()
+        }
+
+        private func configureRebaseNotification(_ notificationName: Notification.Name?) {
+            guard rebaseNotification != notificationName else { return }
+
+            if let notificationObserver {
+                NotificationCenter.default.removeObserver(notificationObserver)
+                self.notificationObserver = nil
+            }
+
+            rebaseNotification = notificationName
+
+            guard let notificationName else { return }
+
+            notificationObserver = NotificationCenter.default.addObserver(
+                forName: notificationName,
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                self?.rebase(from: notification)
+            }
+        }
+
+        private func rebase(from notification: Notification) {
+            guard
+                let unclaimedTime = notification.userInfo?[TimerAccessorySummaryNotificationKey.unclaimedTime] as? TimeInterval,
+                let date = notification.userInfo?[TimerAccessorySummaryNotificationKey.date] as? Date
+            else { return }
+
+            baseDuration = unclaimedTime
+            referenceDate = date
             updateLabel()
         }
 

@@ -13,6 +13,11 @@ import OSLog
 
 private let timerAccessoryLogger = Logger(subsystem: "Aware", category: "TimerAccessoryStore")
 
+enum TimerAccessorySummaryNotificationKey {
+    static let unclaimedTime = "unclaimedTime"
+    static let date = "date"
+}
+
 @Observable
 final class TimerAccessoryStore {
     private var timers: [Timekeeper] = []
@@ -85,5 +90,24 @@ final class TimerAccessoryStore {
 
         sleepData = fetchedSleepData
         workoutData = fetchedWorkoutData
+        postSummaryUpdate(for: date)
     }
+
+    private func postSummaryUpdate(for date: Date) {
+        let summaryDate = Calendar.current.isDateInToday(date) ? Date() : date
+        let summary = self.summary(at: summaryDate)
+
+        NotificationCenter.default.post(
+            name: .timerAccessorySummaryDidUpdate,
+            object: self,
+            userInfo: [
+                TimerAccessorySummaryNotificationKey.unclaimedTime: summary.unclaimedTime,
+                TimerAccessorySummaryNotificationKey.date: summaryDate
+            ]
+        )
+    }
+}
+
+extension Notification.Name {
+    static let timerAccessorySummaryDidUpdate = Notification.Name("timerAccessorySummaryDidUpdate")
 }
