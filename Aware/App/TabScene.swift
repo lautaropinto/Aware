@@ -47,6 +47,9 @@ struct TabScene: View {
                 }
                 .tag(3)
         }
+        .tabViewBottomAccessory {
+            TimerAccessoryView()
+        }
         .setUpIntentNotificationListener()
         .environment(storage)
         .environment(awarenessSession)

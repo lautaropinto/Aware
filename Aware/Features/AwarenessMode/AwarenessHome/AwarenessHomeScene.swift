@@ -25,16 +25,19 @@ struct AwarenessHomeScene: View {
                 let selectedSegment = selectedSegment(in: summary)
 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 0) {
                         AwarenessHeader(summary: summary)
+                            .padding(.bottom, 28)
 
-                        TimelineCard(
+                        TimelineSection(
                             summary: summary,
                             selectedSegmentID: selectedSegment.id,
                             onSelectSegment: selectSegment
                         )
+                        .padding(.bottom, 20)
 
-                        TimelineDetailCard(segment: selectedSegment)
+                        TimelineDetailSection(segment: selectedSegment)
+                            .padding(.bottom, 28)
 
                         if let errorMessage = store.errorMessage {
                             Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
@@ -99,103 +102,55 @@ private struct AwarenessHeader: View {
 
             Text("Today is \(summary.dayProgress, format: .percent.precision(.fractionLength(0))) complete · \(summary.timeLeftToday.awarenessDurationLabel) left today")
                 .font(.headline)
+                .monospacedDigit()
                 .foregroundStyle(.secondary)
         }
-        .rounded()
     }
 }
     
-private struct TimelineCard: View {
+private struct TimelineSection: View {
     let summary: AwarenessTimeSummary
     let selectedSegmentID: String
     let onSelectSegment: (AwarenessTimelineSegment) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Timeline")
-                .font(.headline)
-
+        VStack(alignment: .leading, spacing: 10) {
             AwarenessTimelineBar(
                 segments: summary.timelineSegments,
                 selectedSegmentID: selectedSegmentID,
                 dayProgress: summary.dayProgress,
                 onSelectSegment: onSelectSegment
             )
-
-            HStack {
-                ForEach(summary.timelineSegments) { segment in
-                    AwarenessTimelineLegendItem(
-                        title: segment.title,
-                        color: segment.color,
-                        isSelected: segment.id == selectedSegmentID
-                    )
-                }
-                Spacer()
-            }
         }
-        .padding(16)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 
-private struct AwarenessTimelineLegendItem: View {
-    let title: String
-    let color: Color
-    let isSelected: Bool
-
-    var body: some View {
-        HStack(spacing: 6) {
-            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                .fill(color)
-                .frame(width: 12, height: 12)
-
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(isSelected ? .primary : .secondary)
-        }
-        .rounded()
-    }
-}
-
-private struct TimelineDetailCard: View {
+private struct TimelineDetailSection: View {
     let segment: AwarenessTimelineSegment
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                    .fill(segment.color)
-                    .frame(width: 12, height: 12)
-
-                Text("Detail")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            HStack(spacing: 6) {
-                Text(segment.duration.awarenessDurationLabel)
-                    .contentTransition(.numericText(value: segment.duration))
-
-                Text(detailTitle)
-            }
-            .font(.title2.bold())
-            .minimumScaleFactor(0.8)
-            .lineLimit(1)
-            .animation(.smooth, value: segment.duration)
+        VStack(alignment: .leading, spacing: 4) {
+            Text("\(segment.duration.awarenessDurationLabel) \(detailTitle)")
+                .font(.title2.bold())
+                .monospacedDigit()
+                .contentTransition(.numericText(value: segment.duration))
+                .minimumScaleFactor(0.8)
+                .lineLimit(1)
 
             Text("\(segment.dayProgress, format: .percent.precision(.fractionLength(0))) of today")
-                .font(.footnote)
+                .font(.subheadline)
+                .monospacedDigit()
                 .foregroundStyle(.secondary)
                 .contentTransition(.numericText(value: segment.dayProgress))
-                .animation(.smooth, value: segment.dayProgress)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .animation(.smooth, value: segment.id)
+        .animation(.smooth, value: segment.duration)
+        .animation(.smooth, value: segment.dayProgress)
     }
 
     private var detailTitle: String {
-        segment.id == AwarenessTimelineSegment.unclaimedID ? "unclaimed" : segment.title
+        segment.id == AwarenessTimelineSegment.unclaimedID ? "unclaimed" : segment.title.lowercased()
     }
 }
 
@@ -206,6 +161,8 @@ private struct AwarenessTimelineBar: View {
     let onSelectSegment: (AwarenessTimelineSegment) -> Void
 
     private let minimumSegmentWidth: CGFloat = 16
+    private let nowIndicatorWidth: CGFloat = 2
+    private let nowIndicatorExtraHeight: CGFloat = 24
 
     var body: some View {
         GeometryReader { proxy in
@@ -214,12 +171,9 @@ private struct AwarenessTimelineBar: View {
             let offsets = segmentWidths.reduce(into: [CGFloat]()) { partialResult, segmentWidth in
                 partialResult.append((partialResult.last ?? 0) + segmentWidth)
             }
+            let nowOffset = max(0, min(width, width * dayProgress))
 
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(.secondary.opacity(0.18))
-                    .allowsHitTesting(false)
-
                 ForEach(Array(segments.enumerated()), id: \.element.id) { index, segment in
                     let offset = index == 0 ? 0 : offsets[index - 1]
 
@@ -228,10 +182,7 @@ private struct AwarenessTimelineBar: View {
                     } label: {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .fill(segment.color.gradient)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(.primary.opacity(segment.id == selectedSegmentID ? 0.3 : 0), lineWidth: 2)
-                            }
+                            .opacity(segment.id == selectedSegmentID ? 1 : 0.72)
                     }
                     .buttonStyle(.plain)
                     .frame(width: segmentWidths[index], height: proxy.size.height)
@@ -240,15 +191,15 @@ private struct AwarenessTimelineBar: View {
                     .accessibilityValue(segment.duration.awarenessDurationLabel)
                 }
 
-                RoundedRectangle(cornerRadius: 1, style: .continuous)
-                    .fill(.primary.opacity(0.45))
-                    .frame(width: 2, height: proxy.size.height)
-                    .offset(x: max(0, min(width - 2, width * dayProgress)))
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .fill(.red.opacity(0.4))
+                    .frame(width: nowIndicatorWidth, height: proxy.size.height + nowIndicatorExtraHeight)
+                    .shadow(color: .red.opacity(0.35), radius: 6, x: 0, y: 0)
+                    .position(x: nowOffset, y: proxy.size.height / 2)
                     .allowsHitTesting(false)
             }
         }
         .frame(height: 64)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private func visibleSegmentWidths(totalWidth: CGFloat) -> [CGFloat] {

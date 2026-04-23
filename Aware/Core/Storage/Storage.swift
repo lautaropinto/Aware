@@ -24,6 +24,7 @@ final class Storage {
 
     private var _context: ModelContext!
     private(set) var changeToken = UUID() // For triggering updates
+    var isConfigured: Bool { _context != nil }
 
     private init() {}
 
