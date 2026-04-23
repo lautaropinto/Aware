@@ -20,6 +20,7 @@ extension SettingsButton {
                     .navigationTitleWithCloseButton("Settings")
                     .navigationBarTitleDisplayMode(.inline)
                     .scrollContentBackground(.hidden)
+//                    .applyBackgroundGradient()
                     .background(
                         Color.accent.mix(with: .background, by: 0.8)
                             .edgesIgnoringSafeArea(.all)

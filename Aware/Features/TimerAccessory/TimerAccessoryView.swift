@@ -21,8 +21,7 @@ struct TimerAccessoryView: View {
     }
 
     var body: some View {
-        let summary = store.summary()
-        let model = accessoryModel(summary: summary)
+        let model = accessoryModel()
 
         TimerAccessoryContent(
             model: model,
@@ -36,11 +35,11 @@ struct TimerAccessoryView: View {
             store.refreshData()
         }
         .fullScreenCover(isPresented: $isDetailPresented) {
-            TimerAccessoryDetailScene(timer: activeTimer)
+            TimerAccessoryDetailScene()
         }
     }
 
-    private func accessoryModel(summary: AwarenessTimeSummary) -> TimerAccessoryModel {
+    private func accessoryModel() -> TimerAccessoryModel {
         if let activeTimer {
             let timeDisplay: TimerAccessoryTimeDisplay
 
@@ -62,14 +61,16 @@ struct TimerAccessoryView: View {
             )
         }
 
+        let referenceDate = store.latestEndedActivityDate() ?? .now
+
         return TimerAccessoryModel(
             title: "Unclaimed time",
             color: .gray,
             timer: nil,
             timeDisplay: .ticking(
-                baseDuration: summary.unclaimedTime,
-                referenceDate: .now,
-                rebaseNotification: .timerAccessorySummaryDidUpdate
+                baseDuration: 0,
+                referenceDate: referenceDate,
+                rebaseNotification: nil
             )
         )
     }
@@ -262,28 +263,227 @@ private struct TickingElapsedText: UIViewRepresentable {
 
 private struct TimerAccessoryDetailScene: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(Storage.self) private var storage
+    @Environment(AwarenessSession.self) private var awarenessSession
 
-    let timer: Timekeeper?
+    private let columns = [
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10)
+    ]
+
+    private var currentTimer: Timekeeper? {
+        awarenessSession.activeTimer
+    }
+
+    private var unclaimedReferenceDate: Date {
+        let now = Date()
+        let dayStart = Calendar.current.startOfDay(for: now)
+        let latestEndedToday = storage.timers
+            .compactMap(\.endTime)
+            .filter { $0 >= dayStart && $0 <= now }
+            .max()
+
+        return latestEndedToday ?? now
+    }
+
+    private var switchTags: [Tag] {
+        guard let currentTagID = currentTimer?.mainTag?.id else {
+            return storage.tags
+        }
+
+        return storage.tags.filter { $0.id != currentTagID }
+    }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                Text(timer?.mainTag?.name ?? timer?.name ?? "Unclaimed time")
-                    .font(.largeTitle.bold())
-
-                Text("Timer detail")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 28) {
+                    currentActivitySection
+                    switchToSection
+                    addActivitySection
+                    moreActionsSection
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.background)
+            .applyBackgroundGradient(.toBottom)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button {
                         dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 15, weight: .semibold))
                     }
                 }
             }
+        }
+    }
+
+    private var currentActivitySection: some View {
+        VStack(alignment: .center, spacing: 12) {
+            HStack(spacing: 10) {
+                Circle()
+                    .fill(currentTimer?.swiftUIColor ?? .gray)
+                    .frame(width: 10, height: 10)
+
+                Text(currentTimer?.mainTag?.name ?? currentTimer?.name ?? "Unclaimed time")
+                    .font(.title3.weight(.semibold))
+                    .lineLimit(1)
+            }
+
+            DetailElapsedTimerText(
+                timer: currentTimer,
+                unclaimedReferenceDate: unclaimedReferenceDate
+            )
+                .font(.system(size: 58, weight: .bold, design: .monospaced))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .contentTransition(.numericText(value: currentTimer?.currentElapsedTime ?? 0))
+        }
+    }
+
+    private var switchToSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            LazyVGrid(columns: columns, spacing: 10) {
+                ForEach(switchTags, id: \.id) { tag in
+                    Button {
+                        switchToActivity(tag)
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: tag.image.isEmpty ? "circle.fill" : tag.image)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(tag.swiftUIColor)
+
+                            Text(tag.name)
+                                .font(.headline)
+                                .lineLimit(1)
+
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 12)
+                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private var addActivitySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Button {
+                // Intentionally left empty for now.
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(.secondary.opacity(0.72))
+
+                    Text("Add new activity")
+                        .font(.headline)
+                        .foregroundStyle(.secondary.opacity(0.82))
+
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 13)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color.secondary.opacity(0.12))
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+                }
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var moreActionsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("More actions")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+
+            VStack(spacing: 8) {
+                Button {
+                    // Intentionally no-op for now.
+                } label: {
+                    actionRow(icon: "timer", title: "Adjust time")
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    stopCurrentActivity()
+                } label: {
+                    actionRow(icon: "stop.fill", title: "Stop activity")
+                }
+                .buttonStyle(.plain)
+                .disabled(currentTimer == nil)
+                .opacity(currentTimer == nil ? 0.4 : 1)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func actionRow(icon: String, title: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 13, weight: .semibold))
+
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private func switchToActivity(_ tag: Tag) {
+        if awarenessSession.activeTimer != nil {
+            awarenessSession.stopTimer()
+        }
+        awarenessSession.startTimer(with: tag)
+        dismiss()
+    }
+
+    private func stopCurrentActivity() {
+        awarenessSession.stopTimer()
+        dismiss()
+    }
+}
+
+private struct DetailElapsedTimerText: View {
+    let timer: Timekeeper?
+    let unclaimedReferenceDate: Date
+
+    private var timerInterval: ClosedRange<Date>? {
+        guard let timer, timer.isRunning, let startTime = timer.startTime else {
+            return nil
+        }
+
+        let adjustedStartTime = startTime.addingTimeInterval(-timer.totalElapsedSeconds)
+        return adjustedStartTime...Date(timeIntervalSinceNow: 360000)
+    }
+
+    private var unclaimedInterval: ClosedRange<Date> {
+        unclaimedReferenceDate...Date(timeIntervalSinceNow: 360000)
+    }
+
+    var body: some View {
+        if let timer, let timerInterval {
+            Text(timerInterval: timerInterval, countsDown: false)
+        } else if let timer {
+            Text(timer.currentElapsedTime.formattedElapsedTime)
+        } else {
+            Text(timerInterval: unclaimedInterval, countsDown: false)
         }
     }
 }

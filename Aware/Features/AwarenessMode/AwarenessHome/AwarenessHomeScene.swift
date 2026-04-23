@@ -82,12 +82,14 @@ struct AwarenessHomeScene: View {
 
     private func selectedSegment(in summary: AwarenessTimeSummary) -> AwarenessTimelineSegment {
         summary.timelineSegments.first { $0.id == selectedSegmentID }
-            ?? summary.timelineSegments.first { $0.id == AwarenessTimelineSegment.unclaimedID }
+            ?? summary.timelineSegments.first(where: \.isUnclaimed)
             ?? AwarenessTimelineSegment(
                 id: AwarenessTimelineSegment.unclaimedID,
-                title: "Unclaimed",
+                title: AwarenessTimelineSegment.unclaimedTitle,
                 duration: 0,
-                color: .gray
+                color: .gray,
+                startDate: nil,
+                endDate: nil
             )
     }
 }
@@ -142,6 +144,14 @@ private struct TimelineDetailSection: View {
                 .monospacedDigit()
                 .foregroundStyle(.secondary)
                 .contentTransition(.numericText(value: segment.dayProgress))
+
+            if let segmentTimeRangeText {
+                Text(segmentTimeRangeText)
+                    .font(.caption)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+                    .contentTransition(.numericText(value: segment.dayProgress))
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .animation(.smooth, value: segment.id)
@@ -150,8 +160,24 @@ private struct TimelineDetailSection: View {
     }
 
     private var detailTitle: String {
-        segment.id == AwarenessTimelineSegment.unclaimedID ? "unclaimed" : segment.title.lowercased()
+        segment.isUnclaimed ? "unclaimed" : segment.title.lowercased()
     }
+
+    private var segmentTimeRangeText: String? {
+        guard let startDate = segment.startDate, let endDate = segment.endDate else {
+            return nil
+        }
+
+        return "From \(Self.timeFormatter.string(from: startDate)) to \(Self.timeFormatter.string(from: endDate))"
+    }
+
+    private static let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.calendar = .current
+        formatter.dateFormat = "HH:mm"
+        return formatter
+    }()
 }
 
 private struct AwarenessTimelineBar: View {
@@ -161,19 +187,41 @@ private struct AwarenessTimelineBar: View {
     let onSelectSegment: (AwarenessTimelineSegment) -> Void
 
     private let minimumSegmentWidth: CGFloat = 16
+    private let segmentSpacing: CGFloat = 2
     private let nowIndicatorWidth: CGFloat = 2
     private let nowIndicatorExtraHeight: CGFloat = 24
 
     var body: some View {
         GeometryReader { proxy in
             let width = proxy.size.width
-            let segmentWidths = visibleSegmentWidths(totalWidth: width)
+            let totalSpacing = CGFloat(max(segments.count - 1, 0)) * segmentSpacing
+            let availableWidth = max(0, width - totalSpacing)
+            let segmentWidths = visibleSegmentWidths(totalWidth: availableWidth)
             let offsets = segmentWidths.reduce(into: [CGFloat]()) { partialResult, segmentWidth in
-                partialResult.append((partialResult.last ?? 0) + segmentWidth)
+                partialResult.append((partialResult.last ?? 0) + segmentWidth + segmentSpacing)
             }
-            let nowOffset = max(0, min(width, width * dayProgress))
+            let progressOffset = max(0, min(width, width * dayProgress))
+            let claimedEndOffset: CGFloat = {
+                guard let lastWidth = segmentWidths.last else { return 0 }
+                let lastIndex = segmentWidths.count - 1
+                let lastOffset = lastIndex == 0 ? 0 : offsets[lastIndex - 1]
+                return min(width, lastOffset + lastWidth)
+            }()
+            let rawRemainingStartOffset = max(progressOffset, claimedEndOffset)
+            let remainingStartOffset = min(
+                width,
+                rawRemainingStartOffset + (rawRemainingStartOffset < width ? segmentSpacing : 0)
+            )
+            let remainingWidth = max(0, width - remainingStartOffset)
 
             ZStack(alignment: .leading) {
+                if remainingWidth > 0 {
+                    TimelineRemainingPlaceholder()
+                        .frame(width: remainingWidth, height: proxy.size.height)
+                        .offset(x: remainingStartOffset)
+                        .allowsHitTesting(false)
+                }
+
                 ForEach(Array(segments.enumerated()), id: \.element.id) { index, segment in
                     let offset = index == 0 ? 0 : offsets[index - 1]
 
@@ -195,7 +243,7 @@ private struct AwarenessTimelineBar: View {
                     .fill(.red.opacity(0.4))
                     .frame(width: nowIndicatorWidth, height: proxy.size.height + nowIndicatorExtraHeight)
                     .shadow(color: .red.opacity(0.35), radius: 6, x: 0, y: 0)
-                    .position(x: nowOffset, y: proxy.size.height / 2)
+                    .position(x: remainingStartOffset, y: proxy.size.height / 2)
                     .allowsHitTesting(false)
             }
         }
@@ -225,6 +273,41 @@ private struct AwarenessTimelineBar: View {
 
             return minimumSegmentWidth + (width / claimedRawWidth) * extraWidth
         }
+    }
+}
+
+private struct TimelineRemainingPlaceholder: View {
+    private let cornerRadius: CGFloat = 8
+    private let stripeSpacing: CGFloat = 10
+    private let stripeWidth: CGFloat = 3
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .fill(Color.primary.opacity(0.08))
+            .overlay {
+                GeometryReader { proxy in
+                    let width = proxy.size.width
+                    let height = proxy.size.height
+
+                    Path { path in
+                        var startX: CGFloat = -height
+                        while startX <= width + height {
+                            path.move(to: CGPoint(x: startX, y: height))
+                            path.addLine(to: CGPoint(x: startX + height, y: 0))
+                            startX += stripeSpacing
+                        }
+                    }
+                    .stroke(
+                        Color.mint.opacity(0.55),
+                        style: StrokeStyle(lineWidth: stripeWidth, lineCap: .round)
+                    )
+                }
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+            }
     }
 }
 

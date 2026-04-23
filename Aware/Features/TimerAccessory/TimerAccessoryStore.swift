@@ -46,6 +46,15 @@ final class TimerAccessoryStore {
         )
     }
 
+    func latestEndedActivityDate(now: Date = .now) -> Date? {
+        let dayStart = Calendar.current.startOfDay(for: now)
+
+        return timers
+            .compactMap(\.endTime)
+            .filter { $0 >= dayStart && $0 <= now }
+            .max()
+    }
+
     @MainActor
     private func loadTodayData(for date: Date) async {
         guard let storage, storage.isConfigured else {

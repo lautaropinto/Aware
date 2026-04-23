@@ -13,16 +13,29 @@ extension Color {
     }
 }
 
+public enum GradientDirection {
+    case toBottom, toTop
+    
+    var startPoint: UnitPoint {
+        self == .toBottom ? .top : .bottom
+    }
+    
+    var endPoint: UnitPoint {
+        self == .toBottom ? .bottom : .top
+    }
+}
 
 private struct BackgroundModifier: ViewModifier {
-    @Environment(\.appConfig) var config
-    @Environment(\.colorScheme) var scheme
+    @Environment(\.appConfig) private var config
+    @Environment(\.colorScheme) private var scheme
+    
+    let direction: GradientDirection
 
     private func palette() -> (main: Color, secondary: Color, tertiary: Color) {
         let base = config.backgroundColor
         let background = Color.background
-        let main = base.mix(with: background, by: 0.6)
-        let secondary = base.mix(with: background, by: 0.7)
+        let main = base.mix(with: background, by: 0.7)
+        let secondary = base.mix(with: background, by: 0.8)
         let tertiary = base.mix(with: background, by: 0.9)
         return (main, secondary, tertiary)
     }
@@ -33,8 +46,8 @@ private struct BackgroundModifier: ViewModifier {
                 .background(
                     LinearGradient(
                         colors: [palette().main, palette().secondary, palette().tertiary],
-                        startPoint: .top,
-                        endPoint: .bottom
+                        startPoint: direction.startPoint,
+                        endPoint: direction.endPoint
                     )
                     .colorEffect(ShaderLibrary.parameterizedNoise(.float(0.5), .float(1.0), .float(0.2)))
                     .edgesIgnoringSafeArea(.all)
@@ -45,8 +58,8 @@ private struct BackgroundModifier: ViewModifier {
                 .background(
                     LinearGradient(
                         colors: [palette().main, palette().secondary, palette().tertiary],
-                        startPoint: .top,
-                        endPoint: .bottom
+                        startPoint: direction.startPoint,
+                        endPoint: direction.endPoint
                     )
                     .edgesIgnoringSafeArea(.all)
                 )
@@ -56,8 +69,8 @@ private struct BackgroundModifier: ViewModifier {
 }
 
 public extension View {
-    func applyBackgroundGradient() -> some View {
-        modifier(BackgroundModifier())
+    func applyBackgroundGradient(_ direction: GradientDirection = .toTop) -> some View {
+        modifier(BackgroundModifier(direction: direction))
     }
 }
 
