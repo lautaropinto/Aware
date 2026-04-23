@@ -521,7 +521,7 @@ private struct TimerAccessoryDetailScene: View {
                 Button {
                     // Intentionally no-op for now.
                 } label: {
-                    actionRow(icon: "timer", title: "Adjust time")
+                    actionRow(icon: "timer", title: "End earlier")
                 }
                 .buttonStyle(.plain)
 
