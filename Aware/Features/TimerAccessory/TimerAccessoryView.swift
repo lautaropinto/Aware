@@ -525,14 +525,14 @@ private struct TimerAccessoryDetailScene: View {
                 }
                 .buttonStyle(.plain)
 
-                Button {
-                    stopCurrentActivity()
-                } label: {
-                    actionRow(icon: "stop.fill", title: "Stop activity")
+                if currentTimer != nil {
+                    Button {
+                        stopCurrentActivity()
+                    } label: {
+                        actionRow(icon: "stop.fill", title: "Stop activity")
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-                .disabled(currentTimer == nil)
-                .opacity(currentTimer == nil ? 0.4 : 1)
             }
         }
     }
