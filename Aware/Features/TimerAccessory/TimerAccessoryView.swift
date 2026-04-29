@@ -61,7 +61,7 @@ struct TimerAccessoryView: View {
             )
         }
 
-        let referenceDate = store.latestEndedActivityDate() ?? .now
+        let referenceDate = store.latestEndedActivityDate() ?? Calendar.current.startOfDay(for: .now)
 
         return TimerAccessoryModel(
             title: "Unclaimed time",
@@ -290,7 +290,7 @@ private struct TimerAccessoryDetailScene: View {
             .filter { $0 >= dayStart && $0 <= now }
             .max()
 
-        return latestEndedToday ?? now
+        return latestEndedToday ?? dayStart
     }
 
     private var switchTags: [Tag] {
