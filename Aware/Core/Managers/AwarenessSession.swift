@@ -114,30 +114,30 @@ final class AwarenessSession {
 
         logger.debug("Stopping timer: \(timer.name)")
         timer.stop()
-        storage?.save()
-        
-        let finalElapsedTime = timer.totalElapsedSeconds // Get final time before stopping
-
-        // Update Live Activity to show completed state with final elapsed time
-        liveActivityManager?.updateLiveActivity(
-            elapsedTime: finalElapsedTime,
-            intentAction: .stop
-        )
-
-        // Reset session state
-        activeTimer = nil
-        isTimerRunning = false
-
-        // Coordinate with other managers
-        resetAppConfig()
-
-        // Keep Live Activity alive to show completion - no auto-dismissal
-
-        // Trigger refresh and notification
-        storage?.triggerRefresh()
-        NotificationCenter.default.post(name: .timerDidStop, object: nil)
+        finishStoppedTimer(timer)
 
         logger.debug("Timer stopped successfully")
+    }
+
+    func stopTimer(at endTime: Date) {
+        Tracker.signal("awareness.stop_timer_earlier")
+        guard let timer = activeTimer else {
+            logger.warning("No active timer to stop earlier")
+            return
+        }
+
+        let startTime = timer.currentSessionStartDate
+        let clampedEndTime = min(max(endTime, startTime), Date())
+
+        logger.debug("Stopping timer earlier: \(timer.name)")
+        timer.endTime = clampedEndTime
+        timer.totalElapsedSeconds = clampedEndTime.timeIntervalSince(startTime)
+        timer.startTime = nil
+        timer.isRunning = false
+
+        finishStoppedTimer(timer)
+
+        logger.debug("Timer stopped earlier successfully")
     }
 
     // MARK: - Lifecycle Management
@@ -186,6 +186,31 @@ final class AwarenessSession {
             elapsedTime: timer.currentElapsedTime,
             intentAction: action
         )
+    }
+
+    private func finishStoppedTimer(_ timer: Timekeeper) {
+        storage?.save()
+
+        let finalElapsedTime = timer.totalElapsedSeconds // Get final time before stopping
+
+        // Update Live Activity to show completed state with final elapsed time
+        liveActivityManager?.updateLiveActivity(
+            elapsedTime: finalElapsedTime,
+            intentAction: .stop
+        )
+
+        // Reset session state
+        activeTimer = nil
+        isTimerRunning = false
+
+        // Coordinate with other managers
+        resetAppConfig()
+
+        // Keep Live Activity alive to show completion - no auto-dismissal
+
+        // Trigger refresh and notification
+        storage?.triggerRefresh()
+        NotificationCenter.default.post(name: .timerDidStop, object: nil)
     }
 
     private func endLiveActivity() {

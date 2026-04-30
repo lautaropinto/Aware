@@ -261,6 +261,11 @@ private struct TickingElapsedText: UIViewRepresentable {
     }
 }
 
+private enum TimerAccessoryDetailMode {
+    case timer
+    case endEarlier
+}
+
 private struct TimerAccessoryDetailScene: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Storage.self) private var storage
@@ -268,10 +273,14 @@ private struct TimerAccessoryDetailScene: View {
     @FocusState private var isNewActivityNameFocused: Bool
 
     @State private var isAddingNewActivity = false
+    @State private var detailMode: TimerAccessoryDetailMode = .timer
+    @State private var endEarlierEndTime = Date()
+    @State private var endEarlierMaxEndTime = Date()
     @State private var newActivityName = ""
     @State private var newActivityIcon = "heart.fill"
     @State private var newActivityColor: Color = .accent
     @Namespace private var addActivityNamespace
+    @Namespace private var detailTransitionNamespace
 
     private let columns = [
         GridItem(.flexible(), spacing: 10),
@@ -315,14 +324,9 @@ private struct TimerAccessoryDetailScene: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    currentActivitySection
-                    switchToSection
-                    addActivitySection
-                    moreActionsSection
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
+                detailContent
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
             }
             .contentShape(Rectangle())
             .gesture(
@@ -333,15 +337,66 @@ private struct TimerAccessoryDetailScene: View {
             )
             .applyBackgroundGradient(.toBottom)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 15, weight: .semibold))
+                if detailMode == .endEarlier {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            cancelEndEarlierEdit()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 15, weight: .semibold))
+                        }
+                    }
+
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            confirmEndEarlierEdit()
+                        } label: {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 15, weight: .semibold))
+                        }
+                    }
+                } else {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 15, weight: .semibold))
+                        }
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var detailContent: some View {
+        if detailMode == .endEarlier, let currentTimer {
+            EndEarlierTimerEditor(
+                timer: currentTimer,
+                endTime: $endEarlierEndTime,
+                maxEndTime: endEarlierMaxEndTime,
+                namespace: detailTransitionNamespace
+            )
+            .transition(
+                .asymmetric(
+                    insertion: .opacity.combined(with: .move(edge: .trailing)),
+                    removal: .opacity.combined(with: .move(edge: .leading))
+                )
+            )
+        } else {
+            VStack(alignment: .leading, spacing: 28) {
+                currentActivitySection
+                switchToSection
+                addActivitySection
+                moreActionsSection
+            }
+            .transition(
+                .asymmetric(
+                    insertion: .opacity.combined(with: .move(edge: .leading)),
+                    removal: .opacity.combined(with: .move(edge: .trailing))
+                )
+            )
         }
     }
 
@@ -356,6 +411,7 @@ private struct TimerAccessoryDetailScene: View {
                     .font(.title3.weight(.semibold))
                     .lineLimit(1)
             }
+            .matchedGeometryEffect(id: "currentActivitySummary", in: detailTransitionNamespace)
 
             DetailElapsedTimerText(
                 timer: currentTimer,
@@ -518,12 +574,14 @@ private struct TimerAccessoryDetailScene: View {
                 .foregroundStyle(.secondary)
 
             VStack(spacing: 8) {
-                Button {
-                    // Intentionally no-op for now.
-                } label: {
-                    actionRow(icon: "timer", title: "End earlier")
+                if currentTimer?.isRunning == true {
+                    Button {
+                        beginEndEarlierEdit()
+                    } label: {
+                        actionRow(icon: "timer", title: "End earlier")
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
 
                 if currentTimer != nil {
                     Button {
@@ -563,6 +621,30 @@ private struct TimerAccessoryDetailScene: View {
 
     private func stopCurrentActivity() {
         awarenessSession.stopTimer()
+        dismiss()
+    }
+
+    private func beginEndEarlierEdit() {
+        guard let timer = currentTimer, timer.isRunning else { return }
+
+        endEarlierMaxEndTime = Date()
+        endEarlierEndTime = endEarlierMaxEndTime
+        endEarlierEndTime = min(max(endEarlierEndTime, timer.currentSessionStartDate), endEarlierMaxEndTime)
+
+        withAnimation(.spring(duration: 0.56, bounce: 0.24)) {
+            detailMode = .endEarlier
+            isAddingNewActivity = false
+        }
+    }
+
+    private func cancelEndEarlierEdit() {
+        withAnimation(.spring(duration: 0.48, bounce: 0.22)) {
+            detailMode = .timer
+        }
+    }
+
+    private func confirmEndEarlierEdit() {
+        awarenessSession.stopTimer(at: endEarlierEndTime)
         dismiss()
     }
 
@@ -639,13 +721,196 @@ private struct DetailElapsedTimerText: View {
     }
 
     var body: some View {
-        if let timer, let timerInterval {
+        if timer != nil, let timerInterval {
             Text(timerInterval: timerInterval, countsDown: false)
         } else if let timer {
             Text(timer.currentElapsedTime.formattedElapsedTime)
         } else {
             Text(timerInterval: unclaimedInterval, countsDown: false)
         }
+    }
+}
+
+private struct EndEarlierTimerEditor: View {
+    let timer: Timekeeper
+    @Binding var endTime: Date
+    let maxEndTime: Date
+    let namespace: Namespace.ID
+
+    private var startTime: Date {
+        timer.currentSessionStartDate
+    }
+
+    private var color: Color {
+        timer.swiftUIColor
+    }
+
+    private var activityName: String {
+        timer.mainTag?.name ?? timer.name
+    }
+
+    private var clampedEndTime: Date {
+        min(max(endTime, startTime), maxEndTime)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 26) {
+            currentActivitySummary
+
+            VStack(alignment: .leading, spacing: 12.0) {
+                Text("When did you stop?")
+                    .font(.title2.weight(.bold))
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+
+                EndTimeDragControl(
+                    startTime: startTime,
+                    endTime: $endTime,
+                    maxEndTime: maxEndTime,
+                    color: color
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .onAppear {
+            endTime = clampedEndTime
+        }
+        .animation(.smooth(duration: 0.22), value: clampedEndTime)
+    }
+
+    private var currentActivitySummary: some View {
+        HStack(spacing: 12) {
+            Image(systemName: timer.mainTag?.image.isEmpty == false ? timer.mainTag?.image ?? "timer" : "timer")
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(color)
+                .frame(width: 34, height: 34)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(activityName)
+                    .font(.title3.weight(.semibold))
+                    .lineLimit(1)
+
+                Text("Started at \(startTime.formattedTime)")
+                    .font(.caption.monospacedDigit().weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .matchedGeometryEffect(id: "currentActivitySummary", in: namespace)
+    }
+}
+
+private struct EndTimeDragControl: View {
+    let startTime: Date
+    @Binding var endTime: Date
+    let maxEndTime: Date
+    let color: Color
+
+    private var clampedEndTime: Date {
+        min(max(endTime, startTime), maxEndTime)
+    }
+
+    private var availableDuration: TimeInterval {
+        max(1, maxEndTime.timeIntervalSince(startTime))
+    }
+
+    private var selectedDuration: TimeInterval {
+        max(0, clampedEndTime.timeIntervalSince(startTime))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(clampedEndTime.formattedTime)
+                .font(.system(size: 54, weight: .bold, design: .monospaced))
+                .monospacedDigit()
+                .contentTransition(.numericText())
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+
+            GeometryReader { proxy in
+                let width = max(1, proxy.size.width)
+                let progress = selectedDuration / availableDuration
+                let handleWidth: CGFloat = 38
+                let handleOffset = max(0, min(width - handleWidth, (width - handleWidth) * progress))
+                let fillWidth = max(handleWidth * 0.62, width * progress)
+
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(color.opacity(0.18))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                .stroke(color.opacity(0.2), lineWidth: 1)
+                        }
+
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    color.opacity(0.95),
+                                    color.opacity(0.72),
+                                    color.opacity(0.36)
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: fillWidth)
+                        .animation(.smooth(duration: 0.18), value: fillWidth)
+
+                    HStack {
+                        Spacer(minLength: 0)
+                        Text(selectedDuration.compactFormattedTime)
+                            .font(.headline.monospacedDigit().weight(.bold))
+                            .foregroundStyle(.white.opacity(0.9))
+                            .contentTransition(.numericText(value: selectedDuration))
+                    }
+                    .padding(.horizontal, 22)
+                    .allowsHitTesting(false)
+
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .fill(.white.opacity(0.12))
+                        .frame(width: handleWidth)
+                        .overlay {
+                            Capsule()
+                                .fill(.white.opacity(0.9))
+                                .frame(width: 5, height: 44)
+                        }
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .stroke(.white.opacity(0.16), lineWidth: 1)
+                        }
+                        .shadow(color: color.opacity(0.25), radius: 18, y: 8)
+                        .offset(x: handleOffset)
+                        .animation(.spring(duration: 0.32, bounce: 0.22), value: handleOffset)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .frame(width: width, height: 74)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            updateEndTime(locationX: value.location.x, width: width)
+                        }
+                )
+            }
+            .frame(height: 74)
+
+            HStack {
+                Text(startTime.formattedTime)
+                Spacer()
+                Text(maxEndTime.formattedTime)
+            }
+            .font(.caption2.monospacedDigit().weight(.semibold))
+            .foregroundStyle(.secondary)
+        }
+    }
+
+    private func updateEndTime(locationX: CGFloat, width: CGFloat) {
+        let progress = max(0, min(1, locationX / max(1, width)))
+        let nextEndTime = startTime.addingTimeInterval(availableDuration * progress)
+
+        endTime = min(max(nextEndTime, startTime), maxEndTime)
     }
 }
 

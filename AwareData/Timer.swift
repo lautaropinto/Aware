@@ -100,6 +100,18 @@ public class Timekeeper: Codable, Equatable {
         }
         return elapsed
     }
+
+    public var currentSessionStartDate: Date {
+        if isRunning, let startTime {
+            return startTime.addingTimeInterval(-totalElapsedSeconds)
+        }
+
+        if let endTime {
+            return endTime.addingTimeInterval(-totalElapsedSeconds)
+        }
+
+        return creationDate
+    }
     
     public var formattedElapsedTime: String {
         let time = currentElapsedTime

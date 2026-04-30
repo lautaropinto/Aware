@@ -304,10 +304,6 @@ private struct TimelineRemainingPlaceholder: View {
                 }
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             }
-            .overlay {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(Color.primary.opacity(0.12), lineWidth: 1)
-            }
     }
 }
 
