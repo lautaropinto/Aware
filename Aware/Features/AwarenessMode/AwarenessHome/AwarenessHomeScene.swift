@@ -15,6 +15,7 @@ struct AwarenessHomeScene: View {
     @State private var store = AwarenessHomeStore()
     @State private var isSettingsPresented = false
     @State private var selectedSegmentID = AwarenessTimelineSegment.unclaimedID
+    @State private var claimTimeSegment: AwarenessTimelineSegment?
 
     @Namespace private var settingsTransition
 
@@ -36,7 +37,10 @@ struct AwarenessHomeScene: View {
                         )
                         .padding(.bottom, 20)
 
-                        TimelineDetailSection(segment: selectedSegment)
+                        TimelineDetailSection(
+                            segment: selectedSegment,
+                            onClaimTime: { claimTimeSegment = selectedSegment }
+                        )
                             .padding(.bottom, 28)
 
                         if let errorMessage = store.errorMessage {
@@ -64,6 +68,9 @@ struct AwarenessHomeScene: View {
         .sheet(isPresented: $isSettingsPresented) {
             SettingsButton.SettingsScene()
                 .navigationTransition(.zoom(sourceID: "settings", in: settingsTransition))
+        }
+        .fullScreenCover(item: $claimTimeSegment) { segment in
+            ClaimTimeScene(segment: segment)
         }
         .onAppear {
             store.configure(storage: storage, healthKitManager: HealthKitManager.shared)
@@ -129,6 +136,7 @@ private struct TimelineSection: View {
 
 private struct TimelineDetailSection: View {
     let segment: AwarenessTimelineSegment
+    let onClaimTime: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -152,6 +160,25 @@ private struct TimelineDetailSection: View {
                     .foregroundStyle(.secondary)
                     .contentTransition(.numericText(value: segment.dayProgress))
             }
+
+            if canClaimTime {
+                Button(action: onClaimTime) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "pencil.and.outline")
+                            .font(.system(size: 14, weight: .semibold))
+
+                        Text("What were you doing?")
+                            .font(.headline)
+
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 12)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .animation(.smooth, value: segment.id)
@@ -161,6 +188,10 @@ private struct TimelineDetailSection: View {
 
     private var detailTitle: String {
         segment.isUnclaimed ? "unclaimed" : segment.title.lowercased()
+    }
+
+    private var canClaimTime: Bool {
+        segment.isUnclaimed && segment.startDate != nil && segment.endDate != nil && segment.duration >= 60
     }
 
     private var segmentTimeRangeText: String? {
