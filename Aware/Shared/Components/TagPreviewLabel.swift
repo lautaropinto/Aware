@@ -11,7 +11,7 @@ import AwareData
 struct TagPreviewLabel: View {
     let tag: AwareData.Tag
     var body: some View {
-        Label(tag.name.isEmpty ? "Preview" : tag.name, systemImage: tag.image)
+        Label(tag.name.isEmpty ? "Preview" : tag.name, systemImage: tagDisplayIconName(for: tag.image))
             .imageScale(.small)
             .font(.subheadline)
             .foregroundColor(tag.swiftUIColor)

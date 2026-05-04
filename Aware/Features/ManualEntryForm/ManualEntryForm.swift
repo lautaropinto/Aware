@@ -82,7 +82,7 @@ extension ManualEntryButton {
                 Text(" - ").tag(nil as Tag?)
                 
                 ForEach(tags, id: \.id) { tag in
-                    Label(tag.name, systemImage: tag.image.isEmpty ? "circle.fill" : tag.image)
+                    Label(tag.name, systemImage: tagDisplayIconName(for: tag.image))
                         .imageScale(.small)
                         .foregroundColor(tag.swiftUIColor)
                         .tag(tag as Tag?)

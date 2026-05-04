@@ -20,7 +20,7 @@ struct TagIconView: View {
     }
     
     var body: some View {
-        Image(systemName: tag.image)
+        Image(systemName: tagDisplayIconName(for: tag.image))
             .imageScale(.small)
             .foregroundStyle(Color.primary)
             .padding(8.0)
@@ -30,4 +30,8 @@ struct TagIconView: View {
                     .frame(width: 32.0, height: 32.0)
             )
     }
+}
+
+func tagDisplayIconName(for storedIconName: String) -> String {
+    storedIconName == "placeholder" || storedIconName.isEmpty ? "tag" : storedIconName
 }

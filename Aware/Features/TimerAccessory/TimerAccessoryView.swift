@@ -434,7 +434,7 @@ private struct TimerAccessoryDetailScene: View {
                         switchToActivity(tag)
                     } label: {
                         HStack(spacing: 8) {
-                            Image(systemName: tag.image.isEmpty ? "circle.fill" : tag.image)
+                            Image(systemName: tagDisplayIconName(for: tag.image))
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(tag.swiftUIColor)
 
@@ -780,7 +780,7 @@ private struct EndEarlierTimerEditor: View {
 
     private var currentActivitySummary: some View {
         HStack(spacing: 12) {
-            Image(systemName: timer.mainTag?.image.isEmpty == false ? timer.mainTag?.image ?? "timer" : "timer")
+            Image(systemName: timer.mainTag.map { tagDisplayIconName(for: $0.image) } ?? "timer")
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(color)
                 .frame(width: 34, height: 34)

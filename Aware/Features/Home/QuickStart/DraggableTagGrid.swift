@@ -81,7 +81,7 @@ struct DraggableTagButton: View {
     var body: some View {
         Button(action: onTap) {
             HStack {
-                Image(systemName: tag.image)
+                Image(systemName: tagDisplayIconName(for: tag.image))
                     .imageScale(.small)
                     .foregroundStyle(isDisabled ? .secondary.opacity(0.86) : tag.swiftUIColor)
                 

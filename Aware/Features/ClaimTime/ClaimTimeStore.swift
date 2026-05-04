@@ -356,7 +356,7 @@ final class ClaimTimeStore {
                 tag = existingTag
             } else {
                 let newTag = Tag(
-                    name: draft.trimmedActivityName,
+                    name: storedActivityName(from: draft.trimmedActivityName),
                     color: Color.accent.toHex(),
                     image: "placeholder",
                     displayOrder: nextDisplayOrder
@@ -455,5 +455,12 @@ final class ClaimTimeStore {
         return normalized
             .split(whereSeparator: \.isWhitespace)
             .joined(separator: " ")
+    }
+
+    private func storedActivityName(from rawValue: String) -> String {
+        let trimmedName = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let firstCharacter = trimmedName.first else { return trimmedName }
+
+        return firstCharacter.uppercased() + trimmedName.dropFirst()
     }
 }

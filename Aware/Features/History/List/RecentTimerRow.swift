@@ -32,7 +32,7 @@ struct RecentTimerRow: View {
                 
                 VStack(alignment: .leading, spacing: 2.0) {
                     
-                    Text(entry.name)
+                    Text(entryDisplayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         
@@ -90,5 +90,19 @@ struct RecentTimerRow: View {
         }
         // For non-running timers, use the formatted elapsed time
         return timekeeper.formattedElapsedTime
+    }
+
+    private var entryDisplayName: String {
+        guard entry is Timekeeper else { return entry.name }
+
+        return entry.name.removingSessionSuffix
+    }
+}
+
+private extension String {
+    var removingSessionSuffix: String {
+        guard hasSuffix(" Session") else { return self }
+
+        return String(dropLast(" Session".count))
     }
 }

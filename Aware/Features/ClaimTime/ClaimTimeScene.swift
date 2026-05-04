@@ -879,7 +879,7 @@ private struct ClaimTimeStripeOverlay: View {
 }
 
 private func iconName(for storedIconName: String) -> String {
-    storedIconName == "placeholder" || storedIconName.isEmpty ? "circle.dashed" : storedIconName
+    tagDisplayIconName(for: storedIconName)
 }
 
 #Preview {
