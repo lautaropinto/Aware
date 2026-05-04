@@ -11,15 +11,37 @@ import AwareData
 
 struct ClaimTimeDraft: Identifiable {
     let id: UUID
-    let tag: Tag
+    var tag: Tag?
+    var activityName: String
     var startDate: Date
     var endDate: Date
+    var color: Color
+    var iconName: String
 
-    init(id: UUID = UUID(), tag: Tag, startDate: Date, endDate: Date) {
+    init(
+        id: UUID = UUID(),
+        tag: Tag? = nil,
+        activityName: String = "",
+        startDate: Date,
+        endDate: Date,
+        color: Color = .accent,
+        iconName: String = "placeholder"
+    ) {
         self.id = id
         self.tag = tag
+        self.activityName = activityName
         self.startDate = startDate
         self.endDate = endDate
+        self.color = color
+        self.iconName = iconName
+    }
+
+    var trimmedActivityName: String {
+        activityName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var hasActivity: Bool {
+        !trimmedActivityName.isEmpty
     }
 
     var duration: TimeInterval {
@@ -31,6 +53,7 @@ struct ClaimTimeTimelineSegment: Identifiable {
     let id: String
     let title: String
     let color: Color
+    let iconName: String
     let startDate: Date
     let endDate: Date
     let draftID: UUID?
@@ -66,12 +89,16 @@ enum ClaimTimeProcessor {
         guard intervalEnd > intervalStart else { return [] }
 
         let sortedDrafts = drafts
+            .filter(\.hasActivity)
             .map { draft in
                 ClaimTimeDraft(
                     id: draft.id,
                     tag: draft.tag,
+                    activityName: draft.activityName,
                     startDate: min(max(draft.startDate, intervalStart), intervalEnd),
-                    endDate: min(max(draft.endDate, intervalStart), intervalEnd)
+                    endDate: min(max(draft.endDate, intervalStart), intervalEnd),
+                    color: draft.color,
+                    iconName: draft.iconName
                 )
             }
             .filter { $0.endDate > $0.startDate }
@@ -102,8 +129,9 @@ enum ClaimTimeProcessor {
             segments.append(
                 ClaimTimeTimelineSegment(
                     id: draft.id.uuidString,
-                    title: draft.tag.name,
-                    color: draft.tag.swiftUIColor,
+                    title: draft.trimmedActivityName,
+                    color: draft.color,
+                    iconName: draft.iconName,
                     startDate: claimedStart,
                     endDate: claimedEnd,
                     draftID: draft.id
@@ -143,6 +171,7 @@ enum ClaimTimeProcessor {
             id: "unclaimed-\(Int(startDate.timeIntervalSince1970))",
             title: "Unclaimed",
             color: .gray,
+            iconName: "questionmark",
             startDate: startDate,
             endDate: endDate,
             draftID: nil
