@@ -303,23 +303,28 @@ enum AwarenessHomeProcessor {
         now: Date,
         dayDuration: TimeInterval
     ) -> [AwarenessTimelineSegment] {
-        guard dayDuration > 0, now > dayStart else { return [] }
-        let elapsedRange = DateInterval(start: dayStart, end: now)
+        let elapsedStart = dayStart.startOfMinute
+        let elapsedEnd = now.startOfMinute
+        guard dayDuration > 0, elapsedEnd > elapsedStart else { return [] }
+        let elapsedRange = DateInterval(start: elapsedStart, end: elapsedEnd)
 
         let clampedIntervals = claimedIntervals.compactMap { interval -> ClaimedInterval? in
             guard let overlap = overlapInterval(
                 start: interval.start,
                 end: interval.end,
                 in: elapsedRange,
-                now: now
+                now: elapsedEnd
             ) else { return nil }
+            let start = overlap.start.startOfMinute
+            let end = overlap.end.startOfMinute
+            guard end > start else { return nil }
 
             return ClaimedInterval(
                 key: interval.key,
                 title: interval.title,
                 color: interval.color,
-                start: overlap.start,
-                end: overlap.end,
+                start: start,
+                end: end,
                 priority: interval.priority
             )
         }

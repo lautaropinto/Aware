@@ -63,8 +63,8 @@ final class ClaimTimeStore {
     init(segment: AwarenessTimelineSegment) {
         let fallbackEnd = Date()
         let fallbackStart = fallbackEnd.addingTimeInterval(-max(segment.duration, 0))
-        intervalStart = segment.startDate ?? fallbackStart
-        intervalEnd = segment.endDate ?? fallbackEnd
+        intervalStart = (segment.startDate ?? fallbackStart).startOfMinute
+        intervalEnd = (segment.endDate ?? fallbackEnd).startOfMinute
     }
 
     var duration: TimeInterval {

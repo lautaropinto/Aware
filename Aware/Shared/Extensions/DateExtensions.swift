@@ -146,6 +146,11 @@ extension Date {
     var startOfDay: Date {
         Calendar.current.startOfDay(for: self)
     }
+
+    var startOfMinute: Date {
+        let interval = (timeIntervalSinceReferenceDate / 60).rounded(.down) * 60
+        return Date(timeIntervalSinceReferenceDate: interval)
+    }
     
     var previousDay: Date {
         Calendar.current.date(byAdding: .day, value: -1, to: self)!

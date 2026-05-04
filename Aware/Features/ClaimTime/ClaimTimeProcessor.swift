@@ -86,6 +86,8 @@ enum ClaimTimeProcessor {
         intervalEnd: Date,
         drafts: [ClaimTimeDraft]
     ) -> [ClaimTimeTimelineSegment] {
+        let intervalStart = intervalStart.startOfMinute
+        let intervalEnd = intervalEnd.startOfMinute
         guard intervalEnd > intervalStart else { return [] }
 
         let sortedDrafts = drafts
@@ -95,8 +97,8 @@ enum ClaimTimeProcessor {
                     id: draft.id,
                     tag: draft.tag,
                     activityName: draft.activityName,
-                    startDate: min(max(draft.startDate, intervalStart), intervalEnd),
-                    endDate: min(max(draft.endDate, intervalStart), intervalEnd),
+                    startDate: min(max(draft.startDate.startOfMinute, intervalStart), intervalEnd),
+                    endDate: min(max(draft.endDate.startOfMinute, intervalStart), intervalEnd),
                     color: draft.color,
                     iconName: draft.iconName
                 )
